@@ -119,9 +119,11 @@ export function CommandRoomPage() {
     <main className="command-room">
       <header className="command-bar" aria-label="Статус командної кімнати">
         <div className="command-bar__identity">
-          <div className="command-mark" aria-hidden="true">
-            OC
-          </div>
+          <img
+            alt="OpenClaw Command Center logo"
+            className="command-mark"
+            src={`${import.meta.env.BASE_URL}logo-command-center.png`}
+          />
           <div>
             <p className="eyebrow">OpenClaw Command Center</p>
             <h1>Командна кімната</h1>

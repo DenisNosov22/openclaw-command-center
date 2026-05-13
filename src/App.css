@@ -72,14 +72,11 @@
 }
 
 .command-mark {
-  display: grid;
   flex: 0 0 48px;
   width: 48px;
   aspect-ratio: 1;
-  place-items: center;
-  color: #f7f1e6;
-  font-size: 0.82rem;
-  font-weight: 800;
+  object-fit: contain;
+  padding: 3px;
   background:
     linear-gradient(135deg, rgba(215, 180, 92, 0.16), rgba(215, 180, 92, 0.08)),
     rgba(32, 31, 28, 0.96);
