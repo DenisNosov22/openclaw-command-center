@@ -38,6 +38,8 @@ assertIncludes(modelSource, 'export function createOfficeSceneViewModel', 'offic
 assertIncludes(modelSource, 'export interface OfficeSignalRoute', 'typed office signal route model')
 assertIncludes(modelSource, 'getStationPulse', 'status-derived office pulse mapping')
 assertIncludes(modelSource, 'getTerminalMode', 'task-derived terminal mode mapping')
+assertIncludes(modelSource, 'isSelected: boolean', 'selected route state')
+assertIncludes(modelSource, 'selectedAgentId?: string', 'selected agent route input')
 assertIncludes(componentSource, 'export function IsometricOfficeScene', 'office scene component')
 assertIncludes(componentSource, 'role="img"', 'accessible scene role')
 assertIncludes(componentSource, 'aria-label="Isometric orbital office scene"', 'scene aria label')
@@ -54,16 +56,25 @@ assertIncludes(componentSource, 'office-terminal', 'desk terminals')
 assertIncludes(componentSource, 'office-terminal__ticks', 'terminal activity ticks')
 assertIncludes(componentSource, 'office-agent-marker', 'abstract agent markers')
 assertIncludes(componentSource, 'office-status-lamp', 'status lamps')
-assertIncludes(componentSource, 'aria-label={`Select read-only office station', 'selectable station labels')
+assertIncludes(componentSource, 'aria-label={`${isSelected ? \'Selected\' : \'Select\'} read-only office station', 'state-aware selectable station labels')
+assertIncludes(componentSource, 'aria-pressed={isSelected}', 'selected station pressed state')
+assertIncludes(componentSource, 'data-agent-id={station.agentId}', 'station-to-agent mapping metadata')
+assertIncludes(componentSource, 'onClick={() => onSelectAgent(station.agentId)}', 'station selection handler')
+assertIncludes(componentSource, 'selectedAgentId', 'office selected agent prop')
+assertIncludes(componentSource, 'office-transfer--selected', 'selected route emphasis class')
 assertIncludes(pageSource, "type StageView = 'room' | 'office' | 'graph'", 'Office stage view type')
 assertIncludes(pageSource, "setStageView('office')", 'Office toggle handler')
 assertIncludes(pageSource, '<IsometricOfficeScene', 'office scene integration')
 assertIncludes(pageSource, 'activity={snapshot.activity}', 'office scene timeline binding')
 assertIncludes(pageSource, 'workflow={snapshot.workflow}', 'office scene workflow binding')
+assertIncludes(pageSource, 'onSelectAgent={setSelectedAgentId}', 'office station selection updates shared inspector agent')
+assertIncludes(pageSource, 'selectedAgentId={selectedAgent.id}', 'office selected agent mirrors inspector state')
 assertIncludes(getBlock('.isometric-office'), 'linear-gradient', 'office scene layered surface')
 assertIncludes(getBlock('.office-floor'), 'rotateX(60deg) rotateZ(45deg)', 'isometric office floor')
 assertIncludes(getBlock('.office-core'), 'rgba(215, 180, 92', 'gold command core')
 assertIncludes(getBlock('.office-desk'), 'border: 1px solid rgba(215, 180, 92', 'desk graphite/gold frame')
+assertIncludes(getBlock('.office-desk--selected'), 'outline:', 'selected desk outline')
+assertIncludes(getBlock('.office-desk--selected'), 'rgba(120, 212, 192', 'selected desk cyan/gold accent')
 assertIncludes(getBlock('.office-terminal'), 'rgba(120, 212, 192', 'cyan terminal accent')
 assertIncludes(getBlock('.office-desk--working'), 'office-desk-pulse', 'working desk pulse')
 assertIncludes(getBlock('.office-desk--pulse-danger'), 'office-blocked-pulse', 'danger pulse intensity')
@@ -74,6 +85,8 @@ assertIncludes(getBlock('.office-terminal__ticks'), 'office-terminal-ticks', 'ty
 assertIncludes(getBlock('.office-walker--inner'), 'office-walker-inner', 'short orbital walking path')
 assertIncludes(getBlock('.office-transfer--core::after'), 'office-packet-core', 'core packet transfer')
 assertIncludes(getBlock('.office-transfer--danger::after'), '#d4544d', 'critical route packet tone')
+assertIncludes(getBlock('.office-transfer--selected'), 'opacity:', 'selected route emphasis')
+assertIncludes(getBlock('.office-transfer--selected::after'), 'office-packet-selected', 'selected route packet cadence')
 assertIncludes(getBlock('.office-transfer::before'), 'attr(data-label)', 'packet route labels')
 assertIncludes(getBlock('.office-transfer::before'), 'opacity: 0', 'quiet default route labels')
 assertIncludes(stylesheetSource, '.office-transfer--danger::before', 'selective danger route labels')
@@ -86,6 +99,8 @@ assertIncludes(getBlock('.office-terminal--typing .office-terminal__ticks'), '3s
 assertIncludes(stylesheetSource, '@media (prefers-reduced-motion: reduce)', 'reduced-motion support')
 assertIncludes(stylesheetSource, '.office-walker,\n  .office-transfer::after', 'reduced-motion animated layer fallback')
 assertIncludes(readmeSource, 'Office Scene phase 3', 'README office scene state-aware roadmap')
+assertIncludes(readmeSource, 'Office Scene phase 4', 'README office scene interaction roadmap')
+assertIncludes(readmeSource, 'clicking an office station updates the shared selected agent inspector', 'README office scene interaction behavior')
 
 const agents: Agent[] = [
   {
@@ -164,6 +179,10 @@ const viewModel = createOfficeSceneViewModel(agents, tasks, activity, {
   nodes: workflowNodes,
   edges: workflowEdges,
 })
+const selectedViewModel = createOfficeSceneViewModel(agents, tasks, activity, {
+  nodes: workflowNodes,
+  edges: workflowEdges,
+}, 'agent-blocked')
 const onlineStation = viewModel.stations.find((station) => station.agentId === 'agent-online')
 const busyStation = viewModel.stations.find((station) => station.agentId === 'agent-busy')
 const blockedStation = viewModel.stations.find((station) => station.agentId === 'agent-blocked')
@@ -181,6 +200,12 @@ assert(
     (route) => route.label === 'release' && route.tone === 'danger' && route.activity === 'blocked',
   ),
   'workflow plus critical timeline event maps to a blocked danger signal route',
+)
+assert(
+  selectedViewModel.signalRoutes.some(
+    (route) => route.label === 'release' && route.isSelected,
+  ),
+  'selected office station emphasizes its related workflow route',
 )
 
 console.log('[office-scene] Source-level office scene checks passed.')

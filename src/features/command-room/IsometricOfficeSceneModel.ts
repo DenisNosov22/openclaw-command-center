@@ -36,6 +36,7 @@ export interface OfficeSignalRoute {
   label: string
   activity: 'active' | 'blocked' | 'handoff' | 'monitoring'
   tone: OfficeStationTone
+  isSelected: boolean
 }
 
 export interface OfficeSceneViewModel {
@@ -289,12 +290,17 @@ export function createOfficeSignalRoutes(
   stations: OfficeAgentStation[],
   activity: ActivityEvent[],
   workflow: CommandCenterSnapshot['workflow'],
+  selectedAgentId?: string,
 ): OfficeSignalRoute[] {
   return workflow.edges.slice(0, 6).map((edge, index) => {
     const targetNode = workflow.nodes.find((node) => node.id === edge.to)
     const targetStation = stations.find((station) => station.agentId === targetNode?.agentId)
     const lane = targetStation?.lane ?? officeStationLayout[index % officeStationLayout.length].lane
     const tone = getRouteTone(edge, workflow, stations, activity)
+    const relatedNodeIds = new Set([edge.from, edge.to])
+    const relatedAgentIds = new Set(
+      workflow.nodes.filter((node) => relatedNodeIds.has(node.id)).map((node) => node.agentId),
+    )
 
     return {
       id: `office-route-${edge.id}`,
@@ -302,6 +308,7 @@ export function createOfficeSignalRoutes(
       label: edge.label,
       tone,
       activity: getRouteActivity(edge, workflow, stations, tone),
+      isSelected: selectedAgentId ? relatedAgentIds.has(selectedAgentId) : false,
     }
   })
 }
@@ -311,11 +318,12 @@ export function createOfficeSceneViewModel(
   tasks: Task[],
   activity: ActivityEvent[],
   workflow: CommandCenterSnapshot['workflow'],
+  selectedAgentId?: string,
 ): OfficeSceneViewModel {
   const stations = createOfficeAgentStations(agents, tasks)
 
   return {
     stations,
-    signalRoutes: createOfficeSignalRoutes(stations, activity, workflow),
+    signalRoutes: createOfficeSignalRoutes(stations, activity, workflow, selectedAgentId),
   }
 }

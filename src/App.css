@@ -858,6 +858,24 @@
   opacity: 0.54;
 }
 
+.office-transfer--selected {
+  opacity: 0.86;
+}
+
+.office-transfer--selected::after {
+  width: 6px;
+  background: #78d4c0;
+  box-shadow:
+    0 0 10px rgba(120, 212, 192, 0.44),
+    0 0 16px rgba(215, 180, 92, 0.16);
+  animation: office-packet-selected 5.2s ease-in-out infinite;
+}
+
+.office-transfer--selected::before {
+  color: #f4f1ea;
+  opacity: 0.68;
+}
+
 .office-walkers {
   position: absolute;
   inset: 0;
@@ -918,8 +936,18 @@
     transform 160ms ease;
 }
 
-.office-desk:hover,
 .office-desk--selected {
+  border-color: rgba(215, 180, 92, 0.68);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 0 30px rgba(215, 180, 92, 0.18),
+    0 14px 32px rgba(0, 0, 0, 0.3);
+  outline: 1px solid rgba(120, 212, 192, 0.34);
+  outline-offset: 2px;
+  transform: translate(-50%, -52%) skewY(-4deg);
+}
+
+.office-desk:hover {
   border-color: rgba(215, 180, 92, 0.68);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.06),
@@ -1664,6 +1692,24 @@
   88%,
   100% {
     opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+@keyframes office-packet-selected {
+  0%,
+  18% {
+    opacity: 0.28;
+    transform: translateX(0);
+  }
+
+  52% {
+    opacity: 0.92;
+  }
+
+  86%,
+  100% {
+    opacity: 0.28;
     transform: translateX(100%);
   }
 }

@@ -105,6 +105,8 @@ monitoring terminal ticks, and workflow edges plus timeline severity drive deter
 route labels/classes. The scene is still mock/read-only only: no real runtime actions, no controls,
 no deploy hooks, and no real data source.
 
+Office Scene phase 4 makes the office a dashboard interaction surface: clicking an office station updates the shared selected agent inspector exactly like roster cards, room nodes, and workflow nodes. The selected desk gets a quiet visual/accessibility state, and related mock workflow packets can receive a subtle selected-route emphasis while remaining read-only.
+
 Manual viewport widths:
 
 - Desktop: `1366` and `1440`

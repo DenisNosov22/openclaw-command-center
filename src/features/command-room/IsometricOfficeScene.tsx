@@ -18,7 +18,13 @@ export function IsometricOfficeScene({
   selectedAgentId,
   onSelectAgent,
 }: IsometricOfficeSceneProps) {
-  const { stations, signalRoutes } = createOfficeSceneViewModel(agents, tasks, activity, workflow)
+  const { stations, signalRoutes } = createOfficeSceneViewModel(
+    agents,
+    tasks,
+    activity,
+    workflow,
+    selectedAgentId,
+  )
   const selectedStation = stations.find((station) => station.agentId === selectedAgentId)
 
   return (
@@ -42,7 +48,9 @@ export function IsometricOfficeScene({
         <span className="office-transfer office-transfer--handoff" />
         {signalRoutes.map((route) => (
           <span
-            className={`office-transfer office-transfer--${route.lane} office-transfer--${route.activity} office-transfer--${route.tone}`}
+            className={`office-transfer office-transfer--${route.lane} office-transfer--${route.activity} office-transfer--${route.tone}${
+              route.isSelected ? ' office-transfer--selected' : ''
+            }`}
             data-label={route.label}
             key={route.id}
           />
@@ -57,11 +65,12 @@ export function IsometricOfficeScene({
 
         return (
           <button
-            aria-label={`Select read-only office station ${station.name}: ${station.role}, ${station.activity} activity, ${station.terminalMode} terminal`}
+            aria-label={`${isSelected ? 'Selected' : 'Select'} read-only office station ${station.name}: ${station.role}, ${station.activity} activity, ${station.terminalMode} terminal`}
             aria-pressed={isSelected}
             className={`office-desk office-desk--${station.lane} office-desk--${station.activity} office-desk--pulse-${station.pulse}${
               isSelected ? ' office-desk--selected' : ''
             }`}
+            data-agent-id={station.agentId}
             key={station.id}
             onClick={() => onSelectAgent(station.agentId)}
             style={{

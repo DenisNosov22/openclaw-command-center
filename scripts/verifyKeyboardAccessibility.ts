@@ -1,10 +1,15 @@
 import { strict as assert } from 'node:assert'
 import { readFileSync } from 'node:fs'
 
-const componentSource = readFileSync(
+const pageSource = readFileSync(
   'src/features/command-room/CommandRoomPage.tsx',
   'utf8',
 )
+const officeSceneSource = readFileSync(
+  'src/features/command-room/IsometricOfficeScene.tsx',
+  'utf8',
+)
+const componentSource = `${pageSource}\n${officeSceneSource}`
 const stylesheetSource = readFileSync('src/App.css', 'utf8')
 
 function assertIncludes(source: string, expected: string, label: string) {
@@ -65,7 +70,7 @@ for (const filter of ['all', 'selected', 'critical', 'system']) {
   )
 }
 
-for (const className of ['agent-card', 'agent-node', 'workflow-node']) {
+for (const className of ['agent-card', 'agent-node', 'workflow-node', 'office-desk']) {
   assertButtonHasAttribute(className, 'aria-label=')
   assertButtonHasAttribute(className, 'aria-pressed=')
   assertButtonHasAttribute(className, 'onClick=')
@@ -85,6 +90,7 @@ for (const selector of [
   '.agent-card:focus-visible',
   '.agent-node:focus-visible',
   '.workflow-node:focus-visible',
+  '.office-desk:focus-visible',
 ]) {
   assertIncludes(stylesheetSource, selector, `${selector} focus-visible style`)
 }
