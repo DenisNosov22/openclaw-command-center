@@ -956,6 +956,7 @@
   line-clamp: 2;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+  overflow-wrap: anywhere;
 }
 
 .task-chip__meta {
@@ -1262,6 +1263,14 @@
 .timeline-event--empty {
   border-color: rgba(212, 84, 77, 0.28);
   box-shadow: inset 3px 0 0 rgba(212, 84, 77, 0.52);
+}
+
+.timeline strong,
+.timeline p,
+.task-chip span,
+.inspector-risk p,
+.inspector-next strong {
+  overflow-wrap: anywhere;
 }
 
 .timeline time {
@@ -1587,7 +1596,11 @@
   }
 
   .hologram {
-    min-height: 360px;
+    min-height: 340px;
+  }
+
+  .workflow-graph {
+    min-height: 400px;
   }
 
   .hologram__core {
