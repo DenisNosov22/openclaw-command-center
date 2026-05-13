@@ -57,4 +57,46 @@ npm run build
 npm run lint
 npm run test:redaction
 npm run test:adapter-selection
+npm run test:adapter-diagnostics
+npm run smoke:html
 ```
+
+## Visual smoke runbook
+
+This project intentionally avoids a real browser dependency in local smoke checks. Do not install
+Playwright browsers, Puppeteer, or screenshot tooling just for the MVP visual smoke pass.
+
+Manual viewport widths:
+
+- Desktop: `1366` and `1440`
+- Tablet: `768`
+- Mobile: `390`
+
+Manual states:
+
+- Default/mock: `VITE_COMMAND_CENTER_ADAPTER` unset or `mock`
+- OpenClaw disabled: `VITE_COMMAND_CENTER_ADAPTER=openclaw-disabled`
+- Unknown fallback: any unsupported value, for example `VITE_COMMAND_CENTER_ADAPTER=future-mode`
+
+Acceptance criteria:
+
+- Top bar: logo, title, live/global status, adapter diagnostics, read-only badge, and Kyiv-time
+  update readout stay visible without overlap. Disabled and unknown states show the requested mode
+  and warning in the diagnostics pill.
+- Room/Graph: Room is the default center-stage view; the Room and Graph toggles remain reachable;
+  agent nodes/workflow nodes stay inside the stage and do not cover labels or controls.
+- Inspector: selected agent, risk/next-action block, task chips, and recent activity stay readable
+  and scroll/stack cleanly on tablet and mobile.
+- Timeline: filters remain usable; newest events are readable; warning/critical styles remain
+  distinct from normal and success events.
+
+Lightweight automated smoke:
+
+```sh
+npm run smoke:html
+```
+
+The script builds three adapter modes, starts `vite preview` on local ephemeral ports, checks HTTP
+`200` for the HTML and linked assets, and verifies that the built bundle contains the expected
+adapter diagnostics labels. It does not execute React in a browser and does not create screenshots,
+so it complements but does not replace the manual viewport pass above.
