@@ -50,7 +50,7 @@ export function createCommandCenterAdapterSelection(
       requestedMode,
       readOnly: true,
       usesFallback: true,
-      warning: 'OpenClaw adapter is disabled; rendering safe mock snapshot.',
+      warning: 'OpenClaw adapter disabled; showing safe mock snapshot.',
     }
   }
 
@@ -61,7 +61,7 @@ export function createCommandCenterAdapterSelection(
     requestedMode,
     readOnly: true,
     usesFallback: true,
-    warning: `Unknown adapter mode "${requestedMode}"; rendering safe mock snapshot.`,
+    warning: `Unknown adapter mode "${requestedMode}"; showing safe mock snapshot.`,
   }
 }
 

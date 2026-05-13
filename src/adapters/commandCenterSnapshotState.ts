@@ -38,8 +38,8 @@ export function createLoadingCommandCenterSnapshotState(
   return {
     kind: 'loading',
     snapshot: createEmptySnapshot(now.toISOString()),
-    title: 'Snapshot initializing',
-    detail: 'Read-only adapter snapshot готується до показу.',
+    title: 'Snapshot loading',
+    detail: 'Read-only snapshot is preparing.',
   }
 }
 
@@ -54,8 +54,8 @@ export function createCommandCenterSnapshotState(
       return {
         kind: 'empty',
         snapshot,
-        title: 'Snapshot is empty',
-        detail: 'Read-only adapter повернув порожній roster, tasks і timeline.',
+        title: 'Snapshot empty',
+        detail: 'Read-only snapshot is empty: roster, tasks, timeline, workflow.',
       }
     }
 
@@ -63,14 +63,14 @@ export function createCommandCenterSnapshotState(
       kind: 'ready',
       snapshot,
       title: 'Snapshot ready',
-      detail: 'Read-only adapter snapshot активний.',
+      detail: 'Read-only adapter snapshot active.',
     }
   } catch {
     return {
       kind: 'error',
       snapshot: createEmptySnapshot(now.toISOString()),
-      title: 'Adapter fallback active',
-      detail: 'Read-only snapshot не завантажився; UI показує безпечний fallback.',
+      title: 'Adapter fallback',
+      detail: 'Snapshot unavailable; showing read-only fallback.',
     }
   }
 }

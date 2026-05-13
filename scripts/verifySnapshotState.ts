@@ -26,7 +26,7 @@ assert.match(loadingState.detail, /Read-only/)
 const emptyState = createCommandCenterSnapshotState(() => emptySnapshot, now)
 assert.equal(emptyState.kind, 'empty')
 assert.equal(emptyState.snapshot.generatedAt, '2026-05-13T13:55:00.000Z')
-assert.match(emptyState.detail, /порожній/)
+assert.match(emptyState.detail, /roster, tasks, timeline, workflow/)
 
 const errorState = createCommandCenterSnapshotState(() => {
   throw new Error('adapter failed')

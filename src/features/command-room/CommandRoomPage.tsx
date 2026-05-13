@@ -203,7 +203,7 @@ const fallbackAgent: Agent = {
   name: 'Read-only fallback',
   role: 'system',
   status: 'waiting',
-  summary: 'Snapshot дані ще недоступні; панель лишається read-only.',
+  summary: 'Snapshot data unavailable; panel remains read-only.',
 }
 
 const adapterSelection = getCommandCenterAdapterSelection()
@@ -460,7 +460,7 @@ export function CommandRoomPage() {
             ) : (
               <div className="empty-state empty-state--compact">
                 <strong>Roster порожній</strong>
-                <p>Read-only snapshot не містить агентів.</p>
+                <p>Snapshot has no agents.</p>
               </div>
             )}
           </div>
@@ -624,7 +624,7 @@ export function CommandRoomPage() {
               {snapshot.workflow.nodes.length === 0 ? (
                 <div className="snapshot-state snapshot-state--center">
                   <strong>Workflow порожній</strong>
-                  <p>{snapshot.stateDetail}</p>
+                  <p>Snapshot has no workflow nodes.</p>
                   <span>Read-only</span>
                 </div>
               ) : null}
@@ -659,11 +659,11 @@ export function CommandRoomPage() {
               <article className="task-chip task-chip--empty">
                 <div>
                   <strong>Tasks порожні</strong>
-                  <span>Немає активних read-only задач у snapshot.</span>
+                  <span>No read-only tasks in snapshot.</span>
                 </div>
                 <div className="task-chip__meta">
                   <span>Read-only</span>
-                  <span>Fallback</span>
+                  <span>Empty</span>
                 </div>
               </article>
             )}
@@ -774,7 +774,7 @@ export function CommandRoomPage() {
               ) : (
                 <li>
                   <time>Read-only</time>
-                  <p>Timeline порожній для цього snapshot.</p>
+                  <p>No events for this snapshot.</p>
                 </li>
               )}
             </ol>
@@ -868,7 +868,7 @@ export function CommandRoomPage() {
                 </div>
                 <div>
                   <strong>Timeline порожній</strong>
-                  <p>Adapter не повернув подій для поточного read-only snapshot.</p>
+                  <p>No events in this read-only snapshot.</p>
                 </div>
               </li>
             )}

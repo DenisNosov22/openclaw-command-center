@@ -21,7 +21,7 @@ const smokeModes: readonly SmokeMode[] = [
       'OpenClaw adapter disabled',
       'Requested: ',
       'openclaw-disabled',
-      'OpenClaw adapter is disabled',
+      'OpenClaw adapter disabled',
       'Read-only',
     ],
   },
