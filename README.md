@@ -107,6 +107,8 @@ no deploy hooks, and no real data source.
 
 Office Scene phase 4 makes the office a dashboard interaction surface: clicking an office station updates the shared selected agent inspector exactly like roster cards, room nodes, and workflow nodes. The selected desk gets a quiet visual/accessibility state, and related mock workflow packets can receive a subtle selected-route emphasis while remaining read-only.
 
+Office Scene phase 5 is a professional polish/maturity pass: the room now reads more like a premium command office, with grounded workstations, clearer tiny office agent avatars, a stronger command-core table, quieter route support, glass/depth surfaces, and calmer status/activity motion. It remains CSS-only, mock-first, read-only, dependency-light, and aligned with the graphite/gold/cyan/green/calm-red dashboard language.
+
 Manual viewport widths:
 
 - Desktop: `1366` and `1440`

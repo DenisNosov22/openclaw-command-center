@@ -34,7 +34,7 @@ export function IsometricOfficeScene({
         className="office-floor"
         role="img"
       />
-      <div className="office-core" aria-label="Central orbital command core">
+      <div className="office-core command-core" aria-label="Central orbital command core">
         <span>Orbit Core</span>
         <strong>{selectedStation?.name ?? 'Command'}</strong>
         <p>{selectedStation?.taskTitle ?? 'Mock-first coordination table'}</p>
@@ -67,7 +67,7 @@ export function IsometricOfficeScene({
           <button
             aria-label={`${isSelected ? 'Selected' : 'Select'} read-only office station ${station.name}: ${station.role}, ${station.activity} activity, ${station.terminalMode} terminal`}
             aria-pressed={isSelected}
-            className={`office-desk office-desk--${station.lane} office-desk--${station.activity} office-desk--pulse-${station.pulse}${
+            className={`office-desk office-workstation office-desk--${station.lane} office-desk--${station.activity} office-desk--pulse-${station.pulse}${
               isSelected ? ' office-desk--selected' : ''
             }`}
             data-agent-id={station.agentId}
@@ -84,7 +84,7 @@ export function IsometricOfficeScene({
               <span className="office-terminal__ticks" aria-hidden="true" />
             </span>
             <span className="office-chair" aria-hidden="true" />
-            <span className={`office-agent-marker office-agent-marker--${station.action}`}>
+            <span className={`office-agent-marker office-agent-avatar office-agent-marker--${station.action}`}>
               {station.marker}
             </span>
             <span className={`office-status-lamp office-status-lamp--${station.tone}`} />
