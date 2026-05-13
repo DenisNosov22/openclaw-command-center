@@ -780,6 +780,51 @@
   box-shadow: inset 0 -6px 0 rgba(0, 0, 0, 0.14);
 }
 
+.office-lounge-sofa {
+  position: absolute;
+  right: 13%;
+  bottom: 18%;
+  z-index: 2;
+  width: min(22%, 138px);
+  height: 42px;
+  background:
+    linear-gradient(180deg, rgba(244, 241, 234, 0.08), transparent 36%),
+    linear-gradient(90deg, rgba(215, 180, 92, 0.24), rgba(77, 67, 48, 0.38)),
+    rgba(24, 22, 18, 0.74);
+  border: 1px solid rgba(215, 180, 92, 0.3);
+  border-radius: 8px 8px 10px 10px;
+  box-shadow:
+    inset 0 -10px 0 rgba(0, 0, 0, 0.16),
+    0 12px 24px rgba(0, 0, 0, 0.24);
+  transform: skewY(-4deg);
+}
+
+.office-lounge-sofa::before,
+.office-lounge-sofa::after {
+  position: absolute;
+  content: '';
+  border-radius: 6px;
+}
+
+.office-lounge-sofa::before {
+  left: 10px;
+  right: 10px;
+  top: 7px;
+  height: 11px;
+  background:
+    linear-gradient(90deg, rgba(244, 241, 234, 0.12), transparent 48%),
+    rgba(215, 180, 92, 0.18);
+  border: 1px solid rgba(215, 180, 92, 0.22);
+}
+
+.office-lounge-sofa::after {
+  left: 18px;
+  right: 18px;
+  bottom: -8px;
+  height: 8px;
+  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.42), transparent 70%);
+}
+
 .office-area--hologram {
   left: 50%;
   top: 17%;
@@ -815,6 +860,40 @@
     0 0 46px rgba(215, 180, 92, 0.18),
     0 24px 46px rgba(0, 0, 0, 0.34);
   transform: translate(-50%, -50%);
+}
+
+.office-core__surface {
+  position: absolute;
+  left: 50%;
+  top: 48%;
+  z-index: 0;
+  width: 76%;
+  height: 42px;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(90deg, rgba(120, 212, 192, 0.18) 0 2px, transparent 2px 8px),
+    linear-gradient(90deg, transparent, rgba(120, 212, 192, 0.18), transparent);
+  border: 1px solid rgba(120, 212, 192, 0.2);
+  border-radius: 50%;
+  opacity: 0.68;
+  transform: translate(-50%, -50%) rotateX(62deg);
+}
+
+.office-core__surface::after {
+  position: absolute;
+  inset: 8px 16px;
+  content: '';
+  background: linear-gradient(90deg, transparent, rgba(244, 241, 234, 0.36), transparent);
+  border-radius: 50%;
+  opacity: 0.54;
+  animation: office-core-scan 6.8s ease-in-out infinite;
+}
+
+.office-core > span:not(.office-core__surface),
+.office-core strong,
+.office-core p {
+  position: relative;
+  z-index: 1;
 }
 
 .command-core::before,
@@ -884,6 +963,36 @@
   background: linear-gradient(90deg, transparent, rgba(120, 212, 192, 0.18), transparent);
   opacity: 0.72;
   transform-origin: 0 50%;
+}
+
+.office-lane {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 0;
+  width: min(62%, 386px);
+  height: 46px;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, transparent, rgba(244, 241, 234, 0.06) 14%, transparent 24%),
+    linear-gradient(90deg, transparent 0 9%, rgba(120, 212, 192, 0.1) 9% 11%, transparent 11% 20%),
+    linear-gradient(90deg, rgba(215, 180, 92, 0.08), transparent 60%);
+  border-top: 1px solid rgba(120, 212, 192, 0.1);
+  border-bottom: 1px solid rgba(215, 180, 92, 0.09);
+  border-radius: 999px;
+  opacity: 0.48;
+  transform-origin: 0 50%;
+}
+
+.office-lane--inner {
+  width: min(47%, 292px);
+  height: 34px;
+  transform: rotate(28deg) translateX(-46%);
+}
+
+.office-lane--outer {
+  width: min(56%, 340px);
+  transform: rotate(118deg) translateX(-50%);
 }
 
 .office-route--north {
@@ -962,6 +1071,57 @@
   background: #d7b45c;
   box-shadow: 0 0 8px rgba(215, 180, 92, 0.34);
   animation: office-packet-handoff 5.6s ease-in-out infinite;
+}
+
+.office-handoff-hub {
+  position: absolute;
+  left: 25%;
+  top: 58%;
+  z-index: 2;
+  width: 76px;
+  height: 28px;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(215, 180, 92, 0.22), transparent 64%),
+    rgba(16, 18, 17, 0.72);
+  border: 1px solid rgba(215, 180, 92, 0.36);
+  border-radius: 999px;
+  box-shadow:
+    inset 0 1px 0 rgba(244, 241, 234, 0.07),
+    0 0 18px rgba(215, 180, 92, 0.12);
+  transform: skewY(-4deg);
+}
+
+.office-handoff-hub::before {
+  position: absolute;
+  left: 12px;
+  top: -15px;
+  max-width: 92px;
+  overflow: hidden;
+  color: rgba(244, 241, 234, 0.62);
+  content: attr(data-link);
+  font-size: 0.5rem;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.office-handoff-hub::after {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  width: 8px;
+  aspect-ratio: 1;
+  content: '';
+  background: #d7b45c;
+  border-radius: 50%;
+  box-shadow:
+    18px 0 0 rgba(120, 212, 192, 0.68),
+    36px 0 0 rgba(215, 180, 92, 0.68),
+    0 0 10px rgba(215, 180, 92, 0.28);
+  transform: translateY(-50%);
+  animation: office-handoff-bus 5.8s ease-in-out infinite;
 }
 
 .office-transfer--north {
@@ -1190,6 +1350,8 @@
 .office-terminal {
   position: relative;
   display: grid;
+  grid-column: 1;
+  grid-row: 1;
   width: 38px;
   aspect-ratio: 1.12;
   place-items: center;
@@ -1199,6 +1361,35 @@
   border: 1px solid rgba(120, 212, 192, 0.36);
   border-radius: 5px;
   box-shadow: 0 0 14px rgba(120, 212, 192, 0.12);
+}
+
+.office-monitor-stand {
+  position: absolute;
+  left: 50%;
+  bottom: -7px;
+  width: 18px;
+  height: 7px;
+  background:
+    linear-gradient(180deg, rgba(215, 180, 92, 0.28), rgba(77, 67, 48, 0.44)),
+    rgba(20, 19, 16, 0.86);
+  border: 1px solid rgba(215, 180, 92, 0.28);
+  border-radius: 2px 2px 5px 5px;
+  transform: translateX(-50%);
+}
+
+.office-keyboard-tray {
+  position: relative;
+  grid-column: 1;
+  grid-row: 2;
+  width: 38px;
+  height: 12px;
+  background:
+    repeating-linear-gradient(90deg, rgba(120, 212, 192, 0.24) 0 2px, transparent 2px 5px),
+    linear-gradient(180deg, rgba(244, 241, 234, 0.08), rgba(0, 0, 0, 0.12)),
+    rgba(19, 22, 21, 0.86);
+  border: 1px solid rgba(120, 212, 192, 0.2);
+  border-radius: 3px;
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.16);
 }
 
 .office-terminal::before {
@@ -1258,6 +1449,8 @@
 
 .office-chair {
   position: relative;
+  grid-column: 2;
+  grid-row: 1 / 3;
   width: 28px;
   aspect-ratio: 0.9;
   background:
@@ -1284,6 +1477,7 @@
   position: relative;
   display: grid;
   grid-column: 1 / 3;
+  grid-row: 3;
   justify-self: center;
   width: 40px;
   aspect-ratio: 0.86;
@@ -2131,6 +2325,30 @@
   }
 }
 
+@keyframes office-core-scan {
+  0%,
+  100% {
+    transform: translateX(-18%);
+  }
+
+  50% {
+    transform: translateX(18%);
+  }
+}
+
+@keyframes office-handoff-bus {
+  0%,
+  100% {
+    opacity: 0.42;
+    transform: translateY(-50%) translateX(0);
+  }
+
+  50% {
+    opacity: 0.86;
+    transform: translateY(-50%) translateX(12px);
+  }
+}
+
 @keyframes office-agent-rest {
   0%,
   100% {
@@ -2259,6 +2477,8 @@
   .office-agent-sprite__legs::before,
   .office-agent-sprite__legs::after,
   .office-walker,
+  .office-core__surface::after,
+  .office-handoff-hub::after,
   .office-transfer::after {
     animation: none;
   }
@@ -2824,6 +3044,10 @@
   }
 
   .office-terminal {
+    width: 30px;
+  }
+
+  .office-keyboard-tray {
     width: 30px;
   }
 

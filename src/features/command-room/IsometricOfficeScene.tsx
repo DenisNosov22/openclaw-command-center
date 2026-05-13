@@ -46,19 +46,24 @@ export function IsometricOfficeScene({
         <span className={`office-area ${OFFICE_ZONE_TOKENS.desk}`} data-label="Desks + PCs" />
         <span className={`office-area ${OFFICE_ZONE_TOKENS.sofa}`} data-label="Rest bay" />
         <span className={`office-area ${OFFICE_ZONE_TOKENS.hologram}`} data-label="Hologram UI" />
+        <span className={OFFICE_ZONE_TOKENS.loungeSofa} />
       </div>
       <div className={`office-core ${OFFICE_ZONE_TOKENS.core}`} aria-label="Central orbital command core">
+        <span className={OFFICE_ZONE_TOKENS.coreSurface} aria-hidden="true" />
         <span>Orbit Core</span>
         <strong>{selectedStation?.name ?? 'Command'}</strong>
         <p>{selectedStation?.taskTitle ?? 'Mock-first coordination table'}</p>
       </div>
       <div className="office-routes" aria-hidden="true">
+        <span className={`${OFFICE_ZONE_TOKENS.path} office-lane--inner`} />
+        <span className={`${OFFICE_ZONE_TOKENS.path} office-lane--outer`} />
         <span className="office-route office-route--north" />
         <span className="office-route office-route--east" />
         <span className="office-route office-route--south" />
         <span className="office-route office-route--west" />
         <span className="office-transfer office-transfer--core" />
         <span className="office-transfer office-transfer--handoff" />
+        <span className={OFFICE_ZONE_TOKENS.handoff} data-link="agent data transfer to core" />
         {signalRoutes.map((route) => (
           <span
             className={`office-transfer office-transfer--${route.lane} office-transfer--${route.activity} office-transfer--${route.tone}${
@@ -92,8 +97,10 @@ export function IsometricOfficeScene({
           >
             <span className={getOfficeTerminalClassName(station.terminalMode)}>
               <i />
+              <span className={OFFICE_SPRITE_TOKENS.monitorStand} aria-hidden="true" />
               <span className={OFFICE_SPRITE_TOKENS.terminalTicks} aria-hidden="true" />
             </span>
+            <span className={OFFICE_SPRITE_TOKENS.keyboardTray} aria-hidden="true" />
             <span className={OFFICE_SPRITE_TOKENS.chair} aria-hidden="true" />
             <span className={getOfficeAgentMarkerClassName(station.action)}>
               <span className={OFFICE_SPRITE_TOKENS.restProp} aria-hidden="true" />

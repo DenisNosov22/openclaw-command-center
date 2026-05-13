@@ -98,6 +98,8 @@ export const OFFICE_SPRITE_TOKENS = {
   workstation: 'office-workstation',
   terminal: 'office-terminal',
   terminalTicks: 'office-terminal__ticks',
+  monitorStand: 'office-monitor-stand',
+  keyboardTray: 'office-keyboard-tray',
   chair: 'office-chair',
   avatar: 'office-agent-avatar',
   marker: 'office-agent-marker',
@@ -117,7 +119,11 @@ export const OFFICE_ZONE_TOKENS = {
   sofa: 'office-area--sofa',
   hologram: 'office-area--hologram',
   core: 'command-core',
+  coreSurface: 'office-core__surface',
+  path: 'office-lane',
   route: 'office-transfer',
+  handoff: 'office-handoff-hub',
+  loungeSofa: 'office-lounge-sofa',
 } as const
 
 export function getOfficeSpriteActionDefinition(

@@ -52,3 +52,9 @@ The Office scene is final enough for this planned milestone when:
 - Selection stays synchronized with the shared inspector and remains keyboard accessible.
 - Source-level tests protect the blueprint, action definitions, token map, and default scene.
 - Local verification passes with `npm ci`, smoke, tests, build, lint, and `git diff --check`.
+
+## Phase Progress
+
+- Step 45: richer CSS/SVG-free office props are now represented by maintained tokens: PC monitor
+  stand, keyboard/tool tray, lounge sofa, command-core status surface, floor walking lanes, and
+  handoff/data-transfer hub. The scene remains read-only and mock-first.

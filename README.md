@@ -129,6 +129,11 @@ The explicit rule is retro/mini-game inspiration only: no Mario, Nintendo, or re
 copying. See `docs/final-office-blueprint.md` for final-enough criteria, zones, animation rules,
 visual constraints, and source-level guardrails.
 
+Office Scene phase 9 makes the planned zones and props more visible on the live surface: desks now
+carry clearer PC monitor stands and keyboard/tool trays, the lounge reads as a sofa bay, the command
+core has a subtle status surface, walking routes are rendered as floor lanes, and the handoff area
+has a small data-transfer hub. The slice remains CSS-only, read-only, mock-first, and dependency-light.
+
 Manual viewport widths:
 
 - Desktop: `1366` and `1440`
