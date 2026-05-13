@@ -47,10 +47,11 @@ function assertToggleButton(label: string, setter: string) {
 assertIncludes(
   componentSource,
   '<div className="stage-toggle" aria-label="Режим центральної панелі" role="group">',
-  'Room/Graph toggle group',
+  'Office/Graph toggle group',
 )
-assertToggleButton('Показати кімнату агентів', "setStageView('room')")
+assertToggleButton('Показати orbital office', "setStageView('office')")
 assertToggleButton('Показати workflow graph', "setStageView('graph')")
+assert(!componentSource.includes('Показати кімнату агентів'), 'Room is not exposed as a central-stage toggle')
 
 assertIncludes(
   componentSource,
@@ -70,7 +71,7 @@ for (const filter of ['all', 'selected', 'critical', 'system']) {
   )
 }
 
-for (const className of ['agent-card', 'agent-node', 'workflow-node', 'office-desk']) {
+for (const className of ['agent-card', 'workflow-node', 'office-desk']) {
   assertButtonHasAttribute(className, 'aria-label=')
   assertButtonHasAttribute(className, 'aria-pressed=')
   assertButtonHasAttribute(className, 'onClick=')

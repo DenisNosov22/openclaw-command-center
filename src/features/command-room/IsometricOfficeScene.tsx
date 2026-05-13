@@ -34,6 +34,11 @@ export function IsometricOfficeScene({
         className="office-floor"
         role="img"
       />
+      <div className="office-zones" aria-hidden="true">
+        <span className="office-area office-area--desk" data-label="Desks + PCs" />
+        <span className="office-area office-area--sofa" data-label="Rest bay" />
+        <span className="office-area office-area--hologram" data-label="Hologram UI" />
+      </div>
       <div className="office-core command-core" aria-label="Central orbital command core">
         <span>Orbit Core</span>
         <strong>{selectedStation?.name ?? 'Command'}</strong>
@@ -85,7 +90,12 @@ export function IsometricOfficeScene({
             </span>
             <span className="office-chair" aria-hidden="true" />
             <span className={`office-agent-marker office-agent-avatar office-agent-marker--${station.action}`}>
-              {station.marker}
+              <span className="office-agent-sprite" aria-hidden="true">
+                <span className="office-agent-sprite__head" />
+                <span className="office-agent-sprite__body">{station.marker}</span>
+                <span className="office-agent-sprite__legs" />
+              </span>
+              <span className="office-agent-tool" aria-hidden="true" />
             </span>
             <span className={`office-status-lamp office-status-lamp--${station.tone}`} />
             <span className="office-desk__label">

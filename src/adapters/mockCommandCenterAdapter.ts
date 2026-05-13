@@ -213,7 +213,7 @@ const snapshot: CommandCenterSnapshot = {
       agentId: 'agent-krab',
       category: 'system',
       severity: 'info',
-      summary: 'Room/Graph toggle лишається read-only navigation surface.',
+      summary: 'Office/Graph toggle лишається read-only navigation surface.',
     },
     {
       id: 'event-008',

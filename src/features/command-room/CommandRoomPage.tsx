@@ -9,25 +9,13 @@ import type { ActivityEvent, Agent, Task, WorkflowNode } from '../../shared/type
 import { formatKyivTime } from '../../shared/time/kyivTime'
 import { IsometricOfficeScene } from './IsometricOfficeScene'
 
-type StageView = 'room' | 'office' | 'graph'
+type StageView = 'office' | 'graph'
 type ActivityFilter = 'all' | 'selected' | 'critical' | 'system'
 type LiveSnapshot = ReturnType<typeof createLoadingCommandCenterSnapshotState>['snapshot'] & {
   lastUpdated: Date
   stateKind: ReturnType<typeof createLoadingCommandCenterSnapshotState>['kind']
   stateTitle: string
   stateDetail: string
-}
-
-const roomAgentPositions: Record<string, { x: number; y: number }> = {
-  'agent-krab': { x: 50, y: 14 },
-  'agent-dev': { x: 72, y: 25 },
-  'agent-bastion': { x: 83, y: 47 },
-  'agent-desk': { x: 82, y: 70 },
-  'agent-shturman': { x: 68, y: 82 },
-  'agent-spec': { x: 50, y: 86 },
-  'agent-varta': { x: 32, y: 82 },
-  'agent-rezhyser': { x: 17, y: 47 },
-  'agent-verstalnyk': { x: 28, y: 25 },
 }
 
 const statusLabel: Record<Agent['status'], string> = {
@@ -107,17 +95,6 @@ function getAgentRole(agent: Agent) {
 
 function getWorkflowAgent(node: WorkflowNode, agents: Agent[]) {
   return agents.find((agent) => agent.id === node.agentId)
-}
-
-function getRoomAgentPosition(agent: Agent, index: number) {
-  const fallbackAngle = (index / 9) * Math.PI * 2 - Math.PI / 2
-
-  return (
-    roomAgentPositions[agent.id] ?? {
-      x: 50 + Math.cos(fallbackAngle) * 39,
-      y: 50 + Math.sin(fallbackAngle) * 39,
-    }
-  )
 }
 
 function isRiskTask(task?: Task) {
@@ -287,7 +264,7 @@ export function CommandRoomPage() {
   )
   const snapshotAnchor = snapshot.generatedAt
   const [selectedAgentId, setSelectedAgentId] = useState(snapshot.agents[0]?.id)
-  const [stageView, setStageView] = useState<StageView>('room')
+  const [stageView, setStageView] = useState<StageView>('office')
   const [activityFilter, setActivityFilter] = useState<ActivityFilter>('all')
   const selectedAgent =
     snapshot.agents.find((agent) => agent.id === selectedAgentId) ??
@@ -471,30 +448,14 @@ export function CommandRoomPage() {
           <div className="stage-header">
             <div>
               <p className="eyebrow">
-                {stageView === 'room'
-                  ? '2D Hologram'
-                  : stageView === 'office'
-                    ? 'Orbit Office'
-                    : 'Workflow Graph'}
+                {stageView === 'office' ? 'Orbit Office' : 'Workflow Graph'}
               </p>
               <h2>
-                {stageView === 'room'
-                  ? 'Орбіта агентів'
-                  : stageView === 'office'
-                    ? 'Орбітальний офіс'
-                    : 'Маршрут задач'}
+                {stageView === 'office' ? 'Офіс агентів' : 'Маршрут задач'}
               </h2>
             </div>
             <div className="stage-actions">
               <div className="stage-toggle" aria-label="Режим центральної панелі" role="group">
-                <button
-                  aria-label="Показати кімнату агентів"
-                  aria-pressed={stageView === 'room'}
-                  onClick={() => setStageView('room')}
-                  type="button"
-                >
-                  Room
-                </button>
                 <button
                   aria-label="Показати orbital office"
                   aria-pressed={stageView === 'office'}
@@ -520,55 +481,6 @@ export function CommandRoomPage() {
               </div>
             </div>
           </div>
-
-          {stageView === 'room' ? (
-            <div className="hologram" aria-label="Карта вузлів агентів">
-              <div className="hologram__ring hologram__ring--outer" />
-              <div className="hologram__ring hologram__ring--inner" />
-              <div className="hologram__axis hologram__axis--vertical" />
-              <div className="hologram__axis hologram__axis--horizontal" />
-              <div className="room-grid" aria-hidden="true" />
-              <div className="hologram__beacon hologram__beacon--top">Control</div>
-              <div className="hologram__beacon hologram__beacon--right">Ops</div>
-              <div className="hologram__beacon hologram__beacon--bottom">QA</div>
-              <div className="hologram__beacon hologram__beacon--left">Research</div>
-              <div className="hologram__core">
-                <span>{selectedAgent.name}</span>
-                <strong>{statusLabel[selectedAgent.status]}</strong>
-                <p>{selectedTask?.title ?? 'Немає активної задачі'}</p>
-              </div>
-              {hasSnapshotWarning ? (
-                <div className="snapshot-state snapshot-state--center">
-                  <strong>{snapshot.stateTitle}</strong>
-                  <p>{snapshot.stateDetail}</p>
-                  <span>Read-only</span>
-                </div>
-              ) : null}
-              {snapshot.agents.map((agent, index) => {
-                const position = getRoomAgentPosition(agent, index)
-
-                return (
-                  <button
-                    aria-label={`Обрати ${agent.name}`}
-                    aria-pressed={agent.id === selectedAgent.id}
-                    className={`agent-node${
-                      agent.id === selectedAgent.id ? ' agent-node--selected' : ''
-                    }`}
-                    key={agent.id}
-                    onClick={() => setSelectedAgentId(agent.id)}
-                    style={{
-                      left: `${position.x}%`,
-                      top: `${position.y}%`,
-                    }}
-                    type="button"
-                  >
-                    <span>{getAgentMarker(agent)}</span>
-                    <small className={`node-signal node-signal--${statusTone[agent.status]}`} />
-                  </button>
-                )
-              })}
-            </div>
-          ) : null}
 
           {stageView === 'office' ? (
             <IsometricOfficeScene

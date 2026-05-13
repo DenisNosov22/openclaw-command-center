@@ -15,7 +15,7 @@ Private web dashboard prototype for OpenClaw agents.
 The initial screen is `Dashboard / Command Room`:
 
 - agent roster
-- center stage hologram placeholder
+- center-stage Office scene with optional workflow Graph
 - inspector panel
 - activity timeline
 
@@ -109,6 +109,14 @@ Office Scene phase 4 makes the office a dashboard interaction surface: clicking 
 
 Office Scene phase 5 is a professional polish/maturity pass: the room now reads more like a premium command office, with grounded workstations, clearer tiny office agent avatars, a stronger command-core table, quieter route support, glass/depth surfaces, and calmer status/activity motion. It remains CSS-only, mock-first, read-only, dependency-light, and aligned with the graphite/gold/cyan/green/calm-red dashboard language.
 
+Office Scene phase 6 is the Step 42 foundation: Office is now the main/default scene and the old
+Room view is no longer exposed as a separate center-stage mode. The office adds richer desk/PC,
+rest/sofa, command-core, path, status-lamp, and subtle hologram zones, plus original lightweight
+2D mini-game-style agent sprites for working, monitoring, walking, handoff, and signaling states.
+Graph remains available as a read-only alternate workflow view. The slice stays CSS-only,
+mock-first, read-only, dependency-light, and avoids Mario/Nintendo-specific IP or exact sprite
+language.
+
 Manual viewport widths:
 
 - Desktop: `1366` and `1440`
@@ -126,15 +134,16 @@ Acceptance criteria:
 - Top bar: logo, title, live/global status, adapter diagnostics, read-only badge, and Kyiv-time
   update readout stay visible without overlap. Disabled and unknown states show the requested mode
   and warning in the diagnostics pill.
-- Accessibility/readability: Room/Graph toggles, timeline filters, selectable agents, adapter
+- Accessibility/readability: Office/Graph toggles, timeline filters, selectable agents, adapter
   diagnostics, and read-only status expose accessible labels/states and visible keyboard focus.
-- Room/Graph: Room is the default center-stage view; the Room and Graph toggles remain reachable;
-  agent nodes/workflow nodes stay inside the stage and do not cover labels or controls.
+- Office/Graph: Office is the default center-stage view; the Office and Graph toggles remain
+  reachable; office stations/workflow nodes stay inside the stage and do not cover labels or
+  controls.
 - Inspector: selected agent, risk/next-action block, task chips, and recent activity stay readable
   and scroll/stack cleanly on tablet and mobile.
 - Timeline: filters remain usable; newest events are readable; warning/critical styles remain
   distinct from normal and success events.
-- Composition: the center-stage heading, Room/Graph controls, stats, Room, Graph, task strip, and
+- Composition: the center-stage heading, Office/Graph controls, stats, Office, Graph, task strip, and
   timeline stay contained and wrap/stack cleanly between desktop, tablet, and narrow mobile widths.
 
 Lightweight automated smoke:

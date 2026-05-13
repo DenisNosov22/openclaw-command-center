@@ -498,7 +498,7 @@
 
 .stage-toggle {
   display: inline-grid;
-  grid-template-columns: repeat(3, minmax(62px, 1fr));
+  grid-template-columns: repeat(2, minmax(72px, 1fr));
   gap: 2px;
   min-height: 34px;
   padding: 3px;
@@ -714,6 +714,67 @@
   inset: 25% 18%;
   border-color: rgba(215, 180, 92, 0.16);
   box-shadow: inset 0 0 38px rgba(120, 212, 192, 0.035);
+}
+
+.office-zones {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.office-area {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  color: rgba(244, 241, 234, 0.62);
+  border: 1px solid rgba(244, 241, 234, 0.06);
+  border-radius: 8px;
+  opacity: 0.66;
+  transform: skewY(-4deg);
+}
+
+.office-area::before {
+  content: attr(data-label);
+  color: rgba(244, 241, 234, 0.58);
+  font-size: 0.52rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.office-area--desk {
+  left: 12%;
+  top: 22%;
+  width: 24%;
+  height: 18%;
+  background:
+    linear-gradient(90deg, rgba(120, 212, 192, 0.12), transparent 62%),
+    rgba(10, 14, 14, 0.28);
+  border-color: rgba(120, 212, 192, 0.18);
+}
+
+.office-area--sofa {
+  right: 10%;
+  bottom: 17%;
+  width: 25%;
+  height: 17%;
+  background:
+    linear-gradient(90deg, rgba(215, 180, 92, 0.15), transparent 66%),
+    rgba(20, 18, 14, 0.3);
+  border-color: rgba(215, 180, 92, 0.2);
+}
+
+.office-area--hologram {
+  left: 50%;
+  top: 17%;
+  width: 28%;
+  height: 13%;
+  background:
+    radial-gradient(ellipse at 50% 100%, rgba(120, 212, 192, 0.22), transparent 58%),
+    linear-gradient(90deg, transparent, rgba(120, 212, 192, 0.1), transparent);
+  border-color: rgba(120, 212, 192, 0.16);
+  transform: translateX(-50%) skewY(-4deg);
 }
 
 .office-core {
@@ -1212,6 +1273,85 @@
     0 8px 14px rgba(0, 0, 0, 0.2);
   font-size: 0.95rem;
   font-weight: 800;
+}
+
+.office-agent-sprite {
+  position: relative;
+  display: grid;
+  width: 24px;
+  height: 34px;
+  grid-template-rows: 11px 16px 7px;
+  justify-items: center;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.26));
+}
+
+.office-agent-sprite__head {
+  width: 13px;
+  height: 11px;
+  background:
+    linear-gradient(180deg, rgba(244, 241, 234, 0.34), transparent 42%),
+    #d7b45c;
+  border: 1px solid rgba(244, 241, 234, 0.36);
+  border-radius: 5px 5px 4px 4px;
+}
+
+.office-agent-sprite__body {
+  display: grid;
+  width: 20px;
+  height: 16px;
+  place-items: center;
+  color: #11110f;
+  background:
+    linear-gradient(90deg, rgba(120, 212, 192, 0.72), rgba(215, 180, 92, 0.72)),
+    #78d4c0;
+  border: 1px solid rgba(244, 241, 234, 0.2);
+  border-radius: 4px 4px 5px 5px;
+  font-size: 0.62rem;
+  line-height: 1;
+}
+
+.office-agent-sprite__legs {
+  position: relative;
+  width: 18px;
+  height: 7px;
+}
+
+.office-agent-sprite__legs::before,
+.office-agent-sprite__legs::after {
+  position: absolute;
+  top: 0;
+  width: 5px;
+  height: 7px;
+  content: '';
+  background: #f4f1ea;
+  border-radius: 0 0 3px 3px;
+}
+
+.office-agent-sprite__legs::before {
+  left: 3px;
+  animation: office-agent-step 3.8s ease-in-out infinite;
+}
+
+.office-agent-sprite__legs::after {
+  right: 3px;
+  animation: office-agent-step 3.8s ease-in-out infinite reverse;
+}
+
+.office-agent-sprite__legs::before {
+  animation-name: office-agent-step;
+}
+
+.office-agent-tool {
+  position: absolute;
+  right: 5px;
+  bottom: 11px;
+  width: 9px;
+  height: 7px;
+  border: 1px solid rgba(120, 212, 192, 0.5);
+  border-color: rgba(120, 212, 192, 0.5);
+  border-radius: 2px;
+  box-shadow: 0 0 8px rgba(120, 212, 192, 0.16);
 }
 
 .office-agent-avatar::before,
@@ -1839,6 +1979,17 @@
   }
 }
 
+@keyframes office-agent-step {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(2px);
+  }
+}
+
 @keyframes office-walker-inner {
   0%,
   100% {
@@ -1930,6 +2081,8 @@
   .office-desk,
   .office-terminal__ticks,
   .office-agent-avatar,
+  .office-agent-sprite__legs::before,
+  .office-agent-sprite__legs::after,
   .office-walker,
   .office-transfer::after {
     animation: none;
@@ -2457,7 +2610,7 @@
   }
 
   .stage-toggle {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .command-room__grid {
