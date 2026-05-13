@@ -31,13 +31,29 @@ const statusTone: Record<Agent['status'], string> = {
 }
 
 const priorityLabel: Record<Task['priority'], string> = {
-  low: 'Low',
-  medium: 'Medium',
-  high: 'High',
+  low: 'Низький',
+  medium: 'Середній',
+  high: 'Високий',
+}
+
+const roleLabel: Record<string, string> = {
+  'main/orchestrator': 'оркестрація',
+  coding: 'розробка',
+  ops: 'операції',
+  research: 'дослідження',
+  requirements: 'вимоги',
+  QA: 'якість',
+  video: 'відео',
+  'UI/layout': 'інтерфейс',
+  trading: 'трейдинг',
 }
 
 function getAgentMarker(agent: Agent) {
   return agent.name.match(/\p{Extended_Pictographic}/u)?.[0] ?? agent.name.slice(0, 1)
+}
+
+function getAgentRole(agent: Agent) {
+  return roleLabel[agent.role] ?? agent.role
 }
 
 export function CommandRoomPage() {
@@ -55,17 +71,23 @@ export function CommandRoomPage() {
   const onlineAgents = snapshot.agents.filter((agent) =>
     ['working', 'done'].includes(agent.status),
   )
-  let globalStatus = 'Nominal'
+  const blockedTasks = snapshot.tasks.filter((task) =>
+    ['blocked', 'failed'].includes(task.status),
+  )
+  let globalStatus = 'Стабільно'
+  let globalStatusDetail = 'Read-only mock snapshot'
 
   if (snapshot.agents.some((agent) => agent.status === 'error')) {
-    globalStatus = 'Mock alert'
+    globalStatus = 'Потрібна увага'
+    globalStatusDetail = 'Є mock-помилка агента'
   } else if (snapshot.agents.some((agent) => agent.status === 'blocked')) {
-    globalStatus = 'Needs attention'
+    globalStatus = 'Є блокери'
+    globalStatusDetail = 'Частина задач очікує рішення'
   }
 
   return (
     <main className="command-room">
-      <header className="command-bar" aria-label="Command Room status">
+      <header className="command-bar" aria-label="Статус командної кімнати">
         <div className="command-bar__identity">
           <div className="command-mark" aria-hidden="true">
             OC
@@ -73,16 +95,17 @@ export function CommandRoomPage() {
           <div>
             <p className="eyebrow">OpenClaw Command Center</p>
             <h1>Командна кімната</h1>
+            <p className="command-subtitle">Read-only панель координації агентів</p>
           </div>
         </div>
-        <div className="command-bar__telemetry" aria-label="Global command status">
-          <div className="telemetry-pill telemetry-pill--live">
+        <div className="command-bar__telemetry" aria-label="Глобальний стан">
+          <div className="telemetry-pill telemetry-pill--live" title={globalStatusDetail}>
             <span />
             {globalStatus}
           </div>
-          <div className="telemetry-pill">Mock mode</div>
+          <div className="telemetry-pill">Mock режим</div>
           <div className="telemetry-readout">
-            <span>Snapshot</span>
+            <span>Знімок</span>
             <strong>{snapshot.generatedAt}</strong>
           </div>
         </div>
@@ -92,7 +115,7 @@ export function CommandRoomPage() {
         <aside className="panel agent-roster" aria-label="Список агентів">
           <div className="panel-heading">
             <div>
-              <p className="eyebrow">Roster</p>
+              <p className="eyebrow">Команда</p>
               <h2>Агенти</h2>
             </div>
             <span>{onlineAgents.length}/{snapshot.agents.length}</span>
@@ -113,7 +136,7 @@ export function CommandRoomPage() {
                   </span>
                   <div className="agent-card__body">
                     <h3>{agent.name.replace(/\s*\p{Extended_Pictographic}/gu, '')}</h3>
-                    <p>{agent.role}</p>
+                    <p>{getAgentRole(agent)}</p>
                   </div>
                   <span className={`status status--${agent.status}`}>
                     {statusLabel[agent.status]}
@@ -128,18 +151,25 @@ export function CommandRoomPage() {
           <div className="stage-header">
             <div>
               <p className="eyebrow">2D Hologram</p>
-              <h2>Agent Orbit</h2>
+              <h2>Орбіта агентів</h2>
             </div>
-            <div className="stage-stats" aria-label="Active task metrics">
-              <span>{activeTasks.length} active</span>
-              <span>{snapshot.activity.length} events</span>
+            <div className="stage-stats" aria-label="Метрики активних задач">
+              <span>{activeTasks.length} активних</span>
+              <span>{blockedTasks.length} ризики</span>
+              <span>{snapshot.activity.length} події</span>
             </div>
           </div>
 
-          <div className="hologram" aria-label="Agent node map">
+          <div className="hologram" aria-label="Карта вузлів агентів">
             <div className="hologram__ring hologram__ring--outer" />
             <div className="hologram__ring hologram__ring--inner" />
+            <div className="hologram__axis hologram__axis--vertical" />
+            <div className="hologram__axis hologram__axis--horizontal" />
             <div className="room-grid" aria-hidden="true" />
+            <div className="hologram__beacon hologram__beacon--top">Control</div>
+            <div className="hologram__beacon hologram__beacon--right">Ops</div>
+            <div className="hologram__beacon hologram__beacon--bottom">QA</div>
+            <div className="hologram__beacon hologram__beacon--left">Research</div>
             <div className="hologram__core">
               <span>{selectedAgent.name}</span>
               <strong>{statusLabel[selectedAgent.status]}</strong>
@@ -147,7 +177,7 @@ export function CommandRoomPage() {
             </div>
             {snapshot.agents.map((agent, index) => (
               <button
-                aria-label={`Select ${agent.name}`}
+                aria-label={`Обрати ${agent.name}`}
                 className={`agent-node agent-node--${index + 1}${
                   agent.id === selectedAgent.id ? ' agent-node--selected' : ''
                 }`}
@@ -159,6 +189,12 @@ export function CommandRoomPage() {
                 <small className={`node-signal node-signal--${statusTone[agent.status]}`} />
               </button>
             ))}
+          </div>
+
+          <div className="stage-legend" aria-label="Пояснення станів">
+            <span><i className="legend-dot legend-dot--online" />В роботі / готово</span>
+            <span><i className="legend-dot legend-dot--caution" />Очікує / блокер</span>
+            <span><i className="legend-dot legend-dot--danger" />Помилка</span>
           </div>
 
           <div className="task-strip">
@@ -184,8 +220,8 @@ export function CommandRoomPage() {
         <aside className="panel inspector" aria-label="Інспектор">
           <div className="panel-heading">
             <div>
-              <p className="eyebrow">Inspector</p>
-              <h2>Selected Agent</h2>
+              <p className="eyebrow">Інспектор</p>
+              <h2>Обраний агент</h2>
             </div>
             <span className={`status status--${selectedAgent.status}`}>
               {statusLabel[selectedAgent.status]}
@@ -197,7 +233,7 @@ export function CommandRoomPage() {
             </span>
             <div>
               <h3>{selectedAgent.name.replace(/\s*\p{Extended_Pictographic}/gu, '')}</h3>
-              <p>{selectedAgent.role}</p>
+              <p>{getAgentRole(selectedAgent)}</p>
             </div>
           </div>
           <dl>
@@ -206,15 +242,15 @@ export function CommandRoomPage() {
               <dd>{selectedTask?.title ?? 'Немає активної задачі'}</dd>
             </div>
             <div>
-              <dt>Task state</dt>
-              <dd>{selectedTask ? taskLabel[selectedTask.status] : 'Standby'}</dd>
+              <dt>Стан задачі</dt>
+              <dd>{selectedTask ? taskLabel[selectedTask.status] : 'Резерв'}</dd>
             </div>
             <div>
-              <dt>Priority</dt>
-              <dd>{selectedTask ? priorityLabel[selectedTask.priority] : 'None'}</dd>
+              <dt>Пріоритет</dt>
+              <dd>{selectedTask ? priorityLabel[selectedTask.priority] : 'Немає'}</dd>
             </div>
             <div>
-              <dt>Owned tasks</dt>
+              <dt>Задач у роботі</dt>
               <dd>{selectedAgentTasks.length}</dd>
             </div>
           </dl>
@@ -228,8 +264,8 @@ export function CommandRoomPage() {
               ))
             ) : (
               <article>
-                <strong>Backlog empty</strong>
-                <span>Ready for delegation</span>
+                <strong>Backlog порожній</strong>
+                <span>Готовий до делегування</span>
               </article>
             )}
           </div>
@@ -238,10 +274,10 @@ export function CommandRoomPage() {
         <section className="panel timeline" aria-label="Таймлайн активності">
           <div className="panel-heading">
             <div>
-              <p className="eyebrow">Activity</p>
+              <p className="eyebrow">Активність</p>
               <h2>Таймлайн</h2>
             </div>
-            <span>{snapshot.activity.length} updates</span>
+            <span>{snapshot.activity.length} оновлення</span>
           </div>
           <ol>
             {snapshot.activity.map((event) => {

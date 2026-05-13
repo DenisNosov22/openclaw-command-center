@@ -1,21 +1,21 @@
 import type { CommandCenterSnapshot } from '../shared/types'
 
 const snapshot: CommandCenterSnapshot = {
-  generatedAt: '2026-05-13T12:30:00Z',
+  generatedAt: '2026-05-13T13:15:00Z',
   agents: [
     {
       id: 'agent-krab',
       name: 'Краб 🦀',
       role: 'main/orchestrator',
       status: 'working',
-      currentTaskId: 'task-command-center-step-3',
+      currentTaskId: 'task-command-center-step-6',
     },
     {
       id: 'agent-dev',
       name: 'Дев 🛠️',
       role: 'coding',
       status: 'working',
-      currentTaskId: 'task-mock-identities',
+      currentTaskId: 'task-visual-polish',
     },
     {
       id: 'agent-bastion',
@@ -63,15 +63,15 @@ const snapshot: CommandCenterSnapshot = {
   ],
   tasks: [
     {
-      id: 'task-command-center-step-3',
-      title: 'Крок 3: foundation fix',
+      id: 'task-command-center-step-6',
+      title: 'Крок 6: visual QA',
       status: 'in_progress',
       ownerAgentId: 'agent-krab',
       priority: 'high',
     },
     {
-      id: 'task-mock-identities',
-      title: 'Оновити agent identities',
+      id: 'task-visual-polish',
+      title: 'Polish першого екрану',
       status: 'delegated',
       ownerAgentId: 'agent-dev',
       priority: 'high',
@@ -122,24 +122,24 @@ const snapshot: CommandCenterSnapshot = {
   activity: [
     {
       id: 'event-001',
-      timestamp: '12:24 UTC',
+      timestamp: '13:04 UTC',
       agentId: 'agent-krab',
       type: 'system',
       summary: 'MVP scope зафіксовано на read-only mock data.',
     },
     {
       id: 'event-002',
-      timestamp: '12:28 UTC',
+      timestamp: '13:10 UTC',
       agentId: 'agent-dev',
       type: 'task',
-      summary: 'Локальний Vite React TypeScript workspace створено.',
+      summary: 'Dashboard polish виконується без real OpenClaw data.',
     },
     {
       id: 'event-003',
-      timestamp: '12:30 UTC',
+      timestamp: '13:15 UTC',
       agentId: 'agent-varta',
       type: 'status',
-      summary: 'Command Room layout підключено через adapter snapshot.',
+      summary: 'QA gates: build, lint, diff check перед push.',
     },
   ],
 }
