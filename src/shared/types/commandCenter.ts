@@ -1,0 +1,41 @@
+export type AgentStatus = 'idle' | 'working' | 'waiting' | 'blocked' | 'done' | 'error'
+
+export type TaskStatus =
+  | 'queued'
+  | 'in_progress'
+  | 'delegated'
+  | 'waiting'
+  | 'blocked'
+  | 'completed'
+  | 'failed'
+
+export interface Agent {
+  id: string
+  name: string
+  role: string
+  status: AgentStatus
+  currentTaskId?: string
+}
+
+export interface Task {
+  id: string
+  title: string
+  status: TaskStatus
+  ownerAgentId: string
+  priority: 'low' | 'medium' | 'high'
+}
+
+export interface ActivityEvent {
+  id: string
+  timestamp: string
+  agentId: string
+  summary: string
+  type: 'status' | 'task' | 'system'
+}
+
+export interface CommandCenterSnapshot {
+  generatedAt: string
+  agents: Agent[]
+  tasks: Task[]
+  activity: ActivityEvent[]
+}
