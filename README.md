@@ -68,6 +68,7 @@ npm run test:responsive-accessibility
 npm run test:content-density
 npm run test:state-copy
 npm run test:visual-polish
+npm run test:composition-qa
 npm run smoke:html
 ```
 
@@ -105,6 +106,8 @@ Acceptance criteria:
   and scroll/stack cleanly on tablet and mobile.
 - Timeline: filters remain usable; newest events are readable; warning/critical styles remain
   distinct from normal and success events.
+- Composition: the center-stage heading, Room/Graph controls, stats, Room, Graph, task strip, and
+  timeline stay contained and wrap/stack cleanly between desktop, tablet, and narrow mobile widths.
 
 Lightweight automated smoke:
 

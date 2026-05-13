@@ -303,6 +303,7 @@
 .stage-header {
   position: relative;
   z-index: 1;
+  flex-wrap: wrap;
   justify-content: space-between;
   gap: 12px;
   margin-bottom: 14px;
@@ -483,6 +484,7 @@
 
 .stage-actions {
   min-width: 0;
+  flex-wrap: wrap;
   justify-content: flex-end;
   gap: 10px;
 }
