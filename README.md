@@ -63,6 +63,11 @@ npm run test:redaction
 npm run test:adapter-selection
 npm run test:adapter-diagnostics
 npm run test:snapshot-state
+npm run test:keyboard-accessibility
+npm run test:responsive-accessibility
+npm run test:content-density
+npm run test:state-copy
+npm run test:visual-polish
 npm run smoke:html
 ```
 

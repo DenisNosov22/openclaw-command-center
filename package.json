@@ -15,6 +15,7 @@
     "test:responsive-accessibility": "node --experimental-strip-types scripts/verifyResponsiveAccessibility.ts",
     "test:content-density": "node --experimental-strip-types scripts/verifyContentDensity.ts",
     "test:state-copy": "node --experimental-strip-types scripts/verifyStateCopy.ts",
+    "test:visual-polish": "node --experimental-strip-types scripts/verifyVisualPolish.ts",
     "smoke:html": "node --experimental-strip-types scripts/smokeHtml.ts",
     "preview": "vite preview"
   },

@@ -18,13 +18,18 @@ body {
   min-width: 320px;
   margin: 0;
   background:
-    linear-gradient(rgba(215, 180, 92, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(215, 180, 92, 0.04) 1px, transparent 1px),
-    radial-gradient(circle at 50% 25%, rgba(215, 180, 92, 0.2), transparent 34%),
+    linear-gradient(rgba(215, 180, 92, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(215, 180, 92, 0.035) 1px, transparent 1px),
+    radial-gradient(circle at 18% 8%, rgba(70, 127, 158, 0.16), transparent 28%),
+    radial-gradient(circle at 78% 18%, rgba(94, 138, 96, 0.12), transparent 30%),
+    radial-gradient(circle at 50% 25%, rgba(215, 180, 92, 0.16), transparent 34%),
+    linear-gradient(135deg, rgba(9, 14, 17, 0.76), transparent 42%),
     #0b0b0a;
   background-size:
     36px 36px,
     36px 36px,
+    auto,
+    auto,
     auto,
     auto;
 }
