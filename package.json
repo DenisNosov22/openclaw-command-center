@@ -11,6 +11,7 @@
     "test:adapter-selection": "node --experimental-strip-types scripts/verifyAdapterSelection.ts",
     "test:adapter-diagnostics": "node --experimental-strip-types scripts/verifyAdapterDiagnostics.ts",
     "test:snapshot-state": "node --experimental-strip-types scripts/verifySnapshotState.ts",
+    "test:keyboard-accessibility": "node --experimental-strip-types scripts/verifyKeyboardAccessibility.ts",
     "smoke:html": "node --experimental-strip-types scripts/smokeHtml.ts",
     "preview": "vite preview"
   },
