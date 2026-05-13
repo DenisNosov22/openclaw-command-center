@@ -90,11 +90,13 @@ export function IsometricOfficeScene({
             </span>
             <span className="office-chair" aria-hidden="true" />
             <span className={`office-agent-marker office-agent-avatar office-agent-marker--${station.action}`}>
+              <span className="office-agent-rest-prop" aria-hidden="true" />
               <span className="office-agent-sprite" aria-hidden="true">
                 <span className="office-agent-sprite__head" />
                 <span className="office-agent-sprite__body">{station.marker}</span>
                 <span className="office-agent-sprite__legs" />
               </span>
+              <span className="office-agent-signal-prop" aria-hidden="true" />
               <span className="office-agent-tool" aria-hidden="true" />
             </span>
             <span className={`office-status-lamp office-status-lamp--${station.tone}`} />

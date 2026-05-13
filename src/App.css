@@ -765,6 +765,21 @@
   border-color: rgba(215, 180, 92, 0.2);
 }
 
+.office-area--sofa::after {
+  position: absolute;
+  right: 14%;
+  bottom: 18%;
+  width: 54%;
+  height: 28%;
+  content: '';
+  background:
+    linear-gradient(90deg, rgba(244, 241, 234, 0.08), transparent 34%),
+    rgba(215, 180, 92, 0.22);
+  border: 1px solid rgba(215, 180, 92, 0.24);
+  border-radius: 6px 6px 9px 9px;
+  box-shadow: inset 0 -6px 0 rgba(0, 0, 0, 0.14);
+}
+
 .office-area--hologram {
   left: 50%;
   top: 17%;
@@ -1160,6 +1175,18 @@
   animation: office-blocked-pulse 9.2s ease-in-out infinite;
 }
 
+.office-desk--resting {
+  border-color: rgba(215, 180, 92, 0.34);
+  background:
+    linear-gradient(180deg, rgba(215, 180, 92, 0.075), transparent 42%),
+    linear-gradient(145deg, rgba(42, 38, 31, 0.98), rgba(17, 16, 14, 0.95)),
+    rgba(18, 18, 16, 0.92);
+}
+
+.office-desk--walking {
+  border-color: rgba(120, 212, 192, 0.32);
+}
+
 .office-terminal {
   position: relative;
   display: grid;
@@ -1354,6 +1381,35 @@
   box-shadow: 0 0 8px rgba(120, 212, 192, 0.16);
 }
 
+.office-agent-rest-prop,
+.office-agent-signal-prop {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.office-agent-rest-prop {
+  left: 4px;
+  right: 4px;
+  bottom: 4px;
+  height: 10px;
+  background:
+    linear-gradient(90deg, rgba(244, 241, 234, 0.12), transparent 28%),
+    rgba(215, 180, 92, 0.24);
+  border: 1px solid rgba(215, 180, 92, 0.3);
+  border-radius: 5px 5px 8px 8px;
+}
+
+.office-agent-signal-prop {
+  right: -4px;
+  top: 7px;
+  width: 12px;
+  aspect-ratio: 1;
+  border: 1px solid rgba(120, 212, 192, 0.42);
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(120, 212, 192, 0.18);
+}
+
 .office-agent-avatar::before,
 .office-agent-avatar::after {
   position: absolute;
@@ -1382,10 +1438,28 @@
   transform: translateX(-50%);
 }
 
-.office-agent-marker--signaling {
+.office-agent-marker--alert {
   border-color: rgba(212, 84, 77, 0.54);
   box-shadow: 0 0 18px rgba(212, 84, 77, 0.13);
-  animation: office-agent-signal 7.4s ease-in-out infinite;
+  animation: office-agent-alert 5.8s ease-in-out infinite;
+}
+
+.office-agent-marker--alert .office-agent-signal-prop {
+  color: #d4544d;
+  opacity: 1;
+  border-color: rgba(212, 84, 77, 0.62);
+  box-shadow:
+    0 0 8px rgba(212, 84, 77, 0.28),
+    0 0 16px rgba(212, 84, 77, 0.14);
+}
+
+.office-agent-marker--alert .office-agent-signal-prop::after {
+  position: absolute;
+  inset: -5px;
+  content: '';
+  border: 1px solid currentColor;
+  border-radius: inherit;
+  opacity: 0.42;
 }
 
 .office-agent-marker--working,
@@ -1395,8 +1469,21 @@
   animation: office-agent-work 6.6s ease-in-out infinite;
 }
 
+.office-agent-marker--working .office-agent-tool,
+.office-agent-marker--coordinating .office-agent-tool {
+  width: 12px;
+  height: 5px;
+  background: rgba(120, 212, 192, 0.18);
+  transform: rotate(-8deg);
+}
+
 .office-agent-marker--monitoring {
   border-color: rgba(120, 212, 192, 0.42);
+}
+
+.office-agent-marker--monitoring .office-agent-signal-prop {
+  opacity: 1;
+  animation: office-monitor-sweep 5.2s ease-in-out infinite;
 }
 
 .office-agent-marker--handoff {
@@ -1405,9 +1492,63 @@
   animation: office-agent-work 7.2s ease-in-out infinite;
 }
 
+.office-agent-marker--handoff .office-agent-signal-prop {
+  opacity: 1;
+  border-color: rgba(215, 180, 92, 0.64);
+  box-shadow:
+    -8px 5px 0 -4px rgba(215, 180, 92, 0.82),
+    0 0 10px rgba(215, 180, 92, 0.2);
+  animation: office-handoff-signal 4.8s ease-in-out infinite;
+}
+
+.office-agent-marker--handoff .office-agent-tool {
+  border-color: rgba(215, 180, 92, 0.58);
+  transform: translateX(2px) rotate(12deg);
+}
+
 .office-agent-marker--walking {
   border-color: rgba(120, 212, 192, 0.42);
   animation: office-agent-walk 8.8s ease-in-out infinite;
+}
+
+.office-agent-marker--walking .office-agent-sprite__legs::before {
+  animation-duration: 1.4s;
+}
+
+.office-agent-marker--walking .office-agent-sprite__legs::after {
+  animation-duration: 1.4s;
+}
+
+.office-agent-marker--walking .office-agent-tool {
+  opacity: 0;
+}
+
+.office-agent-marker--resting {
+  border-color: rgba(215, 180, 92, 0.42);
+  background:
+    radial-gradient(circle at 50% 18%, rgba(244, 241, 234, 0.12), transparent 24%),
+    linear-gradient(180deg, rgba(215, 180, 92, 0.08), transparent 54%),
+    rgba(20, 18, 15, 0.92);
+  animation: office-agent-rest 8.4s ease-in-out infinite;
+}
+
+.office-agent-marker--resting .office-agent-rest-prop {
+  background: rgba(215, 180, 92, 0.26);
+  opacity: 1;
+}
+
+.office-agent-marker--resting .office-agent-sprite {
+  transform: translateY(3px) rotate(-8deg);
+}
+
+.office-agent-marker--resting .office-agent-sprite__legs::before,
+.office-agent-marker--resting .office-agent-sprite__legs::after {
+  animation: none;
+  transform: translateY(1px);
+}
+
+.office-agent-marker--resting .office-agent-tool {
+  opacity: 0;
 }
 
 .office-status-lamp {
@@ -1951,7 +2092,7 @@
   }
 }
 
-@keyframes office-agent-signal {
+@keyframes office-agent-alert {
   0%,
   100% {
     box-shadow:
@@ -1965,6 +2106,39 @@
       inset 0 1px 0 rgba(244, 241, 234, 0.08),
       0 8px 14px rgba(0, 0, 0, 0.2),
       0 0 18px rgba(212, 84, 77, 0.14);
+  }
+}
+
+@keyframes office-monitor-sweep {
+  0%,
+  100% {
+    transform: scale(0.72);
+  }
+
+  50% {
+    transform: scale(1);
+  }
+}
+
+@keyframes office-handoff-signal {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  50% {
+    transform: translateX(4px);
+  }
+}
+
+@keyframes office-agent-rest {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(1px);
   }
 }
 
@@ -2081,6 +2255,7 @@
   .office-desk,
   .office-terminal__ticks,
   .office-agent-avatar,
+  .office-agent-signal-prop,
   .office-agent-sprite__legs::before,
   .office-agent-sprite__legs::after,
   .office-walker,

@@ -33,6 +33,8 @@ assertIncludes(modelSource, 'export interface OfficeAgentStation', 'typed office
 assertIncludes(modelSource, "| 'walking'", 'walking office station action')
 assertIncludes(modelSource, "| 'handoff'", 'handoff office station action')
 assertIncludes(modelSource, "| 'blocked'", 'blocked office station action')
+assertIncludes(modelSource, "| 'resting'", 'resting office station action')
+assertIncludes(modelSource, "| 'alert'", 'alert office station action')
 assertIncludes(modelSource, 'export function createOfficeAgentStations', 'agent view-model mapper')
 assertIncludes(modelSource, 'export function createOfficeSceneViewModel', 'office scene view-model mapper')
 assertIncludes(modelSource, 'export interface OfficeSignalRoute', 'typed office signal route model')
@@ -66,6 +68,8 @@ assertIncludes(componentSource, 'office-agent-sprite__head', '2D avatar head sha
 assertIncludes(componentSource, 'office-agent-sprite__body', '2D avatar body shape')
 assertIncludes(componentSource, 'office-agent-sprite__legs', '2D avatar leg animation shape')
 assertIncludes(componentSource, 'office-agent-tool', '2D avatar action prop')
+assertIncludes(componentSource, 'office-agent-rest-prop', '2D avatar rest/sofa prop')
+assertIncludes(componentSource, 'office-agent-signal-prop', '2D avatar signal/alert prop')
 assertIncludes(componentSource, 'office-status-lamp', 'status lamps')
 assertIncludes(componentSource, 'aria-label={`${isSelected ? \'Selected\' : \'Select\'} read-only office station', 'state-aware selectable station labels')
 assertIncludes(componentSource, 'aria-pressed={isSelected}', 'selected station pressed state')
@@ -125,7 +129,10 @@ assertIncludes(getBlock('.office-agent-sprite'), 'image-rendering: pixelated', '
 assertIncludes(getBlock('.office-agent-sprite__legs::before'), 'office-agent-step', '2D sprite walk/work leg motion')
 assertIncludes(getBlock('.office-agent-tool'), 'border-color: rgba(120, 212, 192', 'avatar action tool signal')
 assertIncludes(stylesheetSource, 'office-agent-work', 'calm working avatar motion')
-assertIncludes(getBlock('.office-agent-marker--signaling'), 'office-agent-signal', 'calm alert avatar motion')
+assertIncludes(getBlock('.office-agent-marker--alert'), 'office-agent-alert', 'calm alert avatar motion')
+assertIncludes(getBlock('.office-agent-marker--resting'), 'office-agent-rest', 'visible resting avatar motion')
+assertIncludes(getBlock('.office-agent-marker--resting .office-agent-rest-prop'), 'rgba(215, 180, 92', 'resting action sofa prop')
+assertIncludes(getBlock('.office-agent-marker--handoff .office-agent-signal-prop'), 'office-handoff-signal', 'handoff action signal prop')
 assertIncludes(getBlock('.office-walker'), 'opacity: 0.64', 'subtle walking markers')
 assertIncludes(getBlock('.office-terminal--typing .office-terminal__ticks'), '3s', 'measured typing cadence')
 assertIncludes(stylesheetSource, '@media (prefers-reduced-motion: reduce)', 'reduced-motion support')
@@ -162,6 +169,27 @@ const agents: Agent[] = [
     status: 'idle',
     currentTaskId: 'task-blocked',
   },
+  {
+    id: 'agent-resting',
+    name: 'Spec',
+    role: 'requirements',
+    status: 'done',
+    currentTaskId: 'task-resting',
+  },
+  {
+    id: 'agent-walking',
+    name: 'Research',
+    role: 'research',
+    status: 'idle',
+    currentTaskId: 'task-walking',
+  },
+  {
+    id: 'agent-handoff',
+    name: 'Main',
+    role: 'main/orchestrator',
+    status: 'working',
+    currentTaskId: 'task-handoff',
+  },
 ]
 const tasks: Task[] = [
   {
@@ -184,6 +212,27 @@ const tasks: Task[] = [
     status: 'failed',
     ownerAgentId: 'agent-blocked',
     priority: 'low',
+  },
+  {
+    id: 'task-resting',
+    title: 'Review complete',
+    status: 'completed',
+    ownerAgentId: 'agent-resting',
+    priority: 'medium',
+  },
+  {
+    id: 'task-walking',
+    title: 'Queue research',
+    status: 'queued',
+    ownerAgentId: 'agent-walking',
+    priority: 'low',
+  },
+  {
+    id: 'task-handoff',
+    title: 'Delegate polish',
+    status: 'delegated',
+    ownerAgentId: 'agent-handoff',
+    priority: 'high',
   },
 ]
 const activity: ActivityEvent[] = [
@@ -224,6 +273,9 @@ const selectedViewModel = createOfficeSceneViewModel(agents, tasks, activity, {
 const onlineStation = viewModel.stations.find((station) => station.agentId === 'agent-online')
 const busyStation = viewModel.stations.find((station) => station.agentId === 'agent-busy')
 const blockedStation = viewModel.stations.find((station) => station.agentId === 'agent-blocked')
+const restingStation = viewModel.stations.find((station) => station.agentId === 'agent-resting')
+const walkingStation = viewModel.stations.find((station) => station.agentId === 'agent-walking')
+const handoffStation = viewModel.stations.find((station) => station.agentId === 'agent-handoff')
 
 assert.equal(onlineStation?.activity, 'working', 'in-progress current task maps to working')
 assert.equal(onlineStation?.terminalMode, 'typing', 'in-progress current task maps to typing')
@@ -231,8 +283,15 @@ assert.equal(onlineStation?.pulse, 'active', 'working health maps to active puls
 assert.equal(busyStation?.activity, 'monitoring', 'waiting status maps to monitoring')
 assert.equal(busyStation?.terminalMode, 'monitoring', 'waiting task maps to monitoring')
 assert.equal(blockedStation?.activity, 'blocked', 'failed task state maps to blocked')
+assert.equal(blockedStation?.action, 'alert', 'failed task state maps to alert action')
 assert.equal(blockedStation?.pulse, 'danger', 'failed task state maps to danger pulse')
 assert.equal(blockedStation?.tone, 'danger', 'failed task state maps to danger lamp')
+assert.equal(restingStation?.activity, 'resting', 'completed task state maps to resting')
+assert.equal(restingStation?.action, 'resting', 'completed task state maps to resting action')
+assert.equal(walkingStation?.activity, 'walking', 'queued task state maps to walking')
+assert.equal(walkingStation?.action, 'walking', 'queued task state maps to walking action')
+assert.equal(handoffStation?.activity, 'handoff', 'delegated task state maps to handoff')
+assert.equal(handoffStation?.action, 'handoff', 'delegated task state maps to handoff action')
 assert(
   viewModel.signalRoutes.some(
     (route) => route.label === 'release' && route.tone === 'danger' && route.activity === 'blocked',

@@ -117,6 +117,11 @@ Graph remains available as a read-only alternate workflow view. The slice stays 
 mock-first, read-only, dependency-light, and avoids Mario/Nintendo-specific IP or exact sprite
 language.
 
+Office Scene phase 7 polishes those sprites into clearer office actions: working agents lean into
+terminal/tools, queued agents walk with faster legs, completed agents visibly rest against the sofa
+prop, delegated work shows handoff signal dots, and blocked/failed work uses an alert beacon. The
+surface remains mock-first, read-only, CSS-only, and dependency-light.
+
 Manual viewport widths:
 
 - Desktop: `1366` and `1440`

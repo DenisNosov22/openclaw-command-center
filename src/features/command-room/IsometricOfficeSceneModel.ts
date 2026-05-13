@@ -1,9 +1,11 @@
 import type { ActivityEvent, Agent, CommandCenterSnapshot, Task, WorkflowEdge } from '../../shared/types'
 
 export type OfficeStationAction =
+  | 'alert'
   | 'blocked'
   | 'coordinating'
   | 'handoff'
+  | 'resting'
   | 'walking'
   | 'working'
   | 'monitoring'
@@ -94,15 +96,17 @@ function getStationActivity(agent: Agent, task?: Task): OfficeStationActivity {
     return 'handoff'
   }
 
+  if (agent.status === 'done' || task?.status === 'completed') {
+    return 'resting'
+  }
+
   if (agent.role === 'main/orchestrator') {
     return 'coordinating'
   }
 
   if (
     agent.status === 'working' ||
-    agent.status === 'done' ||
-    task?.status === 'in_progress' ||
-    task?.status === 'completed'
+    task?.status === 'in_progress'
   ) {
     return 'working'
   }
@@ -122,7 +126,7 @@ function getStationAction(agent: Agent, task?: Task): OfficeStationAction {
   const activity = getStationActivity(agent, task)
 
   if (activity === 'blocked') {
-    return 'signaling'
+    return 'alert'
   }
 
   return activity
