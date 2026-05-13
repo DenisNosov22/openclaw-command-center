@@ -1,9 +1,11 @@
-import type { Agent, Task } from '../../shared/types'
-import { createOfficeAgentStations, getStationTone } from './IsometricOfficeSceneModel'
+import type { ActivityEvent, Agent, CommandCenterSnapshot, Task } from '../../shared/types'
+import { createOfficeSceneViewModel } from './IsometricOfficeSceneModel'
 
 interface IsometricOfficeSceneProps {
   agents: Agent[]
   tasks: Task[]
+  activity: ActivityEvent[]
+  workflow: CommandCenterSnapshot['workflow']
   selectedAgentId: string
   onSelectAgent: (agentId: string) => void
 }
@@ -11,10 +13,12 @@ interface IsometricOfficeSceneProps {
 export function IsometricOfficeScene({
   agents,
   tasks,
+  activity,
+  workflow,
   selectedAgentId,
   onSelectAgent,
 }: IsometricOfficeSceneProps) {
-  const stations = createOfficeAgentStations(agents, tasks)
+  const { stations, signalRoutes } = createOfficeSceneViewModel(agents, tasks, activity, workflow)
   const selectedStation = stations.find((station) => station.agentId === selectedAgentId)
 
   return (
@@ -36,6 +40,13 @@ export function IsometricOfficeScene({
         <span className="office-route office-route--west" />
         <span className="office-transfer office-transfer--core" />
         <span className="office-transfer office-transfer--handoff" />
+        {signalRoutes.map((route) => (
+          <span
+            className={`office-transfer office-transfer--${route.lane} office-transfer--${route.activity} office-transfer--${route.tone}`}
+            data-label={route.label}
+            key={route.id}
+          />
+        ))}
       </div>
       <div className="office-walkers" aria-hidden="true">
         <span className="office-walker office-walker--inner" />
@@ -48,7 +59,7 @@ export function IsometricOfficeScene({
           <button
             aria-label={`Select office station ${station.name}: ${station.role}, ${station.activity}`}
             aria-pressed={isSelected}
-            className={`office-desk office-desk--${station.lane} office-desk--${station.activity}${
+            className={`office-desk office-desk--${station.lane} office-desk--${station.activity} office-desk--pulse-${station.pulse}${
               isSelected ? ' office-desk--selected' : ''
             }`}
             key={station.id}
@@ -59,7 +70,7 @@ export function IsometricOfficeScene({
             }}
             type="button"
           >
-            <span className="office-terminal">
+            <span className={`office-terminal office-terminal--${station.terminalMode}`}>
               <i />
               <span className="office-terminal__ticks" aria-hidden="true" />
             </span>
@@ -67,7 +78,7 @@ export function IsometricOfficeScene({
             <span className={`office-agent-marker office-agent-marker--${station.action}`}>
               {station.marker}
             </span>
-            <span className={`office-status-lamp office-status-lamp--${getStationTone(station.status)}`} />
+            <span className={`office-status-lamp office-status-lamp--${station.tone}`} />
             <span className="office-desk__label">
               <strong>{station.name}</strong>
               <small>{station.role}</small>

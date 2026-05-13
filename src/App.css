@@ -772,6 +772,22 @@
   box-shadow: 0 0 10px rgba(120, 212, 192, 0.5);
 }
 
+.office-transfer::before {
+  position: absolute;
+  top: -18px;
+  left: 36%;
+  max-width: 64px;
+  overflow: hidden;
+  color: #bdb5aa;
+  content: attr(data-label);
+  font-size: 0.56rem;
+  font-weight: 800;
+  opacity: 0.72;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
 .office-transfer--core {
   transform: rotate(-16deg);
 }
@@ -791,6 +807,49 @@
   background: #d7b45c;
   box-shadow: 0 0 10px rgba(215, 180, 92, 0.45);
   animation: office-packet-handoff 5.6s ease-in-out infinite;
+}
+
+.office-transfer--north {
+  transform: rotate(-72deg);
+}
+
+.office-transfer--east {
+  transform: rotate(-16deg);
+}
+
+.office-transfer--south {
+  transform: rotate(72deg);
+}
+
+.office-transfer--west {
+  transform: rotate(164deg);
+}
+
+.office-transfer--active::after {
+  animation: office-packet-core 4.8s ease-in-out infinite;
+}
+
+.office-transfer--monitoring::after {
+  animation: office-packet-core 6.4s ease-in-out infinite;
+}
+
+.office-transfer--blocked::after {
+  animation: office-packet-handoff 7.2s ease-in-out infinite;
+}
+
+.office-transfer--danger {
+  background-image: linear-gradient(90deg, rgba(212, 84, 77, 0.44) 45%, transparent 45%);
+}
+
+.office-transfer--danger::after {
+  background: #d4544d;
+  box-shadow: 0 0 10px rgba(212, 84, 77, 0.5);
+}
+
+.office-transfer--caution::after,
+.office-transfer--handoff::after {
+  background: #d7b45c;
+  box-shadow: 0 0 10px rgba(215, 180, 92, 0.45);
 }
 
 .office-walkers {
@@ -871,6 +930,18 @@
   animation: office-desk-pulse 6.2s ease-in-out infinite;
 }
 
+.office-desk--pulse-active {
+  animation: office-desk-pulse 5.8s ease-in-out infinite;
+}
+
+.office-desk--pulse-calm {
+  animation: office-desk-pulse 8s ease-in-out infinite;
+}
+
+.office-desk--pulse-danger {
+  animation: office-blocked-pulse 7.4s ease-in-out infinite;
+}
+
 .office-desk--coordinating,
 .office-desk--handoff {
   animation: office-desk-pulse 6.2s ease-in-out infinite;
@@ -922,6 +993,17 @@
   animation: office-terminal-ticks 2.8s steps(3, end) infinite;
 }
 
+.office-terminal--typing .office-terminal__ticks {
+  animation: office-terminal-ticks 2.4s steps(3, end) infinite;
+  opacity: 0.74;
+}
+
+.office-terminal--monitoring .office-terminal__ticks {
+  animation: office-terminal-monitor 4.8s ease-in-out infinite;
+  opacity: 0.46;
+}
+
+.office-terminal--idle .office-terminal__ticks,
 .office-desk--standby .office-terminal__ticks,
 .office-desk--walking .office-terminal__ticks {
   animation: none;
@@ -1497,6 +1579,19 @@
   45% {
     opacity: 0.82;
     transform: scaleX(1);
+  }
+}
+
+@keyframes office-terminal-monitor {
+  0%,
+  100% {
+    opacity: 0.22;
+    transform: translateX(0) scaleX(0.5);
+  }
+
+  50% {
+    opacity: 0.68;
+    transform: translateX(-6px) scaleX(0.84);
   }
 }
 

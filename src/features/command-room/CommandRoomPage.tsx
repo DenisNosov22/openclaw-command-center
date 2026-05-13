@@ -572,10 +572,12 @@ export function CommandRoomPage() {
 
           {stageView === 'office' ? (
             <IsometricOfficeScene
+              activity={snapshot.activity}
               agents={snapshot.agents}
               onSelectAgent={setSelectedAgentId}
               selectedAgentId={selectedAgent.id}
               tasks={snapshot.tasks}
+              workflow={snapshot.workflow}
             />
           ) : null}
 

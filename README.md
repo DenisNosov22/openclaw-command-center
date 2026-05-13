@@ -99,6 +99,12 @@ activity classes, subtle typing/monitor pulses, two calm orbital walker markers,
 between the core and stations, and reduced-motion fallbacks. The scene remains mock-first,
 read-only, SVG-free, and dependency-light.
 
+Office Scene phase 3 binds those animations to the existing mock dashboard snapshot more directly:
+agent/task health drives lamp tone and pulse intensity, current task state drives typing vs
+monitoring terminal ticks, and workflow edges plus timeline severity drive deterministic signal
+route labels/classes. The scene is still mock/read-only only: no real runtime actions, no controls,
+no deploy hooks, and no real data source.
+
 Manual viewport widths:
 
 - Desktop: `1366` and `1440`
