@@ -88,6 +88,8 @@ Acceptance criteria:
 - Top bar: logo, title, live/global status, adapter diagnostics, read-only badge, and Kyiv-time
   update readout stay visible without overlap. Disabled and unknown states show the requested mode
   and warning in the diagnostics pill.
+- Accessibility/readability: Room/Graph toggles, timeline filters, selectable agents, adapter
+  diagnostics, and read-only status expose accessible labels/states and visible keyboard focus.
 - Room/Graph: Room is the default center-stage view; the Room and Graph toggles remain reachable;
   agent nodes/workflow nodes stay inside the stage and do not cover labels or controls.
 - Inspector: selected agent, risk/next-action block, task chips, and recent activity stay readable

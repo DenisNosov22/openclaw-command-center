@@ -371,15 +371,27 @@ export function CommandRoomPage() {
             className={`telemetry-pill telemetry-pill--live${
               hasSnapshotWarning ? ' telemetry-pill--warning' : ''
             }`}
+            aria-label={`Глобальний стан: ${globalStatus}. ${globalStatusDetail}`}
+            role="status"
             title={globalStatusDetail}
           >
-            <span />
+            <span aria-hidden="true" />
             {globalStatus}
           </div>
           <div
             className={`adapter-diagnostics${
               adapterDiagnostics.warningLabel ? ' adapter-diagnostics--warning' : ''
             }`}
+            aria-label={`Adapter diagnostics: ${adapterDiagnostics.activeLabel}${
+              adapterDiagnostics.requestedModeLabel
+                ? `. ${adapterDiagnostics.requestedModeLabel}`
+                : ''
+            }${
+              adapterDiagnostics.warningLabel
+                ? `. Warning: ${adapterDiagnostics.warningLabel}`
+                : ''
+            }`}
+            role="status"
             title={adapterDiagnostics.warningLabel ?? adapterDiagnostics.activeLabel}
           >
             <span className="adapter-diagnostics__label">
@@ -396,7 +408,10 @@ export function CommandRoomPage() {
               </span>
             ) : null}
           </div>
-          <div className="telemetry-pill telemetry-pill--readonly">
+          <div
+            aria-label={`Read-only mode: ${adapterDiagnostics.readOnlyLabel}`}
+            className="telemetry-pill telemetry-pill--readonly"
+          >
             {adapterDiagnostics.readOnlyLabel}
           </div>
           <div className="telemetry-readout">
@@ -422,6 +437,8 @@ export function CommandRoomPage() {
 
                 return (
                   <button
+                    aria-label={`Обрати агента ${agent.name}: ${statusLabel[agent.status]}`}
+                    aria-pressed={isSelected}
                     className={`agent-card${isSelected ? ' agent-card--selected' : ''}`}
                     key={agent.id}
                     onClick={() => setSelectedAgentId(agent.id)}
@@ -456,8 +473,9 @@ export function CommandRoomPage() {
               <h2>{stageView === 'room' ? 'Орбіта агентів' : 'Маршрут задач'}</h2>
             </div>
             <div className="stage-actions">
-              <div className="stage-toggle" aria-label="Режим центральної панелі">
+              <div className="stage-toggle" aria-label="Режим центральної панелі" role="group">
                 <button
+                  aria-label="Показати кімнату агентів"
                   aria-pressed={stageView === 'room'}
                   onClick={() => setStageView('room')}
                   type="button"
@@ -465,6 +483,7 @@ export function CommandRoomPage() {
                   Room
                 </button>
                 <button
+                  aria-label="Показати workflow graph"
                   aria-pressed={stageView === 'graph'}
                   onClick={() => setStageView('graph')}
                   type="button"
@@ -510,6 +529,7 @@ export function CommandRoomPage() {
                 return (
                   <button
                     aria-label={`Обрати ${agent.name}`}
+                    aria-pressed={agent.id === selectedAgent.id}
                     className={`agent-node${
                       agent.id === selectedAgent.id ? ' agent-node--selected' : ''
                     }`}
@@ -579,6 +599,7 @@ export function CommandRoomPage() {
                 return (
                   <button
                     aria-label={`Обрати workflow вузол ${node.label}`}
+                    aria-pressed={isSelected}
                     className={`workflow-node workflow-node--${tone}${
                       isSelected ? ' workflow-node--selected' : ''
                     }`}
@@ -772,8 +793,9 @@ export function CommandRoomPage() {
             </div>
             <span>{filteredActivity.length}/{snapshot.activity.length} події</span>
           </div>
-          <div className="timeline-filters" aria-label="Read-only filters">
+          <div className="timeline-filters" aria-label="Read-only timeline filters" role="group">
             <button
+              aria-label="Показати всі події timeline"
               aria-pressed={activityFilter === 'all'}
               onClick={() => setActivityFilter('all')}
               type="button"
@@ -781,6 +803,7 @@ export function CommandRoomPage() {
               All
             </button>
             <button
+              aria-label={`Показати події вибраного агента ${selectedAgent.name}`}
               aria-pressed={activityFilter === 'selected'}
               onClick={() => setActivityFilter('selected')}
               type="button"
@@ -788,6 +811,7 @@ export function CommandRoomPage() {
               {selectedAgent.name.replace(/\s*\p{Extended_Pictographic}/gu, '')}
             </button>
             <button
+              aria-label="Показати blockers та critical події"
               aria-pressed={activityFilter === 'critical'}
               onClick={() => setActivityFilter('critical')}
               type="button"
@@ -795,6 +819,7 @@ export function CommandRoomPage() {
               Blockers / critical
             </button>
             <button
+              aria-label="Показати system та deploy події"
               aria-pressed={activityFilter === 'system'}
               onClick={() => setActivityFilter('system')}
               type="button"

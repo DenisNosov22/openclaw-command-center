@@ -25,6 +25,14 @@
   text-transform: uppercase;
 }
 
+.command-room button:focus-visible {
+  outline: 2px solid #f0cd74;
+  outline-offset: 3px;
+  box-shadow:
+    0 0 0 3px rgba(11, 11, 10, 0.92),
+    0 0 0 5px rgba(240, 205, 116, 0.5);
+}
+
 .eyebrow {
   color: #d7b45c;
   font-size: 0.7rem;
@@ -304,11 +312,15 @@
 }
 
 .agent-card:hover,
-.agent-card:focus-visible,
 .agent-card--selected {
   background: rgba(46, 43, 36, 0.84);
   border-color: rgba(215, 180, 92, 0.46);
-  outline: none;
+  transform: translateX(2px);
+}
+
+.agent-card:focus-visible {
+  background: rgba(46, 43, 36, 0.84);
+  border-color: rgba(240, 205, 116, 0.74);
   transform: translateX(2px);
 }
 
@@ -449,12 +461,15 @@
 }
 
 .stage-toggle button:hover,
-.stage-toggle button:focus-visible,
 .stage-toggle button[aria-pressed='true'] {
   color: #f4f1ea;
   background: rgba(215, 180, 92, 0.14);
-  outline: none;
   box-shadow: inset 0 0 0 1px rgba(215, 180, 92, 0.26);
+}
+
+.stage-toggle button:focus-visible {
+  color: #f4f1ea;
+  background: rgba(215, 180, 92, 0.18);
 }
 
 .hologram {
@@ -592,11 +607,14 @@
 }
 
 .workflow-node:hover,
-.workflow-node:focus-visible,
 .workflow-node--selected {
   border-color: rgba(215, 180, 92, 0.68);
-  outline: none;
   box-shadow: 0 0 30px rgba(215, 180, 92, 0.18);
+  transform: translate(-50%, -52%);
+}
+
+.workflow-node:focus-visible {
+  border-color: rgba(240, 205, 116, 0.78);
   transform: translate(-50%, -52%);
 }
 
@@ -795,11 +813,14 @@
 }
 
 .agent-node:hover,
-.agent-node:focus-visible,
 .agent-node--selected {
   border-color: rgba(215, 180, 92, 0.72);
-  outline: none;
   box-shadow: 0 0 28px rgba(215, 180, 92, 0.22);
+  transform: translate(-50%, -52%);
+}
+
+.agent-node:focus-visible {
+  border-color: rgba(240, 205, 116, 0.82);
   transform: translate(-50%, -52%);
 }
 
@@ -1172,12 +1193,16 @@
 }
 
 .timeline-filters button:hover,
-.timeline-filters button:focus-visible,
 .timeline-filters button[aria-pressed='true'] {
   color: #f4f1ea;
   background: rgba(50, 46, 36, 0.82);
   border-color: rgba(215, 180, 92, 0.44);
-  outline: none;
+}
+
+.timeline-filters button:focus-visible {
+  color: #f4f1ea;
+  background: rgba(50, 46, 36, 0.88);
+  border-color: rgba(240, 205, 116, 0.74);
 }
 
 .timeline ol {
