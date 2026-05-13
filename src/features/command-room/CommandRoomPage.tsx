@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { getCommandCenterSnapshot } from '../../adapters'
-import type { Agent, Task } from '../../shared/types'
+import type { Agent, Task, WorkflowNode } from '../../shared/types'
+
+type StageView = 'room' | 'graph'
 
 const statusLabel: Record<Agent['status'], string> = {
   idle: 'Вільний',
@@ -25,7 +27,7 @@ const statusTone: Record<Agent['status'], string> = {
   idle: 'standby',
   working: 'online',
   waiting: 'caution',
-  blocked: 'caution',
+  blocked: 'danger',
   done: 'online',
   error: 'danger',
 }
@@ -56,9 +58,14 @@ function getAgentRole(agent: Agent) {
   return roleLabel[agent.role] ?? agent.role
 }
 
+function getWorkflowAgent(node: WorkflowNode, agents: Agent[]) {
+  return agents.find((agent) => agent.id === node.agentId)
+}
+
 export function CommandRoomPage() {
   const snapshot = getCommandCenterSnapshot()
   const [selectedAgentId, setSelectedAgentId] = useState(snapshot.agents[0]?.id)
+  const [stageView, setStageView] = useState<StageView>('room')
   const selectedAgent =
     snapshot.agents.find((agent) => agent.id === selectedAgentId) ?? snapshot.agents[0]
   const selectedTask = snapshot.tasks.find((task) => task.id === selectedAgent.currentTaskId)
@@ -150,51 +157,145 @@ export function CommandRoomPage() {
         <section className="panel center-stage" aria-label="Центральна панель">
           <div className="stage-header">
             <div>
-              <p className="eyebrow">2D Hologram</p>
-              <h2>Орбіта агентів</h2>
+              <p className="eyebrow">{stageView === 'room' ? '2D Hologram' : 'Workflow Graph'}</p>
+              <h2>{stageView === 'room' ? 'Орбіта агентів' : 'Маршрут задач'}</h2>
             </div>
-            <div className="stage-stats" aria-label="Метрики активних задач">
-              <span>{activeTasks.length} активних</span>
-              <span>{blockedTasks.length} ризики</span>
-              <span>{snapshot.activity.length} події</span>
+            <div className="stage-actions">
+              <div className="stage-toggle" aria-label="Режим центральної панелі">
+                <button
+                  aria-pressed={stageView === 'room'}
+                  onClick={() => setStageView('room')}
+                  type="button"
+                >
+                  Room
+                </button>
+                <button
+                  aria-pressed={stageView === 'graph'}
+                  onClick={() => setStageView('graph')}
+                  type="button"
+                >
+                  Graph
+                </button>
+              </div>
+              <div className="stage-stats" aria-label="Метрики активних задач">
+                <span>{activeTasks.length} активних</span>
+                <span>{blockedTasks.length} ризики</span>
+                <span>{snapshot.activity.length} події</span>
+              </div>
             </div>
           </div>
 
-          <div className="hologram" aria-label="Карта вузлів агентів">
-            <div className="hologram__ring hologram__ring--outer" />
-            <div className="hologram__ring hologram__ring--inner" />
-            <div className="hologram__axis hologram__axis--vertical" />
-            <div className="hologram__axis hologram__axis--horizontal" />
-            <div className="room-grid" aria-hidden="true" />
-            <div className="hologram__beacon hologram__beacon--top">Control</div>
-            <div className="hologram__beacon hologram__beacon--right">Ops</div>
-            <div className="hologram__beacon hologram__beacon--bottom">QA</div>
-            <div className="hologram__beacon hologram__beacon--left">Research</div>
-            <div className="hologram__core">
-              <span>{selectedAgent.name}</span>
-              <strong>{statusLabel[selectedAgent.status]}</strong>
-              <p>{selectedTask?.title ?? 'Немає активної задачі'}</p>
+          {stageView === 'room' ? (
+            <div className="hologram" aria-label="Карта вузлів агентів">
+              <div className="hologram__ring hologram__ring--outer" />
+              <div className="hologram__ring hologram__ring--inner" />
+              <div className="hologram__axis hologram__axis--vertical" />
+              <div className="hologram__axis hologram__axis--horizontal" />
+              <div className="room-grid" aria-hidden="true" />
+              <div className="hologram__beacon hologram__beacon--top">Control</div>
+              <div className="hologram__beacon hologram__beacon--right">Ops</div>
+              <div className="hologram__beacon hologram__beacon--bottom">QA</div>
+              <div className="hologram__beacon hologram__beacon--left">Research</div>
+              <div className="hologram__core">
+                <span>{selectedAgent.name}</span>
+                <strong>{statusLabel[selectedAgent.status]}</strong>
+                <p>{selectedTask?.title ?? 'Немає активної задачі'}</p>
+              </div>
+              {snapshot.agents.map((agent, index) => (
+                <button
+                  aria-label={`Обрати ${agent.name}`}
+                  className={`agent-node agent-node--${index + 1}${
+                    agent.id === selectedAgent.id ? ' agent-node--selected' : ''
+                  }`}
+                  key={agent.id}
+                  onClick={() => setSelectedAgentId(agent.id)}
+                  type="button"
+                >
+                  <span>{getAgentMarker(agent)}</span>
+                  <small className={`node-signal node-signal--${statusTone[agent.status]}`} />
+                </button>
+              ))}
             </div>
-            {snapshot.agents.map((agent, index) => (
-              <button
-                aria-label={`Обрати ${agent.name}`}
-                className={`agent-node agent-node--${index + 1}${
-                  agent.id === selectedAgent.id ? ' agent-node--selected' : ''
-                }`}
-                key={agent.id}
-                onClick={() => setSelectedAgentId(agent.id)}
-                type="button"
-              >
-                <span>{getAgentMarker(agent)}</span>
-                <small className={`node-signal node-signal--${statusTone[agent.status]}`} />
-              </button>
-            ))}
-          </div>
+          ) : (
+            <div className="workflow-graph" aria-label="Read-only workflow graph">
+              <svg aria-hidden="true" className="workflow-graph__edges" viewBox="0 0 100 100">
+                <defs>
+                  <marker
+                    id="workflow-arrow"
+                    markerHeight="6"
+                    markerWidth="6"
+                    orient="auto"
+                    refX="5"
+                    refY="3"
+                  >
+                    <path d="M0,0 L6,3 L0,6 Z" />
+                  </marker>
+                </defs>
+                {snapshot.workflow.edges.map((edge) => {
+                  const from = snapshot.workflow.nodes.find((node) => node.id === edge.from)
+                  const to = snapshot.workflow.nodes.find((node) => node.id === edge.to)
+
+                  if (!from || !to) {
+                    return null
+                  }
+
+                  return (
+                    <g key={edge.id}>
+                      <line
+                        className="workflow-graph__edge"
+                        markerEnd="url(#workflow-arrow)"
+                        x1={from.x}
+                        x2={to.x}
+                        y1={from.y}
+                        y2={to.y}
+                      />
+                      <text
+                        className="workflow-graph__edge-label"
+                        x={(from.x + to.x) / 2}
+                        y={(from.y + to.y) / 2 - 2}
+                      >
+                        {edge.label}
+                      </text>
+                    </g>
+                  )
+                })}
+              </svg>
+              {snapshot.workflow.nodes.map((node) => {
+                const agent = getWorkflowAgent(node, snapshot.agents)
+                const tone = agent ? statusTone[agent.status] : 'standby'
+                const isSelected = agent?.id === selectedAgent.id
+
+                return (
+                  <button
+                    aria-label={`Обрати workflow вузол ${node.label}`}
+                    className={`workflow-node workflow-node--${tone}${
+                      isSelected ? ' workflow-node--selected' : ''
+                    }`}
+                    key={node.id}
+                    onClick={() => {
+                      if (agent) {
+                        setSelectedAgentId(agent.id)
+                      }
+                    }}
+                    style={{
+                      left: `${node.x}%`,
+                      top: `${node.y}%`,
+                    }}
+                    type="button"
+                  >
+                    <span>{agent ? getAgentMarker(agent) : node.label.slice(0, 1)}</span>
+                    <strong>{node.label}</strong>
+                    <small>{node.lane}</small>
+                  </button>
+                )
+              })}
+            </div>
+          )}
 
           <div className="stage-legend" aria-label="Пояснення станів">
             <span><i className="legend-dot legend-dot--online" />В роботі / готово</span>
-            <span><i className="legend-dot legend-dot--caution" />Очікує / блокер</span>
-            <span><i className="legend-dot legend-dot--danger" />Помилка</span>
+            <span><i className="legend-dot legend-dot--caution" />Очікує</span>
+            <span><i className="legend-dot legend-dot--danger" />Блокер / помилка</span>
           </div>
 
           <div className="task-strip">
