@@ -57,7 +57,7 @@ export function IsometricOfficeScene({
 
         return (
           <button
-            aria-label={`Select office station ${station.name}: ${station.role}, ${station.activity}`}
+            aria-label={`Select read-only office station ${station.name}: ${station.role}, ${station.activity} activity, ${station.terminalMode} terminal`}
             aria-pressed={isSelected}
             className={`office-desk office-desk--${station.lane} office-desk--${station.activity} office-desk--pulse-${station.pulse}${
               isSelected ? ' office-desk--selected' : ''

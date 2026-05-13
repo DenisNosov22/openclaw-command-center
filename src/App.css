@@ -756,7 +756,7 @@
   overflow: visible;
   background-image: linear-gradient(90deg, rgba(120, 212, 192, 0.42) 45%, transparent 45%);
   background-size: 12px 1px;
-  opacity: 0.58;
+  opacity: 0.46;
   transform-origin: 0 50%;
 }
 
@@ -764,25 +764,25 @@
   position: absolute;
   top: -3px;
   left: 0;
-  width: 6px;
+  width: 5px;
   aspect-ratio: 1;
   content: '';
   background: #78d4c0;
   border-radius: 50%;
-  box-shadow: 0 0 10px rgba(120, 212, 192, 0.5);
+  box-shadow: 0 0 8px rgba(120, 212, 192, 0.36);
 }
 
 .office-transfer::before {
   position: absolute;
-  top: -18px;
-  left: 36%;
-  max-width: 64px;
+  top: -16px;
+  left: 42%;
+  max-width: 52px;
   overflow: hidden;
   color: #bdb5aa;
   content: attr(data-label);
-  font-size: 0.56rem;
+  font-size: 0.52rem;
   font-weight: 800;
-  opacity: 0.72;
+  opacity: 0;
   text-overflow: ellipsis;
   text-transform: uppercase;
   white-space: nowrap;
@@ -805,7 +805,7 @@
 
 .office-transfer--handoff::after {
   background: #d7b45c;
-  box-shadow: 0 0 10px rgba(215, 180, 92, 0.45);
+  box-shadow: 0 0 8px rgba(215, 180, 92, 0.34);
   animation: office-packet-handoff 5.6s ease-in-out infinite;
 }
 
@@ -834,22 +834,28 @@
 }
 
 .office-transfer--blocked::after {
-  animation: office-packet-handoff 7.2s ease-in-out infinite;
+  animation: office-packet-handoff 8.4s ease-in-out infinite;
 }
 
 .office-transfer--danger {
-  background-image: linear-gradient(90deg, rgba(212, 84, 77, 0.44) 45%, transparent 45%);
+  background-image: linear-gradient(90deg, rgba(212, 84, 77, 0.34) 45%, transparent 45%);
 }
 
 .office-transfer--danger::after {
   background: #d4544d;
-  box-shadow: 0 0 10px rgba(212, 84, 77, 0.5);
+  box-shadow: 0 0 8px rgba(212, 84, 77, 0.34);
 }
 
 .office-transfer--caution::after,
 .office-transfer--handoff::after {
   background: #d7b45c;
-  box-shadow: 0 0 10px rgba(215, 180, 92, 0.45);
+  box-shadow: 0 0 8px rgba(215, 180, 92, 0.34);
+}
+
+.office-transfer--caution::before,
+.office-transfer--danger::before,
+.office-transfer--handoff::before {
+  opacity: 0.54;
 }
 
 .office-walkers {
@@ -863,14 +869,15 @@
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 11px;
+  width: 9px;
   aspect-ratio: 1;
   background:
     radial-gradient(circle at 50% 34%, rgba(255, 255, 255, 0.2), transparent 34%),
     rgba(18, 20, 19, 0.96);
-  border: 1px solid rgba(215, 180, 92, 0.5);
+  border: 1px solid rgba(215, 180, 92, 0.38);
   border-radius: 50% 50% 44% 44%;
-  box-shadow: 0 0 10px rgba(215, 180, 92, 0.14);
+  opacity: 0.64;
+  box-shadow: 0 0 8px rgba(215, 180, 92, 0.1);
 }
 
 .office-walker--inner {
@@ -878,8 +885,8 @@
 }
 
 .office-walker--outer {
-  border-color: rgba(120, 212, 192, 0.46);
-  box-shadow: 0 0 10px rgba(120, 212, 192, 0.14);
+  border-color: rgba(120, 212, 192, 0.34);
+  box-shadow: 0 0 8px rgba(120, 212, 192, 0.1);
   animation: office-walker-outer 12s ease-in-out infinite;
 }
 
@@ -939,7 +946,7 @@
 }
 
 .office-desk--pulse-danger {
-  animation: office-blocked-pulse 7.4s ease-in-out infinite;
+  animation: office-blocked-pulse 9.2s ease-in-out infinite;
 }
 
 .office-desk--coordinating,
@@ -953,7 +960,7 @@
 
 .office-desk--blocked {
   border-color: rgba(212, 84, 77, 0.4);
-  animation: office-blocked-pulse 7.4s ease-in-out infinite;
+  animation: office-blocked-pulse 9.2s ease-in-out infinite;
 }
 
 .office-terminal {
@@ -994,8 +1001,8 @@
 }
 
 .office-terminal--typing .office-terminal__ticks {
-  animation: office-terminal-ticks 2.4s steps(3, end) infinite;
-  opacity: 0.74;
+  animation: office-terminal-ticks 3s steps(3, end) infinite;
+  opacity: 0.64;
 }
 
 .office-terminal--monitoring .office-terminal__ticks {
@@ -1012,7 +1019,7 @@
 
 .office-desk--blocked .office-terminal__ticks {
   background: #d4544d;
-  animation-duration: 4.4s;
+  animation-duration: 5.6s;
 }
 
 .office-chair {
@@ -1564,7 +1571,7 @@
   50% {
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.05),
-      0 0 18px rgba(212, 84, 77, 0.18),
+      0 0 12px rgba(212, 84, 77, 0.12),
       0 12px 28px rgba(0, 0, 0, 0.28);
   }
 }
@@ -1577,7 +1584,7 @@
   }
 
   45% {
-    opacity: 0.82;
+    opacity: 0.72;
     transform: scaleX(1);
   }
 }
