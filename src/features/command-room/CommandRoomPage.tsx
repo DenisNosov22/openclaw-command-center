@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { getCommandCenterSnapshot } from '../../adapters'
 import type { ActivityEvent, Agent, Task, WorkflowNode } from '../../shared/types'
+import { formatKyivTime } from '../../shared/time/kyivTime'
 
 type StageView = 'room' | 'graph'
 
@@ -49,6 +50,12 @@ const priorityLabel: Record<Task['priority'], string> = {
   medium: 'Середній',
   high: 'Високий',
 }
+
+const heartbeatSummaries = [
+  'Mock live heartbeat: активні агенти синхронізовані без real backend.',
+  'Mock live heartbeat: task timeline оновлено read-only знімком.',
+  'Mock live heartbeat: operator panel тримає Kyiv-time telemetry.',
+]
 
 const roleLabel: Record<string, string> = {
   'main/orchestrator': 'оркестрація',
@@ -130,8 +137,50 @@ function getInspectorEvents(events: ActivityEvent[], agentId: string) {
   return [...relatedEvents, ...fallbackEvents].slice(0, 3)
 }
 
+function getLiveSnapshot(tick: number) {
+  const baseSnapshot = getCommandCenterSnapshot()
+  const lastUpdated = new Date()
+  const formattedLastUpdated = formatKyivTime(lastUpdated, { includeDate: true })
+  const activeAgentIds = new Set(['agent-krab', 'agent-dev', 'agent-varta'])
+  const heartbeatAgentId = ['agent-krab', 'agent-dev', 'agent-varta'][tick % 3]
+  const heartbeatEvent: ActivityEvent = {
+    id: `mock-heartbeat-${tick}`,
+    timestamp: lastUpdated.toISOString(),
+    agentId: heartbeatAgentId,
+    type: 'system',
+    summary: heartbeatSummaries[tick % heartbeatSummaries.length],
+  }
+
+  return {
+    ...baseSnapshot,
+    generatedAt: lastUpdated.toISOString(),
+    agents: baseSnapshot.agents.map((agent) =>
+      activeAgentIds.has(agent.id)
+        ? {
+            ...agent,
+            lastSeen: lastUpdated.toISOString(),
+          }
+        : agent,
+    ),
+    activity: [
+      heartbeatEvent,
+      ...baseSnapshot.activity.map((event, index) =>
+        index === 0
+          ? {
+              ...event,
+              summary: `${event.summary} Оновлено mock live: ${formattedLastUpdated}.`,
+            }
+          : event,
+      ),
+    ],
+    lastUpdated,
+  }
+}
+
 export function CommandRoomPage() {
-  const snapshot = getCommandCenterSnapshot()
+  const [liveTick, setLiveTick] = useState(0)
+  const snapshot = useMemo(() => getLiveSnapshot(liveTick), [liveTick])
+  const snapshotAnchor = snapshot.generatedAt
   const [selectedAgentId, setSelectedAgentId] = useState(snapshot.agents[0]?.id)
   const [stageView, setStageView] = useState<StageView>('room')
   const selectedAgent =
@@ -155,8 +204,17 @@ export function CommandRoomPage() {
   const blockedTasks = snapshot.tasks.filter((task) =>
     ['blocked', 'failed'].includes(task.status),
   )
+  const formattedLastUpdated = formatKyivTime(snapshot.lastUpdated, { includeDate: true })
   let globalStatus = 'Стабільно'
-  let globalStatusDetail = 'Read-only mock snapshot'
+  let globalStatusDetail = `Mock live heartbeat, read-only. Оновлено: ${formattedLastUpdated}`
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      setLiveTick((currentTick) => currentTick + 1)
+    }, 15_000)
+
+    return () => window.clearInterval(intervalId)
+  }, [])
 
   if (snapshot.agents.some((agent) => agent.status === 'error')) {
     globalStatus = 'Потрібна увага'
@@ -186,10 +244,11 @@ export function CommandRoomPage() {
             <span />
             {globalStatus}
           </div>
-          <div className="telemetry-pill">Mock режим</div>
+          <div className="telemetry-pill telemetry-pill--mock">Mock live</div>
+          <div className="telemetry-pill">Read-only</div>
           <div className="telemetry-readout">
-            <span>Знімок</span>
-            <strong>{snapshot.generatedAt}</strong>
+            <span>Оновлено</span>
+            <strong>{formattedLastUpdated}</strong>
           </div>
         </div>
       </header>
@@ -257,6 +316,7 @@ export function CommandRoomPage() {
                 <span>{activeTasks.length} активних</span>
                 <span>{blockedTasks.length} ризики</span>
                 <span>{snapshot.activity.length} події</span>
+                <span>Оновлено {formatKyivTime(snapshot.lastUpdated)}</span>
               </div>
             </div>
           </div>
@@ -443,7 +503,11 @@ export function CommandRoomPage() {
             </div>
             <div>
               <dt>Останній сигнал</dt>
-              <dd>{selectedAgent.lastSeen ?? snapshot.generatedAt}</dd>
+              <dd>
+                {formatKyivTime(selectedAgent.lastSeen ?? snapshot.generatedAt, {
+                  fallbackDate: snapshotAnchor,
+                })}
+              </dd>
             </div>
           </dl>
           {hasSelectedRisk ? (
@@ -490,7 +554,11 @@ export function CommandRoomPage() {
             <ol className="inspector-events">
               {inspectorEvents.map((event) => (
                 <li key={event.id}>
-                  <time>{event.timestamp}</time>
+                  <time>
+                    {formatKyivTime(event.timestamp, {
+                      fallbackDate: snapshotAnchor,
+                    })}
+                  </time>
                   <p>{event.summary}</p>
                 </li>
               ))}
@@ -516,7 +584,11 @@ export function CommandRoomPage() {
 
               return (
                 <li key={event.id}>
-                  <time>{event.timestamp}</time>
+                  <time>
+                    {formatKyivTime(event.timestamp, {
+                      fallbackDate: snapshotAnchor,
+                    })}
+                  </time>
                   <span className="timeline__type">{event.type}</span>
                   <div>
                     <strong>{agent?.name ?? 'Система'}</strong>

@@ -123,7 +123,13 @@
   aspect-ratio: 1;
   background: #d7b45c;
   border-radius: 50%;
+  animation: mock-heartbeat 1.8s ease-in-out infinite;
   box-shadow: 0 0 14px rgba(215, 180, 92, 0.8);
+}
+
+.telemetry-pill--mock {
+  color: #f0cd74;
+  border-color: rgba(215, 180, 92, 0.32);
 }
 
 .telemetry-readout {
@@ -694,6 +700,19 @@
 
 .node-signal--danger {
   background: #d4544d;
+}
+
+@keyframes mock-heartbeat {
+  0%,
+  100% {
+    opacity: 0.62;
+    transform: scale(0.88);
+  }
+
+  45% {
+    opacity: 1;
+    transform: scale(1.16);
+  }
 }
 
 .stage-legend {
