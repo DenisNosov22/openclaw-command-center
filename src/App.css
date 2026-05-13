@@ -99,6 +99,7 @@
 }
 
 .telemetry-pill,
+.adapter-diagnostics,
 .telemetry-readout {
   min-width: 0;
   min-height: 34px;
@@ -137,9 +138,52 @@
   border-color: rgba(215, 180, 92, 0.32);
 }
 
+.telemetry-pill--readonly {
+  color: #f4f1ea;
+  border-color: rgba(215, 180, 92, 0.3);
+}
+
 .telemetry-pill--warning {
   color: #ff827b;
   border-color: rgba(212, 84, 77, 0.42);
+}
+
+.adapter-diagnostics {
+  display: grid;
+  gap: 3px;
+  max-width: 270px;
+  color: #f0cd74;
+  border-color: rgba(215, 180, 92, 0.32);
+}
+
+.adapter-diagnostics--warning {
+  color: #ff827b;
+  border-color: rgba(212, 84, 77, 0.42);
+}
+
+.adapter-diagnostics__label,
+.adapter-diagnostics__mode,
+.adapter-diagnostics__warning {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.adapter-diagnostics__label {
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.adapter-diagnostics__mode,
+.adapter-diagnostics__warning {
+  color: #aaa399;
+  font-size: 0.66rem;
+  font-weight: 700;
+}
+
+.adapter-diagnostics__warning {
+  color: #ffaaa5;
 }
 
 .telemetry-readout {
@@ -1281,12 +1325,19 @@
   }
 
   .telemetry-pill,
+  .adapter-diagnostics,
   .telemetry-readout {
     width: 100%;
   }
 
   .telemetry-pill {
     justify-content: center;
+    text-align: center;
+  }
+
+  .adapter-diagnostics {
+    grid-column: 1 / -1;
+    max-width: none;
     text-align: center;
   }
 

@@ -1,5 +1,7 @@
 export {
+  createCommandCenterAdapterDiagnostics,
   createCommandCenterAdapterSelection,
+  type CommandCenterAdapterDiagnostics,
   type CommandCenterAdapterMode,
   type CommandCenterAdapterSelection,
 } from './createCommandCenterAdapter'

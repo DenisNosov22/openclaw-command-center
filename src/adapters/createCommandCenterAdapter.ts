@@ -12,6 +12,13 @@ export interface CommandCenterAdapterSelection {
   readonly warning?: string
 }
 
+export interface CommandCenterAdapterDiagnostics {
+  readonly activeLabel: CommandCenterAdapterSelection['label']
+  readonly readOnlyLabel: 'Read-only'
+  readonly requestedModeLabel?: string
+  readonly warningLabel?: string
+}
+
 const defaultAdapterMode = 'mock'
 
 function normalizeRequestedMode(rawMode?: string) {
@@ -55,5 +62,18 @@ export function createCommandCenterAdapterSelection(
     readOnly: true,
     usesFallback: true,
     warning: `Unknown adapter mode "${requestedMode}"; rendering safe mock snapshot.`,
+  }
+}
+
+export function createCommandCenterAdapterDiagnostics(
+  selection: CommandCenterAdapterSelection,
+): CommandCenterAdapterDiagnostics {
+  return {
+    activeLabel: selection.label,
+    readOnlyLabel: 'Read-only',
+    requestedModeLabel: selection.usesFallback
+      ? `Requested: ${selection.requestedMode}`
+      : undefined,
+    warningLabel: selection.warning,
   }
 }

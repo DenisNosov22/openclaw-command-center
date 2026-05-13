@@ -1,5 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
-import { getCommandCenterAdapterSelection } from '../../adapters'
+import {
+  createCommandCenterAdapterDiagnostics,
+  getCommandCenterAdapterSelection,
+} from '../../adapters'
 import type { ActivityEvent, Agent, Task, WorkflowNode } from '../../shared/types'
 import { formatKyivTime } from '../../shared/time/kyivTime'
 
@@ -188,6 +191,7 @@ function getFilteredActivity(
 }
 
 const adapterSelection = getCommandCenterAdapterSelection()
+const adapterDiagnostics = createCommandCenterAdapterDiagnostics(adapterSelection)
 
 function getLiveSnapshot(tick: number) {
   const baseSnapshot = adapterSelection.adapter.getSnapshot()
@@ -304,14 +308,28 @@ export function CommandRoomPage() {
             {globalStatus}
           </div>
           <div
-            className={`telemetry-pill telemetry-pill--mock${
-              adapterSelection.warning ? ' telemetry-pill--warning' : ''
+            className={`adapter-diagnostics${
+              adapterDiagnostics.warningLabel ? ' adapter-diagnostics--warning' : ''
             }`}
-            title={adapterSelection.warning ?? adapterSelection.label}
+            title={adapterDiagnostics.warningLabel ?? adapterDiagnostics.activeLabel}
           >
-            {adapterSelection.label}
+            <span className="adapter-diagnostics__label">
+              {adapterDiagnostics.activeLabel}
+            </span>
+            {adapterDiagnostics.requestedModeLabel ? (
+              <span className="adapter-diagnostics__mode">
+                {adapterDiagnostics.requestedModeLabel}
+              </span>
+            ) : null}
+            {adapterDiagnostics.warningLabel ? (
+              <span className="adapter-diagnostics__warning">
+                {adapterDiagnostics.warningLabel}
+              </span>
+            ) : null}
           </div>
-          <div className="telemetry-pill">Read-only</div>
+          <div className="telemetry-pill telemetry-pill--readonly">
+            {adapterDiagnostics.readOnlyLabel}
+          </div>
           <div className="telemetry-readout">
             <span>Оновлено</span>
             <strong>{formattedLastUpdated}</strong>

@@ -13,6 +13,7 @@ const defaultSelection = createCommandCenterAdapterSelection(fallbackAdapter, un
 assert.equal(defaultSelection.mode, 'mock')
 assert.equal(defaultSelection.label, 'Mock adapter')
 assert.equal(defaultSelection.usesFallback, false)
+assert.equal(defaultSelection.readOnly, true)
 assert.equal(defaultSelection.adapter.source, 'mock')
 
 const blankSelection = createCommandCenterAdapterSelection(fallbackAdapter, '  ')
@@ -22,7 +23,9 @@ assert.equal(blankSelection.usesFallback, false)
 const disabledSelection = createCommandCenterAdapterSelection(fallbackAdapter, ' OpenClaw ')
 assert.equal(disabledSelection.mode, 'openclaw')
 assert.equal(disabledSelection.label, 'OpenClaw adapter disabled')
+assert.equal(disabledSelection.requestedMode, 'openclaw')
 assert.equal(disabledSelection.usesFallback, true)
+assert.equal(disabledSelection.readOnly, true)
 assert.equal(disabledSelection.adapter.source, 'mock')
 assert.match(disabledSelection.warning ?? '', /disabled/)
 
