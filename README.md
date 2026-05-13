@@ -122,6 +122,13 @@ terminal/tools, queued agents walk with faster legs, completed agents visibly re
 prop, delegated work shows handoff signal dots, and blocked/failed work uses an alert beacon. The
 surface remains mock-first, read-only, CSS-only, and dependency-light.
 
+Office Scene phase 8 defines the durable final Office blueprint and sprite system foundation.
+The target is a living, original 2D office where station data maps to an office view model and then
+to maintained sprite/action tokens for working, walking, resting, handoff, alert, and monitoring.
+The explicit rule is retro/mini-game inspiration only: no Mario, Nintendo, or recognizable game-IP
+copying. See `docs/final-office-blueprint.md` for final-enough criteria, zones, animation rules,
+visual constraints, and source-level guardrails.
+
 Manual viewport widths:
 
 - Desktop: `1366` and `1440`

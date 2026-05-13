@@ -1,6 +1,15 @@
 import { strict as assert } from 'node:assert'
 import { readFileSync } from 'node:fs'
 import { createOfficeSceneViewModel } from '../src/features/command-room/IsometricOfficeSceneModel.ts'
+import {
+  getOfficeAgentMarkerClassName,
+  getOfficeStationClassName,
+  getOfficeStatusLampClassName,
+  getOfficeTerminalClassName,
+  OFFICE_SPRITE_ACTIONS,
+  OFFICE_SPRITE_TOKENS,
+  OFFICE_ZONE_TOKENS,
+} from '../src/features/command-room/IsometricOfficeSpriteSystem.ts'
 import type { ActivityEvent, Agent, Task, WorkflowEdge, WorkflowNode } from '../src/shared/types/index.ts'
 
 const componentSource = readFileSync(
@@ -14,6 +23,7 @@ const modelSource = readFileSync(
 const pageSource = readFileSync('src/features/command-room/CommandRoomPage.tsx', 'utf8')
 const stylesheetSource = readFileSync('src/App.css', 'utf8')
 const readmeSource = readFileSync('README.md', 'utf8')
+const blueprintSource = readFileSync('docs/final-office-blueprint.md', 'utf8')
 
 function assertIncludes(source: string, expected: string, label: string) {
   assert(source.includes(expected), `Expected ${label} to include ${JSON.stringify(expected)}`)
@@ -42,35 +52,35 @@ assertIncludes(modelSource, 'getStationPulse', 'status-derived office pulse mapp
 assertIncludes(modelSource, 'getTerminalMode', 'task-derived terminal mode mapping')
 assertIncludes(modelSource, 'isSelected: boolean', 'selected route state')
 assertIncludes(modelSource, 'selectedAgentId?: string', 'selected agent route input')
+assertIncludes(componentSource, "from './IsometricOfficeSpriteSystem'", 'visual class map module import')
+assertIncludes(componentSource, 'getOfficeStationClassName', 'station view model to visual class mapper')
+assertIncludes(componentSource, 'getOfficeAgentMarkerClassName', 'sprite action to visual class mapper')
+assertIncludes(componentSource, 'OFFICE_SPRITE_TOKENS', 'sprite part token map usage')
+assertIncludes(componentSource, 'OFFICE_ZONE_TOKENS', 'office zone token map usage')
 assertIncludes(componentSource, 'export function IsometricOfficeScene', 'office scene component')
 assertIncludes(componentSource, 'role="img"', 'accessible scene role')
 assertIncludes(componentSource, 'aria-label="Isometric orbital office scene"', 'scene aria label')
-assertIncludes(componentSource, 'office-area office-area--desk', 'desk/computer office zones')
-assertIncludes(componentSource, 'office-area office-area--sofa', 'sofa/rest office zone')
-assertIncludes(componentSource, 'office-area office-area--hologram', 'subtle hologram UI zone')
+assertIncludes(componentSource, 'OFFICE_ZONE_TOKENS.desk', 'desk/computer office zones')
+assertIncludes(componentSource, 'OFFICE_ZONE_TOKENS.sofa', 'sofa/rest office zone')
+assertIncludes(componentSource, 'OFFICE_ZONE_TOKENS.hologram', 'subtle hologram UI zone')
 assertIncludes(componentSource, 'office-core', 'central orbital command core')
-assertIncludes(componentSource, 'command-core', 'professional command core visual token')
+assertIncludes(componentSource, 'OFFICE_ZONE_TOKENS.core', 'professional command core visual token')
 assertIncludes(componentSource, 'office-transfer office-transfer--core', 'signal transfer layer')
 assertIncludes(componentSource, 'office-transfer--${route.activity}', 'state-aware signal transfer classes')
 assertIncludes(componentSource, 'data-label={route.label}', 'mock route packet labels')
 assertIncludes(componentSource, 'office-walker office-walker--inner', 'walking agent orbital layer')
-assertIncludes(componentSource, 'office-desk', 'agent desks')
-assertIncludes(componentSource, 'office-workstation', 'professional workstation visual token')
-assertIncludes(componentSource, 'office-desk--${station.activity}', 'activity-aware desks')
-assertIncludes(componentSource, 'office-desk--pulse-${station.pulse}', 'status-aware desk pulse classes')
-assertIncludes(componentSource, 'office-terminal--${station.terminalMode}', 'task-aware terminal mode classes')
-assertIncludes(componentSource, 'office-terminal', 'desk terminals')
-assertIncludes(componentSource, 'office-terminal__ticks', 'terminal activity ticks')
-assertIncludes(componentSource, 'office-agent-marker', 'abstract agent markers')
-assertIncludes(componentSource, 'office-agent-avatar', 'professional office agent avatar token')
-assertIncludes(componentSource, 'office-agent-sprite', 'original 2D character sprite token')
-assertIncludes(componentSource, 'office-agent-sprite__head', '2D avatar head shape')
-assertIncludes(componentSource, 'office-agent-sprite__body', '2D avatar body shape')
-assertIncludes(componentSource, 'office-agent-sprite__legs', '2D avatar leg animation shape')
-assertIncludes(componentSource, 'office-agent-tool', '2D avatar action prop')
-assertIncludes(componentSource, 'office-agent-rest-prop', '2D avatar rest/sofa prop')
-assertIncludes(componentSource, 'office-agent-signal-prop', '2D avatar signal/alert prop')
-assertIncludes(componentSource, 'office-status-lamp', 'status lamps')
+assertIncludes(componentSource, 'getOfficeStationClassName(station.lane', 'activity-aware desks')
+assertIncludes(componentSource, 'getOfficeTerminalClassName(station.terminalMode)', 'task-aware terminal mode classes')
+assertIncludes(componentSource, 'OFFICE_SPRITE_TOKENS.terminalTicks', 'terminal activity ticks')
+assertIncludes(componentSource, 'getOfficeAgentMarkerClassName(station.action)', 'abstract agent markers')
+assertIncludes(componentSource, 'OFFICE_SPRITE_TOKENS.sprite', 'original 2D character sprite token')
+assertIncludes(componentSource, 'OFFICE_SPRITE_TOKENS.head', '2D avatar head shape')
+assertIncludes(componentSource, 'OFFICE_SPRITE_TOKENS.body', '2D avatar body shape')
+assertIncludes(componentSource, 'OFFICE_SPRITE_TOKENS.legs', '2D avatar leg animation shape')
+assertIncludes(componentSource, 'OFFICE_SPRITE_TOKENS.tool', '2D avatar action prop')
+assertIncludes(componentSource, 'OFFICE_SPRITE_TOKENS.restProp', '2D avatar rest/sofa prop')
+assertIncludes(componentSource, 'OFFICE_SPRITE_TOKENS.signalProp', '2D avatar signal/alert prop')
+assertIncludes(componentSource, 'getOfficeStatusLampClassName(station.tone)', 'status lamps')
 assertIncludes(componentSource, 'aria-label={`${isSelected ? \'Selected\' : \'Select\'} read-only office station', 'state-aware selectable station labels')
 assertIncludes(componentSource, 'aria-pressed={isSelected}', 'selected station pressed state')
 assertIncludes(componentSource, 'data-agent-id={station.agentId}', 'station-to-agent mapping metadata')
@@ -143,9 +153,58 @@ assertIncludes(readmeSource, 'Office Scene phase 3', 'README office scene state-
 assertIncludes(readmeSource, 'Office Scene phase 4', 'README office scene interaction roadmap')
 assertIncludes(readmeSource, 'Office Scene phase 5', 'README office scene professional maturity roadmap')
 assertIncludes(readmeSource, 'Office Scene phase 6', 'README office scene Step 42 roadmap')
+assertIncludes(readmeSource, 'Office Scene phase 7', 'README office scene sprite/action polish roadmap')
+assertIncludes(readmeSource, 'Office Scene phase 8', 'README final office blueprint roadmap')
+assertIncludes(readmeSource, 'docs/final-office-blueprint.md', 'README final office blueprint link')
 assertIncludes(readmeSource, 'Office is now the main/default scene', 'README office default note')
 assertIncludes(readmeSource, 'professional polish/maturity pass', 'README office scene maturity note')
 assertIncludes(readmeSource, 'clicking an office station updates the shared selected agent inspector', 'README office scene interaction behavior')
+assertIncludes(blueprintSource, 'Final Office Blueprint', 'durable final office blueprint')
+assertIncludes(blueprintSource, 'Desk/PC zone', 'blueprint office zones')
+assertIncludes(blueprintSource, '`working`', 'blueprint working action')
+assertIncludes(blueprintSource, '`walking`', 'blueprint walking action')
+assertIncludes(blueprintSource, '`resting`', 'blueprint resting action')
+assertIncludes(blueprintSource, '`handoff`', 'blueprint handoff action')
+assertIncludes(blueprintSource, '`alert`', 'blueprint alert action')
+assertIncludes(blueprintSource, '`monitoring`', 'blueprint monitoring action')
+assertIncludes(blueprintSource, 'Do not copy Mario, Nintendo', 'blueprint no-IP-copy rule')
+assertIncludes(blueprintSource, 'station data -> office view model -> visual sprite tokens', 'blueprint separation rule')
+
+const expectedCanonicalActions = ['working', 'walking', 'resting', 'handoff', 'alert', 'monitoring'] as const
+
+for (const action of expectedCanonicalActions) {
+  assert.equal(OFFICE_SPRITE_ACTIONS[action].action, action, `sprite action ${action} is canonical`)
+  assert(OFFICE_SPRITE_ACTIONS[action].description.length > 24, `sprite action ${action} is documented`)
+}
+
+assert.equal(OFFICE_SPRITE_ACTIONS.working.pose, 'working', 'working action has working pose')
+assert.equal(OFFICE_SPRITE_ACTIONS.walking.motion, 'walk', 'walking action has walk motion')
+assert.equal(OFFICE_SPRITE_ACTIONS.resting.prop, 'sofa', 'resting action has sofa prop')
+assert.equal(OFFICE_SPRITE_ACTIONS.handoff.prop, 'signal', 'handoff action has signal prop')
+assert.equal(OFFICE_SPRITE_ACTIONS.alert.motion, 'alert', 'alert action has alert motion')
+assert.equal(OFFICE_SPRITE_ACTIONS.monitoring.terminalMode, 'monitoring', 'monitoring action watches terminal')
+assert.equal(OFFICE_SPRITE_TOKENS.sprite, 'office-agent-sprite', 'sprite root token is stable')
+assert.equal(OFFICE_SPRITE_TOKENS.head, 'office-agent-sprite__head', 'sprite head token is stable')
+assert.equal(OFFICE_SPRITE_TOKENS.body, 'office-agent-sprite__body', 'sprite body token is stable')
+assert.equal(OFFICE_SPRITE_TOKENS.legs, 'office-agent-sprite__legs', 'sprite legs token is stable')
+assert.equal(OFFICE_ZONE_TOKENS.desk, 'office-area--desk', 'desk zone token is stable')
+assert.equal(OFFICE_ZONE_TOKENS.sofa, 'office-area--sofa', 'sofa zone token is stable')
+assert.equal(
+  getOfficeStationClassName('north', 'working', 'active', true),
+  'office-desk office-workstation office-desk--north office-desk--working office-desk--pulse-active office-desk--selected',
+  'station class mapper separates view-model state from CSS tokens',
+)
+assert.equal(getOfficeTerminalClassName('typing'), 'office-terminal office-terminal--typing', 'terminal class mapper')
+assert.equal(
+  getOfficeAgentMarkerClassName('blocked'),
+  'office-agent-marker office-agent-avatar office-agent-marker--alert',
+  'blocked action aliases to alert visual pose',
+)
+assert.equal(
+  getOfficeStatusLampClassName('danger'),
+  'office-status-lamp office-status-lamp--danger',
+  'status lamp class mapper',
+)
 
 const agents: Agent[] = [
   {

@@ -1,5 +1,13 @@
 import type { ActivityEvent, Agent, CommandCenterSnapshot, Task } from '../../shared/types'
 import { createOfficeSceneViewModel } from './IsometricOfficeSceneModel'
+import {
+  getOfficeAgentMarkerClassName,
+  getOfficeStationClassName,
+  getOfficeStatusLampClassName,
+  getOfficeTerminalClassName,
+  OFFICE_SPRITE_TOKENS,
+  OFFICE_ZONE_TOKENS,
+} from './IsometricOfficeSpriteSystem'
 
 interface IsometricOfficeSceneProps {
   agents: Agent[]
@@ -35,11 +43,11 @@ export function IsometricOfficeScene({
         role="img"
       />
       <div className="office-zones" aria-hidden="true">
-        <span className="office-area office-area--desk" data-label="Desks + PCs" />
-        <span className="office-area office-area--sofa" data-label="Rest bay" />
-        <span className="office-area office-area--hologram" data-label="Hologram UI" />
+        <span className={`office-area ${OFFICE_ZONE_TOKENS.desk}`} data-label="Desks + PCs" />
+        <span className={`office-area ${OFFICE_ZONE_TOKENS.sofa}`} data-label="Rest bay" />
+        <span className={`office-area ${OFFICE_ZONE_TOKENS.hologram}`} data-label="Hologram UI" />
       </div>
-      <div className="office-core command-core" aria-label="Central orbital command core">
+      <div className={`office-core ${OFFICE_ZONE_TOKENS.core}`} aria-label="Central orbital command core">
         <span>Orbit Core</span>
         <strong>{selectedStation?.name ?? 'Command'}</strong>
         <p>{selectedStation?.taskTitle ?? 'Mock-first coordination table'}</p>
@@ -72,9 +80,7 @@ export function IsometricOfficeScene({
           <button
             aria-label={`${isSelected ? 'Selected' : 'Select'} read-only office station ${station.name}: ${station.role}, ${station.activity} activity, ${station.terminalMode} terminal`}
             aria-pressed={isSelected}
-            className={`office-desk office-workstation office-desk--${station.lane} office-desk--${station.activity} office-desk--pulse-${station.pulse}${
-              isSelected ? ' office-desk--selected' : ''
-            }`}
+            className={getOfficeStationClassName(station.lane, station.activity, station.pulse, isSelected)}
             data-agent-id={station.agentId}
             key={station.id}
             onClick={() => onSelectAgent(station.agentId)}
@@ -84,23 +90,23 @@ export function IsometricOfficeScene({
             }}
             type="button"
           >
-            <span className={`office-terminal office-terminal--${station.terminalMode}`}>
+            <span className={getOfficeTerminalClassName(station.terminalMode)}>
               <i />
-              <span className="office-terminal__ticks" aria-hidden="true" />
+              <span className={OFFICE_SPRITE_TOKENS.terminalTicks} aria-hidden="true" />
             </span>
-            <span className="office-chair" aria-hidden="true" />
-            <span className={`office-agent-marker office-agent-avatar office-agent-marker--${station.action}`}>
-              <span className="office-agent-rest-prop" aria-hidden="true" />
-              <span className="office-agent-sprite" aria-hidden="true">
-                <span className="office-agent-sprite__head" />
-                <span className="office-agent-sprite__body">{station.marker}</span>
-                <span className="office-agent-sprite__legs" />
+            <span className={OFFICE_SPRITE_TOKENS.chair} aria-hidden="true" />
+            <span className={getOfficeAgentMarkerClassName(station.action)}>
+              <span className={OFFICE_SPRITE_TOKENS.restProp} aria-hidden="true" />
+              <span className={OFFICE_SPRITE_TOKENS.sprite} aria-hidden="true">
+                <span className={OFFICE_SPRITE_TOKENS.head} />
+                <span className={OFFICE_SPRITE_TOKENS.body}>{station.marker}</span>
+                <span className={OFFICE_SPRITE_TOKENS.legs} />
               </span>
-              <span className="office-agent-signal-prop" aria-hidden="true" />
-              <span className="office-agent-tool" aria-hidden="true" />
+              <span className={OFFICE_SPRITE_TOKENS.signalProp} aria-hidden="true" />
+              <span className={OFFICE_SPRITE_TOKENS.tool} aria-hidden="true" />
             </span>
-            <span className={`office-status-lamp office-status-lamp--${station.tone}`} />
-            <span className="office-desk__label">
+            <span className={getOfficeStatusLampClassName(station.tone)} />
+            <span className={OFFICE_SPRITE_TOKENS.label}>
               <strong>{station.name}</strong>
               <small>{station.role}</small>
             </span>

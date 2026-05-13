@@ -20,9 +20,11 @@ function assertIncludes(source: string, expected: string, label: string) {
 }
 
 function assertButtonHasAttribute(className: string, attribute: string) {
-  const buttonPattern = new RegExp(
-    `<button[\\s\\S]*?className=\\{\\\`[^\\\`]*${className}[\\s\\S]*?</button>`,
-  )
+  const classNamePattern =
+    className === 'office-desk'
+      ? 'className=\\{getOfficeStationClassName\\('
+      : `className=\\{\\\`[^\\\`]*${className}`
+  const buttonPattern = new RegExp(`<button[\\s\\S]*?${classNamePattern}[\\s\\S]*?</button>`)
   const match = componentSource.match(buttonPattern)
 
   assert(match, `Expected ${className} to be rendered as a button`)
