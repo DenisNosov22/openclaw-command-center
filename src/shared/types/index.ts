@@ -5,4 +5,6 @@ export type {
   CommandCenterSnapshot,
   Task,
   TaskStatus,
+  WorkflowEdge,
+  WorkflowNode,
 } from './commandCenter'

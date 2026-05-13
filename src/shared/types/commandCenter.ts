@@ -33,9 +33,29 @@ export interface ActivityEvent {
   type: 'status' | 'task' | 'system'
 }
 
+export interface WorkflowNode {
+  id: string
+  agentId: string
+  label: string
+  lane: string
+  x: number
+  y: number
+}
+
+export interface WorkflowEdge {
+  id: string
+  from: string
+  to: string
+  label: string
+}
+
 export interface CommandCenterSnapshot {
   generatedAt: string
   agents: Agent[]
   tasks: Task[]
   activity: ActivityEvent[]
+  workflow: {
+    nodes: WorkflowNode[]
+    edges: WorkflowEdge[]
+  }
 }
