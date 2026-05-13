@@ -36,7 +36,8 @@ export interface ActivityEvent {
   timestamp: string
   agentId: string
   summary: string
-  type: 'status' | 'task' | 'system'
+  category: 'system' | 'task' | 'agent' | 'blocker' | 'deploy'
+  severity: 'info' | 'warning' | 'critical' | 'success'
 }
 
 export interface WorkflowNode {

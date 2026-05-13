@@ -4,6 +4,7 @@ import type { ActivityEvent, Agent, Task, WorkflowNode } from '../../shared/type
 import { formatKyivTime } from '../../shared/time/kyivTime'
 
 type StageView = 'room' | 'graph'
+type ActivityFilter = 'all' | 'selected' | 'critical' | 'system'
 
 const roomAgentPositions: Record<string, { x: number; y: number }> = {
   'agent-krab': { x: 50, y: 14 },
@@ -49,6 +50,21 @@ const priorityLabel: Record<Task['priority'], string> = {
   low: 'Низький',
   medium: 'Середній',
   high: 'Високий',
+}
+
+const activityCategoryLabel: Record<ActivityEvent['category'], string> = {
+  system: 'System',
+  task: 'Task',
+  agent: 'Agent',
+  blocker: 'Blocker',
+  deploy: 'Deploy',
+}
+
+const activitySeverityLabel: Record<ActivityEvent['severity'], string> = {
+  info: 'Info',
+  warning: 'Warning',
+  critical: 'Critical',
+  success: 'Success',
 }
 
 const heartbeatSummaries = [
@@ -122,7 +138,7 @@ function getSuggestedAction(agent: Agent, task?: Task, hasRisk = false) {
 }
 
 function getInspectorEvents(events: ActivityEvent[], agentId: string) {
-  const latestEvents = [...events].reverse()
+  const latestEvents = sortActivityByNewest(events)
   const relatedEvents = latestEvents.filter((event) => event.agentId === agentId)
 
   if (relatedEvents.length >= 2) {
@@ -131,10 +147,44 @@ function getInspectorEvents(events: ActivityEvent[], agentId: string) {
 
   const fallbackEvents = latestEvents.filter(
     (event) =>
-      event.type === 'system' && !relatedEvents.some((relatedEvent) => relatedEvent.id === event.id),
+      event.category === 'system' &&
+      !relatedEvents.some((relatedEvent) => relatedEvent.id === event.id),
   )
 
   return [...relatedEvents, ...fallbackEvents].slice(0, 3)
+}
+
+function sortActivityByNewest(events: ActivityEvent[]) {
+  return [...events].sort(
+    (firstEvent, secondEvent) =>
+      new Date(secondEvent.timestamp).getTime() - new Date(firstEvent.timestamp).getTime(),
+  )
+}
+
+function getFilteredActivity(
+  events: ActivityEvent[],
+  filter: ActivityFilter,
+  selectedAgentId: string,
+) {
+  const sortedEvents = sortActivityByNewest(events)
+
+  if (filter === 'selected') {
+    return sortedEvents.filter((event) => event.agentId === selectedAgentId)
+  }
+
+  if (filter === 'critical') {
+    return sortedEvents.filter(
+      (event) => event.category === 'blocker' || event.severity === 'critical',
+    )
+  }
+
+  if (filter === 'system') {
+    return sortedEvents.filter(
+      (event) => event.category === 'system' || event.category === 'deploy',
+    )
+  }
+
+  return sortedEvents
 }
 
 function getLiveSnapshot(tick: number) {
@@ -144,10 +194,11 @@ function getLiveSnapshot(tick: number) {
   const activeAgentIds = new Set(['agent-krab', 'agent-dev', 'agent-varta'])
   const heartbeatAgentId = ['agent-krab', 'agent-dev', 'agent-varta'][tick % 3]
   const heartbeatEvent: ActivityEvent = {
-    id: `mock-heartbeat-${tick}`,
+    id: 'mock-heartbeat-live',
     timestamp: lastUpdated.toISOString(),
     agentId: heartbeatAgentId,
-    type: 'system',
+    category: tick % 3 === 1 ? 'task' : 'system',
+    severity: tick % 3 === 2 ? 'success' : 'info',
     summary: heartbeatSummaries[tick % heartbeatSummaries.length],
   }
 
@@ -162,7 +213,7 @@ function getLiveSnapshot(tick: number) {
           }
         : agent,
     ),
-    activity: [
+    activity: sortActivityByNewest([
       heartbeatEvent,
       ...baseSnapshot.activity.map((event, index) =>
         index === 0
@@ -172,7 +223,7 @@ function getLiveSnapshot(tick: number) {
             }
           : event,
       ),
-    ],
+    ]),
     lastUpdated,
   }
 }
@@ -183,6 +234,7 @@ export function CommandRoomPage() {
   const snapshotAnchor = snapshot.generatedAt
   const [selectedAgentId, setSelectedAgentId] = useState(snapshot.agents[0]?.id)
   const [stageView, setStageView] = useState<StageView>('room')
+  const [activityFilter, setActivityFilter] = useState<ActivityFilter>('all')
   const selectedAgent =
     snapshot.agents.find((agent) => agent.id === selectedAgentId) ?? snapshot.agents[0]
   const selectedTask = snapshot.tasks.find((task) => task.id === selectedAgent.currentTaskId)
@@ -203,6 +255,11 @@ export function CommandRoomPage() {
   )
   const blockedTasks = snapshot.tasks.filter((task) =>
     ['blocked', 'failed'].includes(task.status),
+  )
+  const filteredActivity = getFilteredActivity(
+    snapshot.activity,
+    activityFilter,
+    selectedAgent.id,
   )
   const formattedLastUpdated = formatKyivTime(snapshot.lastUpdated, { includeDate: true })
   let globalStatus = 'Стабільно'
@@ -576,20 +633,60 @@ export function CommandRoomPage() {
               <p className="eyebrow">Активність</p>
               <h2>Таймлайн</h2>
             </div>
-            <span>{snapshot.activity.length} оновлення</span>
+            <span>{filteredActivity.length}/{snapshot.activity.length} події</span>
+          </div>
+          <div className="timeline-filters" aria-label="Read-only filters">
+            <button
+              aria-pressed={activityFilter === 'all'}
+              onClick={() => setActivityFilter('all')}
+              type="button"
+            >
+              All
+            </button>
+            <button
+              aria-pressed={activityFilter === 'selected'}
+              onClick={() => setActivityFilter('selected')}
+              type="button"
+            >
+              {selectedAgent.name.replace(/\s*\p{Extended_Pictographic}/gu, '')}
+            </button>
+            <button
+              aria-pressed={activityFilter === 'critical'}
+              onClick={() => setActivityFilter('critical')}
+              type="button"
+            >
+              Blockers / critical
+            </button>
+            <button
+              aria-pressed={activityFilter === 'system'}
+              onClick={() => setActivityFilter('system')}
+              type="button"
+            >
+              System / deploy
+            </button>
           </div>
           <ol>
-            {snapshot.activity.map((event) => {
+            {filteredActivity.map((event) => {
               const agent = snapshot.agents.find((item) => item.id === event.agentId)
 
               return (
-                <li key={event.id}>
-                  <time>
+                <li
+                  className={`timeline-event timeline-event--${event.category} timeline-event--${event.severity}${
+                    event.id === 'mock-heartbeat-live' ? ' timeline-event--live' : ''
+                  }`}
+                  key={event.id}
+                >
+                  <time dateTime={event.timestamp}>
                     {formatKyivTime(event.timestamp, {
                       fallbackDate: snapshotAnchor,
                     })}
                   </time>
-                  <span className="timeline__type">{event.type}</span>
+                  <div className="timeline-event__tags">
+                    <span className="timeline__type">{activityCategoryLabel[event.category]}</span>
+                    <span className={`timeline__severity timeline__severity--${event.severity}`}>
+                      {activitySeverityLabel[event.severity]}
+                    </span>
+                  </div>
                   <div>
                     <strong>{agent?.name ?? 'Система'}</strong>
                     <p>{event.summary}</p>
