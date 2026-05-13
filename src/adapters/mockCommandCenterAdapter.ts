@@ -1,4 +1,5 @@
 import type { CommandCenterAdapter } from './commandCenterAdapter'
+import { normalizeCommandCenterSnapshot } from './normalizeCommandCenterSnapshot'
 import type { CommandCenterSnapshot } from '../shared/types'
 
 const snapshot: CommandCenterSnapshot = {
@@ -372,6 +373,6 @@ const snapshot: CommandCenterSnapshot = {
 export const mockCommandCenterAdapter: CommandCenterAdapter = {
   source: 'mock',
   getSnapshot() {
-    return snapshot
+    return normalizeCommandCenterSnapshot(snapshot)
   },
 }

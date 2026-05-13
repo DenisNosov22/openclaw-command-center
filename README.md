@@ -35,10 +35,15 @@ Real adapter rules:
 - Keep user-facing time in Kyiv time through the UI formatting layer.
 - Do not add control actions until the product scope explicitly allows them.
 
+## Normalization/redaction boundary
+
+Adapter snapshots pass through `normalizeCommandCenterSnapshot(...)` before UI rendering. The boundary keeps display data safe by redacting common tokens, credentials, private URLs, and emails; trimming long display strings; normalizing unknown statuses to read-only fallbacks; and coercing timestamps to ISO strings that the UI can format in Kyiv time.
+
 ## Local commands
 
 ```sh
 npm install
 npm run build
 npm run lint
+npm run test:redaction
 ```
