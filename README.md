@@ -24,8 +24,18 @@ All UI data flows through the adapter boundary in `src/adapters/`.
 ## Adapter boundary
 
 - `src/adapters/commandCenterAdapter.ts` is the UI-facing contract.
+- `src/adapters/createCommandCenterAdapter.ts` defines safe selection/fallback metadata.
+- `src/adapters/getCommandCenterAdapter.ts` wires the selected runtime adapter for the UI.
 - `src/adapters/mockCommandCenterAdapter.ts` is the active data source for the MVP.
 - `src/adapters/openClawCommandCenterAdapter.ts` is a future real-adapter stub only; it does not call real APIs.
+
+Adapter mode is selected with `VITE_COMMAND_CENTER_ADAPTER`:
+
+- unset or `mock` renders the mock adapter.
+- `openclaw` or `openclaw-disabled` shows `OpenClaw adapter disabled` and safely falls back to mock data.
+- unknown values show a safe warning metadata state and fall back to mock data instead of crashing.
+
+Do not place secrets in adapter mode values or client-side env vars.
 
 Real adapter rules:
 
@@ -46,4 +56,5 @@ npm install
 npm run build
 npm run lint
 npm run test:redaction
+npm run test:adapter-selection
 ```

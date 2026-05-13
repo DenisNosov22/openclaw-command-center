@@ -137,6 +137,11 @@
   border-color: rgba(215, 180, 92, 0.32);
 }
 
+.telemetry-pill--warning {
+  color: #ff827b;
+  border-color: rgba(212, 84, 77, 0.42);
+}
+
 .telemetry-readout {
   display: grid;
   gap: 2px;

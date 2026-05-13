@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { getCommandCenterSnapshot } from '../../adapters'
+import { getCommandCenterAdapterSelection } from '../../adapters'
 import type { ActivityEvent, Agent, Task, WorkflowNode } from '../../shared/types'
 import { formatKyivTime } from '../../shared/time/kyivTime'
 
@@ -187,8 +187,10 @@ function getFilteredActivity(
   return sortedEvents
 }
 
+const adapterSelection = getCommandCenterAdapterSelection()
+
 function getLiveSnapshot(tick: number) {
-  const baseSnapshot = getCommandCenterSnapshot()
+  const baseSnapshot = adapterSelection.adapter.getSnapshot()
   const lastUpdated = new Date()
   const formattedLastUpdated = formatKyivTime(lastUpdated, { includeDate: true })
   const activeAgentIds = new Set(['agent-krab', 'agent-dev', 'agent-varta'])
@@ -263,7 +265,7 @@ export function CommandRoomPage() {
   )
   const formattedLastUpdated = formatKyivTime(snapshot.lastUpdated, { includeDate: true })
   let globalStatus = 'Стабільно'
-  let globalStatusDetail = `Mock live heartbeat, read-only. Оновлено: ${formattedLastUpdated}`
+  let globalStatusDetail = `${adapterSelection.label}, read-only. Оновлено: ${formattedLastUpdated}`
 
   useEffect(() => {
     const intervalId = window.setInterval(() => {
@@ -301,7 +303,14 @@ export function CommandRoomPage() {
             <span />
             {globalStatus}
           </div>
-          <div className="telemetry-pill telemetry-pill--mock">Mock live</div>
+          <div
+            className={`telemetry-pill telemetry-pill--mock${
+              adapterSelection.warning ? ' telemetry-pill--warning' : ''
+            }`}
+            title={adapterSelection.warning ?? adapterSelection.label}
+          >
+            {adapterSelection.label}
+          </div>
           <div className="telemetry-pill">Read-only</div>
           <div className="telemetry-readout">
             <span>Оновлено</span>
