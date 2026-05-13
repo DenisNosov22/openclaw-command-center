@@ -4,6 +4,18 @@ import type { Agent, Task, WorkflowNode } from '../../shared/types'
 
 type StageView = 'room' | 'graph'
 
+const roomAgentPositions: Record<string, { x: number; y: number }> = {
+  'agent-krab': { x: 50, y: 12 },
+  'agent-dev': { x: 78, y: 25 },
+  'agent-bastion': { x: 89, y: 50 },
+  'agent-shturman': { x: 74, y: 80 },
+  'agent-spec': { x: 50, y: 88 },
+  'agent-varta': { x: 24, y: 78 },
+  'agent-rezhyser': { x: 10, y: 50 },
+  'agent-verstalnyk': { x: 21, y: 25 },
+  'agent-desk': { x: 93, y: 70 },
+}
+
 const statusLabel: Record<Agent['status'], string> = {
   idle: 'Вільний',
   working: 'В роботі',
@@ -60,6 +72,17 @@ function getAgentRole(agent: Agent) {
 
 function getWorkflowAgent(node: WorkflowNode, agents: Agent[]) {
   return agents.find((agent) => agent.id === node.agentId)
+}
+
+function getRoomAgentPosition(agent: Agent, index: number) {
+  const fallbackAngle = (index / 9) * Math.PI * 2 - Math.PI / 2
+
+  return (
+    roomAgentPositions[agent.id] ?? {
+      x: 50 + Math.cos(fallbackAngle) * 39,
+      y: 50 + Math.sin(fallbackAngle) * 39,
+    }
+  )
 }
 
 export function CommandRoomPage() {
@@ -201,20 +224,28 @@ export function CommandRoomPage() {
                 <strong>{statusLabel[selectedAgent.status]}</strong>
                 <p>{selectedTask?.title ?? 'Немає активної задачі'}</p>
               </div>
-              {snapshot.agents.map((agent, index) => (
-                <button
-                  aria-label={`Обрати ${agent.name}`}
-                  className={`agent-node agent-node--${index + 1}${
-                    agent.id === selectedAgent.id ? ' agent-node--selected' : ''
-                  }`}
-                  key={agent.id}
-                  onClick={() => setSelectedAgentId(agent.id)}
-                  type="button"
-                >
-                  <span>{getAgentMarker(agent)}</span>
-                  <small className={`node-signal node-signal--${statusTone[agent.status]}`} />
-                </button>
-              ))}
+              {snapshot.agents.map((agent, index) => {
+                const position = getRoomAgentPosition(agent, index)
+
+                return (
+                  <button
+                    aria-label={`Обрати ${agent.name}`}
+                    className={`agent-node${
+                      agent.id === selectedAgent.id ? ' agent-node--selected' : ''
+                    }`}
+                    key={agent.id}
+                    onClick={() => setSelectedAgentId(agent.id)}
+                    style={{
+                      left: `${position.x}%`,
+                      top: `${position.y}%`,
+                    }}
+                    type="button"
+                  >
+                    <span>{getAgentMarker(agent)}</span>
+                    <small className={`node-signal node-signal--${statusTone[agent.status]}`} />
+                  </button>
+                )
+              })}
             </div>
           ) : (
             <div className="workflow-graph" aria-label="Read-only workflow graph">

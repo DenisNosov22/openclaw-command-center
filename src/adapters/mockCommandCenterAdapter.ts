@@ -200,6 +200,14 @@ const snapshot: CommandCenterSnapshot = {
         x: 72,
         y: 86,
       },
+      {
+        id: 'workflow-desk',
+        agentId: 'agent-desk',
+        label: 'Деск',
+        lane: 'Market',
+        x: 84,
+        y: 68,
+      },
     ],
     edges: [
       {
@@ -249,6 +257,18 @@ const snapshot: CommandCenterSnapshot = {
         from: 'workflow-varta',
         to: 'workflow-shturman',
         label: 'notes',
+      },
+      {
+        id: 'edge-shturman-desk',
+        from: 'workflow-shturman',
+        to: 'workflow-desk',
+        label: 'signals',
+      },
+      {
+        id: 'edge-krab-desk',
+        from: 'workflow-krab',
+        to: 'workflow-desk',
+        label: 'watch',
       },
     ],
   },

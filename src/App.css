@@ -647,6 +647,7 @@
   border: 1px solid rgba(215, 180, 92, 0.34);
   border-radius: 8px;
   box-shadow: 0 0 22px rgba(215, 180, 92, 0.12);
+  transform: translate(-50%, -50%);
   transition:
     border-color 160ms ease,
     box-shadow 160ms ease,
@@ -659,7 +660,7 @@
   border-color: rgba(215, 180, 92, 0.72);
   outline: none;
   box-shadow: 0 0 28px rgba(215, 180, 92, 0.22);
-  transform: translateY(-1px);
+  transform: translate(-50%, -52%);
 }
 
 .agent-node span {
@@ -729,51 +730,6 @@
 
 .legend-dot--danger {
   background: #d4544d;
-}
-
-.agent-node--1 {
-  top: 12%;
-  left: 47%;
-}
-
-.agent-node--2 {
-  top: 25%;
-  right: 18%;
-}
-
-.agent-node--3 {
-  top: 50%;
-  right: 11%;
-}
-
-.agent-node--4 {
-  bottom: 16%;
-  right: 25%;
-}
-
-.agent-node--5 {
-  bottom: 10%;
-  left: 46%;
-}
-
-.agent-node--6 {
-  bottom: 18%;
-  left: 21%;
-}
-
-.agent-node--7 {
-  top: 50%;
-  left: 10%;
-}
-
-.agent-node--8 {
-  top: 25%;
-  left: 17%;
-}
-
-.agent-node--9 {
-  top: 39%;
-  left: 35%;
 }
 
 .task-strip {
