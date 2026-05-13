@@ -72,6 +72,12 @@ npm run test:composition-qa
 npm run smoke:html
 ```
 
+## CI checks
+
+Pull requests and pushes to `master` run the separate `Checks` workflow before any Pages deploy
+workflow. It uses Node 24 with `npm ci`, `npm run smoke:html`, `npm run test:all`,
+`npm run build`, and `npm run lint`.
+
 ## Visual smoke runbook
 
 This project intentionally avoids a real browser dependency in local smoke checks. Do not install

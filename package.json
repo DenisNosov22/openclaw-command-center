@@ -17,6 +17,7 @@
     "test:state-copy": "node --experimental-strip-types scripts/verifyStateCopy.ts",
     "test:visual-polish": "node --experimental-strip-types scripts/verifyVisualPolish.ts",
     "test:composition-qa": "node --experimental-strip-types scripts/verifyCompositionQa.ts",
+    "test:all": "npm run test:redaction && npm run test:adapter-selection && npm run test:adapter-diagnostics && npm run test:snapshot-state && npm run test:keyboard-accessibility && npm run test:responsive-accessibility && npm run test:content-density && npm run test:state-copy && npm run test:visual-polish && npm run test:composition-qa",
     "smoke:html": "node --experimental-strip-types scripts/smokeHtml.ts",
     "preview": "vite preview"
   },
