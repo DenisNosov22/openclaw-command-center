@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import {
   createCommandCenterAdapterDiagnostics,
+  createCommandCenterSnapshotState,
+  createLoadingCommandCenterSnapshotState,
   getCommandCenterAdapterSelection,
 } from '../../adapters'
 import type { ActivityEvent, Agent, Task, WorkflowNode } from '../../shared/types'
@@ -8,6 +10,12 @@ import { formatKyivTime } from '../../shared/time/kyivTime'
 
 type StageView = 'room' | 'graph'
 type ActivityFilter = 'all' | 'selected' | 'critical' | 'system'
+type LiveSnapshot = ReturnType<typeof createLoadingCommandCenterSnapshotState>['snapshot'] & {
+  lastUpdated: Date
+  stateKind: ReturnType<typeof createLoadingCommandCenterSnapshotState>['kind']
+  stateTitle: string
+  stateDetail: string
+}
 
 const roomAgentPositions: Record<string, { x: number; y: number }> = {
   'agent-krab': { x: 50, y: 14 },
@@ -190,11 +198,33 @@ function getFilteredActivity(
   return sortedEvents
 }
 
+const fallbackAgent: Agent = {
+  id: 'agent-fallback',
+  name: 'Read-only fallback',
+  role: 'system',
+  status: 'waiting',
+  summary: 'Snapshot дані ще недоступні; панель лишається read-only.',
+}
+
 const adapterSelection = getCommandCenterAdapterSelection()
 const adapterDiagnostics = createCommandCenterAdapterDiagnostics(adapterSelection)
+const initialSnapshotState = createLoadingCommandCenterSnapshotState()
 
-function getLiveSnapshot(tick: number) {
-  const baseSnapshot = adapterSelection.adapter.getSnapshot()
+function getInitialLiveSnapshot(): LiveSnapshot {
+  return {
+    ...initialSnapshotState.snapshot,
+    lastUpdated: new Date(initialSnapshotState.snapshot.generatedAt),
+    stateKind: initialSnapshotState.kind,
+    stateTitle: initialSnapshotState.title,
+    stateDetail: initialSnapshotState.detail,
+  }
+}
+
+function getLiveSnapshot(tick: number): LiveSnapshot {
+  const snapshotState = createCommandCenterSnapshotState(() =>
+    adapterSelection.adapter.getSnapshot(),
+  )
+  const baseSnapshot = snapshotState.snapshot
   const lastUpdated = new Date()
   const formattedLastUpdated = formatKyivTime(lastUpdated, { includeDate: true })
   const activeAgentIds = new Set(['agent-krab', 'agent-dev', 'agent-varta'])
@@ -206,6 +236,17 @@ function getLiveSnapshot(tick: number) {
     category: tick % 3 === 1 ? 'task' : 'system',
     severity: tick % 3 === 2 ? 'success' : 'info',
     summary: heartbeatSummaries[tick % heartbeatSummaries.length],
+  }
+
+  if (snapshotState.kind !== 'ready') {
+    return {
+      ...baseSnapshot,
+      generatedAt: lastUpdated.toISOString(),
+      lastUpdated,
+      stateKind: snapshotState.kind,
+      stateTitle: snapshotState.title,
+      stateDetail: snapshotState.detail,
+    }
   }
 
   return {
@@ -231,18 +272,26 @@ function getLiveSnapshot(tick: number) {
       ),
     ]),
     lastUpdated,
+    stateKind: snapshotState.kind,
+    stateTitle: snapshotState.title,
+    stateDetail: snapshotState.detail,
   }
 }
 
 export function CommandRoomPage() {
-  const [liveTick, setLiveTick] = useState(0)
-  const snapshot = useMemo(() => getLiveSnapshot(liveTick), [liveTick])
+  const [liveTick, setLiveTick] = useState(-1)
+  const snapshot = useMemo(
+    () => (liveTick < 0 ? getInitialLiveSnapshot() : getLiveSnapshot(liveTick)),
+    [liveTick],
+  )
   const snapshotAnchor = snapshot.generatedAt
   const [selectedAgentId, setSelectedAgentId] = useState(snapshot.agents[0]?.id)
   const [stageView, setStageView] = useState<StageView>('room')
   const [activityFilter, setActivityFilter] = useState<ActivityFilter>('all')
   const selectedAgent =
-    snapshot.agents.find((agent) => agent.id === selectedAgentId) ?? snapshot.agents[0]
+    snapshot.agents.find((agent) => agent.id === selectedAgentId) ??
+    snapshot.agents[0] ??
+    fallbackAgent
   const selectedTask = snapshot.tasks.find((task) => task.id === selectedAgent.currentTaskId)
   const selectedAgentTasks = snapshot.tasks.filter(
     (task) => task.ownerAgentId === selectedAgent.id,
@@ -250,7 +299,9 @@ export function CommandRoomPage() {
   const selectedRiskTask =
     (isRiskTask(selectedTask) ? selectedTask : selectedAgentTasks.find(isRiskTask)) ?? undefined
   const hasSelectedRisk =
-    selectedAgent.status === 'error' || selectedAgent.status === 'blocked' || Boolean(selectedRiskTask)
+    selectedAgent.status === 'error' ||
+    selectedAgent.status === 'blocked' ||
+    Boolean(selectedRiskTask)
   const inspectorEvents = getInspectorEvents(snapshot.activity, selectedAgent.id)
   const suggestedAction = getSuggestedAction(selectedAgent, selectedTask, hasSelectedRisk)
   const activeTasks = snapshot.tasks.filter((task) =>
@@ -268,18 +319,31 @@ export function CommandRoomPage() {
     selectedAgent.id,
   )
   const formattedLastUpdated = formatKyivTime(snapshot.lastUpdated, { includeDate: true })
-  let globalStatus = 'Стабільно'
-  let globalStatusDetail = `${adapterSelection.label}, read-only. Оновлено: ${formattedLastUpdated}`
+  const hasSnapshotWarning = snapshot.stateKind !== 'ready'
+  let globalStatus = hasSnapshotWarning ? snapshot.stateTitle : 'Стабільно'
+  let globalStatusDetail = hasSnapshotWarning
+    ? snapshot.stateDetail
+    : `${adapterSelection.label}, read-only. Оновлено: ${formattedLastUpdated}`
 
   useEffect(() => {
+    const firstSnapshotId = window.setTimeout(() => {
+      setLiveTick(0)
+    }, 0)
+
     const intervalId = window.setInterval(() => {
       setLiveTick((currentTick) => currentTick + 1)
     }, 15_000)
 
-    return () => window.clearInterval(intervalId)
+    return () => {
+      window.clearTimeout(firstSnapshotId)
+      window.clearInterval(intervalId)
+    }
   }, [])
 
-  if (snapshot.agents.some((agent) => agent.status === 'error')) {
+  if (hasSnapshotWarning) {
+    globalStatus = snapshot.stateTitle
+    globalStatusDetail = snapshot.stateDetail
+  } else if (snapshot.agents.some((agent) => agent.status === 'error')) {
     globalStatus = 'Потрібна увага'
     globalStatusDetail = 'Є mock-помилка агента'
   } else if (snapshot.agents.some((agent) => agent.status === 'blocked')) {
@@ -303,7 +367,12 @@ export function CommandRoomPage() {
           </div>
         </div>
         <div className="command-bar__telemetry" aria-label="Глобальний стан">
-          <div className="telemetry-pill telemetry-pill--live" title={globalStatusDetail}>
+          <div
+            className={`telemetry-pill telemetry-pill--live${
+              hasSnapshotWarning ? ' telemetry-pill--warning' : ''
+            }`}
+            title={globalStatusDetail}
+          >
             <span />
             {globalStatus}
           </div>
@@ -347,29 +416,36 @@ export function CommandRoomPage() {
             <span>{onlineAgents.length}/{snapshot.agents.length}</span>
           </div>
           <div className="agent-list">
-            {snapshot.agents.map((agent) => {
-              const isSelected = agent.id === selectedAgent.id
+            {snapshot.agents.length > 0 ? (
+              snapshot.agents.map((agent) => {
+                const isSelected = agent.id === selectedAgent.id
 
-              return (
-                <button
-                  className={`agent-card${isSelected ? ' agent-card--selected' : ''}`}
-                  key={agent.id}
-                  onClick={() => setSelectedAgentId(agent.id)}
-                  type="button"
-                >
-                  <span className={`agent-avatar agent-avatar--${statusTone[agent.status]}`}>
-                    {getAgentMarker(agent)}
-                  </span>
-                  <div className="agent-card__body">
-                    <h3>{agent.name.replace(/\s*\p{Extended_Pictographic}/gu, '')}</h3>
-                    <p>{getAgentRole(agent)}</p>
-                  </div>
-                  <span className={`status status--${agent.status}`}>
-                    {statusLabel[agent.status]}
-                  </span>
-                </button>
-              )
-            })}
+                return (
+                  <button
+                    className={`agent-card${isSelected ? ' agent-card--selected' : ''}`}
+                    key={agent.id}
+                    onClick={() => setSelectedAgentId(agent.id)}
+                    type="button"
+                  >
+                    <span className={`agent-avatar agent-avatar--${statusTone[agent.status]}`}>
+                      {getAgentMarker(agent)}
+                    </span>
+                    <div className="agent-card__body">
+                      <h3>{agent.name.replace(/\s*\p{Extended_Pictographic}/gu, '')}</h3>
+                      <p>{getAgentRole(agent)}</p>
+                    </div>
+                    <span className={`status status--${agent.status}`}>
+                      {statusLabel[agent.status]}
+                    </span>
+                  </button>
+                )
+              })
+            ) : (
+              <div className="empty-state empty-state--compact">
+                <strong>Roster порожній</strong>
+                <p>Read-only snapshot не містить агентів.</p>
+              </div>
+            )}
           </div>
         </aside>
 
@@ -421,6 +497,13 @@ export function CommandRoomPage() {
                 <strong>{statusLabel[selectedAgent.status]}</strong>
                 <p>{selectedTask?.title ?? 'Немає активної задачі'}</p>
               </div>
+              {hasSnapshotWarning ? (
+                <div className="snapshot-state snapshot-state--center">
+                  <strong>{snapshot.stateTitle}</strong>
+                  <p>{snapshot.stateDetail}</p>
+                  <span>Read-only</span>
+                </div>
+              ) : null}
               {snapshot.agents.map((agent, index) => {
                 const position = getRoomAgentPosition(agent, index)
 
@@ -517,6 +600,13 @@ export function CommandRoomPage() {
                   </button>
                 )
               })}
+              {snapshot.workflow.nodes.length === 0 ? (
+                <div className="snapshot-state snapshot-state--center">
+                  <strong>Workflow порожній</strong>
+                  <p>{snapshot.stateDetail}</p>
+                  <span>Read-only</span>
+                </div>
+              ) : null}
             </div>
           )}
 
@@ -527,22 +617,35 @@ export function CommandRoomPage() {
           </div>
 
           <div className="task-strip">
-            {snapshot.tasks.slice(0, 4).map((task) => {
-              const agent = snapshot.agents.find((item) => item.id === task.ownerAgentId)
+            {snapshot.tasks.length > 0 ? (
+              snapshot.tasks.slice(0, 4).map((task) => {
+                const agent = snapshot.agents.find((item) => item.id === task.ownerAgentId)
 
-              return (
-                <article className="task-chip" key={task.id}>
-                  <div>
-                    <strong>{task.title}</strong>
-                    <span>{agent?.name ?? 'System'}</span>
-                  </div>
-                  <div className="task-chip__meta">
-                    <span>{taskLabel[task.status]}</span>
-                    <span>{priorityLabel[task.priority]}</span>
-                  </div>
-                </article>
-              )
-            })}
+                return (
+                  <article className="task-chip" key={task.id}>
+                    <div>
+                      <strong>{task.title}</strong>
+                      <span>{agent?.name ?? 'System'}</span>
+                    </div>
+                    <div className="task-chip__meta">
+                      <span>{taskLabel[task.status]}</span>
+                      <span>{priorityLabel[task.priority]}</span>
+                    </div>
+                  </article>
+                )
+              })
+            ) : (
+              <article className="task-chip task-chip--empty">
+                <div>
+                  <strong>Tasks порожні</strong>
+                  <span>Немає активних read-only задач у snapshot.</span>
+                </div>
+                <div className="task-chip__meta">
+                  <span>Read-only</span>
+                  <span>Fallback</span>
+                </div>
+              </article>
+            )}
           </div>
         </section>
 
@@ -636,16 +739,23 @@ export function CommandRoomPage() {
               <span>{inspectorEvents.length}</span>
             </div>
             <ol className="inspector-events">
-              {inspectorEvents.map((event) => (
-                <li key={event.id}>
-                  <time>
-                    {formatKyivTime(event.timestamp, {
-                      fallbackDate: snapshotAnchor,
-                    })}
-                  </time>
-                  <p>{event.summary}</p>
+              {inspectorEvents.length > 0 ? (
+                inspectorEvents.map((event) => (
+                  <li key={event.id}>
+                    <time>
+                      {formatKyivTime(event.timestamp, {
+                        fallbackDate: snapshotAnchor,
+                      })}
+                    </time>
+                    <p>{event.summary}</p>
+                  </li>
+                ))
+              ) : (
+                <li>
+                  <time>Read-only</time>
+                  <p>Timeline порожній для цього snapshot.</p>
                 </li>
-              ))}
+              )}
             </ol>
           </section>
           <section className="inspector-next" aria-label="Next suggested read-only action">
@@ -693,34 +803,50 @@ export function CommandRoomPage() {
             </button>
           </div>
           <ol>
-            {filteredActivity.map((event) => {
-              const agent = snapshot.agents.find((item) => item.id === event.agentId)
+            {filteredActivity.length > 0 ? (
+              filteredActivity.map((event) => {
+                const agent = snapshot.agents.find((item) => item.id === event.agentId)
 
-              return (
-                <li
-                  className={`timeline-event timeline-event--${event.category} timeline-event--${event.severity}${
-                    event.id === 'mock-heartbeat-live' ? ' timeline-event--live' : ''
-                  }`}
-                  key={event.id}
-                >
-                  <time dateTime={event.timestamp}>
-                    {formatKyivTime(event.timestamp, {
-                      fallbackDate: snapshotAnchor,
-                    })}
-                  </time>
-                  <div className="timeline-event__tags">
-                    <span className="timeline__type">{activityCategoryLabel[event.category]}</span>
-                    <span className={`timeline__severity timeline__severity--${event.severity}`}>
-                      {activitySeverityLabel[event.severity]}
-                    </span>
-                  </div>
-                  <div>
-                    <strong>{agent?.name ?? 'Система'}</strong>
-                    <p>{event.summary}</p>
-                  </div>
-                </li>
-              )
-            })}
+                return (
+                  <li
+                    className={`timeline-event timeline-event--${event.category} timeline-event--${event.severity}${
+                      event.id === 'mock-heartbeat-live' ? ' timeline-event--live' : ''
+                    }`}
+                    key={event.id}
+                  >
+                    <time dateTime={event.timestamp}>
+                      {formatKyivTime(event.timestamp, {
+                        fallbackDate: snapshotAnchor,
+                      })}
+                    </time>
+                    <div className="timeline-event__tags">
+                      <span className="timeline__type">
+                        {activityCategoryLabel[event.category]}
+                      </span>
+                      <span className={`timeline__severity timeline__severity--${event.severity}`}>
+                        {activitySeverityLabel[event.severity]}
+                      </span>
+                    </div>
+                    <div>
+                      <strong>{agent?.name ?? 'Система'}</strong>
+                      <p>{event.summary}</p>
+                    </div>
+                  </li>
+                )
+              })
+            ) : (
+              <li className="timeline-event timeline-event--empty">
+                <time>Read-only</time>
+                <div className="timeline-event__tags">
+                  <span className="timeline__type">Snapshot</span>
+                  <span className="timeline__severity timeline__severity--warning">Empty</span>
+                </div>
+                <div>
+                  <strong>Timeline порожній</strong>
+                  <p>Adapter не повернув подій для поточного read-only snapshot.</p>
+                </div>
+              </li>
+            )}
           </ol>
         </section>
       </section>

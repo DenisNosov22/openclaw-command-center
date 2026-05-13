@@ -10,6 +10,7 @@
     "test:redaction": "node --experimental-strip-types scripts/verifyRedaction.ts",
     "test:adapter-selection": "node --experimental-strip-types scripts/verifyAdapterSelection.ts",
     "test:adapter-diagnostics": "node --experimental-strip-types scripts/verifyAdapterDiagnostics.ts",
+    "test:snapshot-state": "node --experimental-strip-types scripts/verifySnapshotState.ts",
     "smoke:html": "node --experimental-strip-types scripts/smokeHtml.ts",
     "preview": "vite preview"
   },

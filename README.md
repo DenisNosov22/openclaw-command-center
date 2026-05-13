@@ -49,6 +49,10 @@ Real adapter rules:
 
 Adapter snapshots pass through `normalizeCommandCenterSnapshot(...)` before UI rendering. The boundary keeps display data safe by redacting common tokens, credentials, private URLs, and emails; trimming long display strings; normalizing unknown statuses to read-only fallbacks; and coercing timestamps to ISO strings that the UI can format in Kyiv time.
 
+Snapshot UI state is resolved through `createCommandCenterSnapshotState(...)`. Loading, empty, and
+adapter-error paths render compact read-only fallback copy instead of assuming a happy-path roster,
+task list, timeline, or workflow graph.
+
 ## Local commands
 
 ```sh
@@ -58,6 +62,7 @@ npm run lint
 npm run test:redaction
 npm run test:adapter-selection
 npm run test:adapter-diagnostics
+npm run test:snapshot-state
 npm run smoke:html
 ```
 
