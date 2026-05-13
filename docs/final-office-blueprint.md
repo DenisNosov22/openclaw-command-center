@@ -58,3 +58,7 @@ The Office scene is final enough for this planned milestone when:
 - Step 45: richer CSS/SVG-free office props are now represented by maintained tokens: PC monitor
   stand, keyboard/tool tray, lounge sofa, command-core status surface, floor walking lanes, and
   handoff/data-transfer hub. The scene remains read-only and mock-first.
+- Step 46: deterministic agent choreography is now represented in the office view model. Each
+  visible agent carries an action phase, route-involvement flag, intensity, tempo, and stable
+  animation timing derived from station index/action/status; CSS consumes those tokens for
+  type/monitor, path/step, sofa idle, signal transfer, scan/check, and resolve-pulse loops.

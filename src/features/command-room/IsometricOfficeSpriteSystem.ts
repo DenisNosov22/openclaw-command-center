@@ -34,7 +34,7 @@ export const OFFICE_SPRITE_ACTIONS = {
     prop: 'tool',
     motion: 'work',
     terminalMode: 'typing',
-    description: 'Agent leans into a terminal/tool posture while active task work is in progress.',
+    description: 'Agent loops through typing, tool use, and a short monitor glance while active work is in progress.',
   },
   walking: {
     action: 'walking',
@@ -42,7 +42,7 @@ export const OFFICE_SPRITE_ACTIONS = {
     prop: 'none',
     motion: 'walk',
     terminalMode: 'idle',
-    description: 'Agent uses faster leg cadence while moving toward queued work.',
+    description: 'Agent follows a deterministic path/step cycle while moving toward queued work.',
   },
   resting: {
     action: 'resting',
@@ -50,7 +50,7 @@ export const OFFICE_SPRITE_ACTIONS = {
     prop: 'sofa',
     motion: 'rest',
     terminalMode: 'idle',
-    description: 'Agent settles into a sofa/rest pose after completed work.',
+    description: 'Agent settles into a sofa idle loop after completed work.',
   },
   handoff: {
     action: 'handoff',
@@ -58,7 +58,7 @@ export const OFFICE_SPRITE_ACTIONS = {
     prop: 'signal',
     motion: 'handoff',
     terminalMode: 'typing',
-    description: 'Agent shows signal dots and a shifted tool while delegated work is handed off.',
+    description: 'Agent prepares a signal, transfers work, then returns to a receive-ready handoff pose.',
   },
   alert: {
     action: 'alert',
@@ -66,7 +66,7 @@ export const OFFICE_SPRITE_ACTIONS = {
     prop: 'signal',
     motion: 'alert',
     terminalMode: 'monitoring',
-    description: 'Agent uses a restrained alert beacon for blocked or failed work.',
+    description: 'Agent uses a calm resolve pulse for blocked or failed work.',
   },
   monitoring: {
     action: 'monitoring',
@@ -74,7 +74,7 @@ export const OFFICE_SPRITE_ACTIONS = {
     prop: 'signal',
     motion: 'calm',
     terminalMode: 'monitoring',
-    description: 'Agent watches a monitoring sweep while waiting on external progress.',
+    description: 'Agent alternates scan and check poses while waiting on external progress.',
   },
 } satisfies Record<string, OfficeSpriteActionDefinition>
 

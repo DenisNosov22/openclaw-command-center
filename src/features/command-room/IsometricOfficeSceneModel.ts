@@ -13,6 +13,25 @@ export type OfficeStationAction =
   | 'standby'
 
 export type OfficeStationActivity = OfficeStationAction
+export type OfficeActionPhase =
+  | 'path-step'
+  | 'resolve-pulse'
+  | 'scan-check'
+  | 'signal-transfer'
+  | 'sofa-idle'
+  | 'type-monitor'
+export type OfficeBehaviorIntensity = 'calm' | 'focused' | 'high' | 'low' | 'medium'
+export type OfficeBehaviorTempo = 'brisk' | 'measured' | 'settled' | 'slow' | 'steady'
+
+export interface OfficeBehaviorChoreography {
+  phaseLabel: OfficeActionPhase
+  className: `office-behavior--${OfficeActionPhase}`
+  routeInvolvement: boolean
+  intensity: OfficeBehaviorIntensity
+  tempo: OfficeBehaviorTempo
+  animationDelay: string
+  animationDuration: string
+}
 
 export interface OfficeAgentStation {
   id: string
@@ -26,6 +45,7 @@ export interface OfficeAgentStation {
   tone: OfficeStationTone
   pulse: OfficeStationPulse
   terminalMode: OfficeTerminalMode
+  choreography: OfficeBehaviorChoreography
   x: number
   y: number
   lane: 'north' | 'east' | 'south' | 'west'
@@ -39,6 +59,8 @@ export interface OfficeSignalRoute {
   activity: 'active' | 'blocked' | 'handoff' | 'monitoring'
   tone: OfficeStationTone
   isSelected: boolean
+  animationDelay: string
+  animationDuration: string
 }
 
 export interface OfficeSceneViewModel {
@@ -72,6 +94,67 @@ const roleLabel: Record<string, string> = {
   video: 'Media',
   'UI/layout': 'UI',
   trading: 'Trading',
+}
+
+const actionPhaseMap: Record<OfficeStationAction, Pick<OfficeBehaviorChoreography, 'intensity' | 'phaseLabel' | 'tempo'>> = {
+  alert: { phaseLabel: 'resolve-pulse', intensity: 'high', tempo: 'slow' },
+  blocked: { phaseLabel: 'resolve-pulse', intensity: 'high', tempo: 'slow' },
+  coordinating: { phaseLabel: 'type-monitor', intensity: 'focused', tempo: 'steady' },
+  handoff: { phaseLabel: 'signal-transfer', intensity: 'medium', tempo: 'measured' },
+  monitoring: { phaseLabel: 'scan-check', intensity: 'calm', tempo: 'slow' },
+  resting: { phaseLabel: 'sofa-idle', intensity: 'low', tempo: 'settled' },
+  signaling: { phaseLabel: 'signal-transfer', intensity: 'medium', tempo: 'measured' },
+  standby: { phaseLabel: 'scan-check', intensity: 'low', tempo: 'slow' },
+  walking: { phaseLabel: 'path-step', intensity: 'medium', tempo: 'brisk' },
+  working: { phaseLabel: 'type-monitor', intensity: 'focused', tempo: 'steady' },
+}
+
+const actionDurationMs: Record<OfficeActionPhase, number> = {
+  'path-step': 7200,
+  'resolve-pulse': 9200,
+  'scan-check': 6400,
+  'signal-transfer': 7600,
+  'sofa-idle': 10400,
+  'type-monitor': 6200,
+}
+
+const statusDelayStepMs: Record<Agent['status'], number> = {
+  blocked: 470,
+  done: 310,
+  error: 530,
+  idle: 190,
+  waiting: 370,
+  working: 230,
+}
+
+function formatMs(value: number) {
+  return `${value}ms`
+}
+
+function getStableAnimationDelay(index: number, action: OfficeStationAction, status: Agent['status']) {
+  const actionSeed = action.length * 83
+  const statusSeed = statusDelayStepMs[status]
+  const layoutSeed = (index % officeStationLayout.length) * 137
+
+  return formatMs(-((actionSeed + statusSeed + layoutSeed) % 2800))
+}
+
+export function getStationChoreography(
+  index: number,
+  action: OfficeStationAction,
+  status: Agent['status'],
+  routeInvolvement = false,
+): OfficeBehaviorChoreography {
+  const phase = actionPhaseMap[action]
+  const durationMs = actionDurationMs[phase.phaseLabel] + (index % 3) * 260
+
+  return {
+    ...phase,
+    className: `office-behavior--${phase.phaseLabel}`,
+    routeInvolvement,
+    animationDelay: getStableAnimationDelay(index, action, status),
+    animationDuration: formatMs(durationMs),
+  }
 }
 
 function getAgentMarker(agent: Agent) {
@@ -221,6 +304,7 @@ export function createOfficeAgentStations(agents: Agent[], tasks: Task[]): Offic
       tone: getStationTone(agent.status, task?.status),
       pulse: getStationPulse(agent, task),
       terminalMode: getTerminalMode(agent, task),
+      choreography: getStationChoreography(index, getStationAction(agent, task), agent.status),
       taskTitle: task?.title ?? 'Read-only station',
       ...layout,
     }
@@ -313,8 +397,18 @@ export function createOfficeSignalRoutes(
       tone,
       activity: getRouteActivity(edge, workflow, stations, tone),
       isSelected: selectedAgentId ? relatedAgentIds.has(selectedAgentId) : false,
+      animationDelay: formatMs(-((index * 420 + edge.label.length * 37) % 2600)),
+      animationDuration: formatMs(5000 + (index % 4) * 520),
     }
   })
+}
+
+function getRoutedAgentIds(workflow: CommandCenterSnapshot['workflow']) {
+  const routedNodeIds = new Set(workflow.edges.flatMap((edge) => [edge.from, edge.to]))
+
+  return new Set(
+    workflow.nodes.filter((node) => routedNodeIds.has(node.id)).map((node) => node.agentId),
+  )
 }
 
 export function createOfficeSceneViewModel(
@@ -325,9 +419,19 @@ export function createOfficeSceneViewModel(
   selectedAgentId?: string,
 ): OfficeSceneViewModel {
   const stations = createOfficeAgentStations(agents, tasks)
+  const routedAgentIds = getRoutedAgentIds(workflow)
+  const choreographedStations = stations.map((station, index) => ({
+    ...station,
+    choreography: getStationChoreography(
+      index,
+      station.action,
+      station.status,
+      routedAgentIds.has(station.agentId),
+    ),
+  }))
 
   return {
-    stations,
-    signalRoutes: createOfficeSignalRoutes(stations, activity, workflow, selectedAgentId),
+    stations: choreographedStations,
+    signalRoutes: createOfficeSignalRoutes(choreographedStations, activity, workflow, selectedAgentId),
   }
 }

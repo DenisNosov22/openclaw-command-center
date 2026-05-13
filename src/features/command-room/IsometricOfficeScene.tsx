@@ -1,4 +1,5 @@
 import type { ActivityEvent, Agent, CommandCenterSnapshot, Task } from '../../shared/types'
+import type { CSSProperties } from 'react'
 import { createOfficeSceneViewModel } from './IsometricOfficeSceneModel'
 import {
   getOfficeAgentMarkerClassName,
@@ -71,6 +72,10 @@ export function IsometricOfficeScene({
             }`}
             data-label={route.label}
             key={route.id}
+            style={{
+              '--office-route-delay': route.animationDelay,
+              '--office-route-duration': route.animationDuration,
+            } as CSSProperties}
           />
         ))}
       </div>
@@ -87,12 +92,17 @@ export function IsometricOfficeScene({
             aria-pressed={isSelected}
             className={getOfficeStationClassName(station.lane, station.activity, station.pulse, isSelected)}
             data-agent-id={station.agentId}
+            data-action-phase={station.choreography.phaseLabel}
+            data-route-involved={station.choreography.routeInvolvement}
             key={station.id}
             onClick={() => onSelectAgent(station.agentId)}
             style={{
               left: `${station.x}%`,
               top: `${station.y}%`,
-            }}
+              '--office-agent-delay': station.choreography.animationDelay,
+              '--office-agent-duration': station.choreography.animationDuration,
+              '--office-agent-tempo': station.choreography.tempo,
+            } as CSSProperties}
             type="button"
           >
             <span className={getOfficeTerminalClassName(station.terminalMode)}>
@@ -102,7 +112,7 @@ export function IsometricOfficeScene({
             </span>
             <span className={OFFICE_SPRITE_TOKENS.keyboardTray} aria-hidden="true" />
             <span className={OFFICE_SPRITE_TOKENS.chair} aria-hidden="true" />
-            <span className={getOfficeAgentMarkerClassName(station.action)}>
+            <span className={`${getOfficeAgentMarkerClassName(station.action)} ${station.choreography.className}`}>
               <span className={OFFICE_SPRITE_TOKENS.restProp} aria-hidden="true" />
               <span className={OFFICE_SPRITE_TOKENS.sprite} aria-hidden="true">
                 <span className={OFFICE_SPRITE_TOKENS.head} />
