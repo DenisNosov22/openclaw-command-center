@@ -20,6 +20,14 @@ assert.equal(mockDiagnostics.readOnlyLabel, 'Read-only')
 assert.equal(mockDiagnostics.requestedModeLabel, undefined)
 assert.equal(mockDiagnostics.warningLabel, undefined)
 
+const blankDiagnostics = createCommandCenterAdapterDiagnostics(
+  createCommandCenterAdapterSelection(fallbackAdapter, '  '),
+)
+assert.equal(blankDiagnostics.activeLabel, 'Mock adapter')
+assert.equal(blankDiagnostics.readOnlyLabel, 'Read-only')
+assert.equal(blankDiagnostics.requestedModeLabel, undefined)
+assert.equal(blankDiagnostics.warningLabel, undefined)
+
 const disabledDiagnostics = createCommandCenterAdapterDiagnostics(
   createCommandCenterAdapterSelection(fallbackAdapter, 'openclaw'),
 )
@@ -27,6 +35,14 @@ assert.equal(disabledDiagnostics.activeLabel, 'OpenClaw adapter disabled')
 assert.equal(disabledDiagnostics.requestedModeLabel, 'Requested: openclaw')
 assert.match(disabledDiagnostics.warningLabel ?? '', /disabled/i)
 assert.equal(disabledDiagnostics.readOnlyLabel, 'Read-only')
+
+const explicitDisabledDiagnostics = createCommandCenterAdapterDiagnostics(
+  createCommandCenterAdapterSelection(fallbackAdapter, 'openclaw-disabled'),
+)
+assert.equal(explicitDisabledDiagnostics.activeLabel, 'OpenClaw adapter disabled')
+assert.equal(explicitDisabledDiagnostics.requestedModeLabel, 'Requested: openclaw-disabled')
+assert.match(explicitDisabledDiagnostics.warningLabel ?? '', /disabled/i)
+assert.equal(explicitDisabledDiagnostics.readOnlyLabel, 'Read-only')
 
 const unknownDiagnostics = createCommandCenterAdapterDiagnostics(
   createCommandCenterAdapterSelection(fallbackAdapter, 'future-mode'),

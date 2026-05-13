@@ -18,7 +18,9 @@ assert.equal(defaultSelection.adapter.source, 'mock')
 
 const blankSelection = createCommandCenterAdapterSelection(fallbackAdapter, '  ')
 assert.equal(blankSelection.mode, 'mock')
+assert.equal(blankSelection.label, 'Mock adapter')
 assert.equal(blankSelection.usesFallback, false)
+assert.equal(blankSelection.warning, undefined)
 
 const disabledSelection = createCommandCenterAdapterSelection(fallbackAdapter, ' OpenClaw ')
 assert.equal(disabledSelection.mode, 'openclaw')
@@ -29,10 +31,23 @@ assert.equal(disabledSelection.readOnly, true)
 assert.equal(disabledSelection.adapter.source, 'mock')
 assert.match(disabledSelection.warning ?? '', /disabled/)
 
+const explicitDisabledSelection = createCommandCenterAdapterSelection(
+  fallbackAdapter,
+  'openclaw-disabled',
+)
+assert.equal(explicitDisabledSelection.mode, 'openclaw-disabled')
+assert.equal(explicitDisabledSelection.label, 'OpenClaw adapter disabled')
+assert.equal(explicitDisabledSelection.requestedMode, 'openclaw-disabled')
+assert.equal(explicitDisabledSelection.usesFallback, true)
+assert.equal(explicitDisabledSelection.readOnly, true)
+assert.equal(explicitDisabledSelection.adapter.source, 'mock')
+assert.match(explicitDisabledSelection.warning ?? '', /disabled/)
+
 const unknownSelection = createCommandCenterAdapterSelection(fallbackAdapter, 'unexpected-mode')
 assert.equal(unknownSelection.mode, 'mock')
 assert.equal(unknownSelection.label, 'Mock adapter')
 assert.equal(unknownSelection.requestedMode, 'unexpected-mode')
 assert.equal(unknownSelection.usesFallback, true)
+assert.equal(unknownSelection.readOnly, true)
 assert.equal(unknownSelection.adapter.source, 'mock')
 assert.match(unknownSelection.warning ?? '', /Unknown adapter mode/)
