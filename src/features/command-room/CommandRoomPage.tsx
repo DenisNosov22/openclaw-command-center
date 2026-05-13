@@ -5,15 +5,15 @@ import type { Agent, Task, WorkflowNode } from '../../shared/types'
 type StageView = 'room' | 'graph'
 
 const roomAgentPositions: Record<string, { x: number; y: number }> = {
-  'agent-krab': { x: 50, y: 12 },
-  'agent-dev': { x: 78, y: 25 },
-  'agent-bastion': { x: 89, y: 50 },
-  'agent-shturman': { x: 74, y: 80 },
-  'agent-spec': { x: 50, y: 88 },
-  'agent-varta': { x: 24, y: 78 },
-  'agent-rezhyser': { x: 10, y: 50 },
-  'agent-verstalnyk': { x: 21, y: 25 },
-  'agent-desk': { x: 93, y: 70 },
+  'agent-krab': { x: 50, y: 14 },
+  'agent-dev': { x: 72, y: 25 },
+  'agent-bastion': { x: 83, y: 47 },
+  'agent-desk': { x: 82, y: 70 },
+  'agent-shturman': { x: 68, y: 82 },
+  'agent-spec': { x: 50, y: 86 },
+  'agent-varta': { x: 32, y: 82 },
+  'agent-rezhyser': { x: 17, y: 47 },
+  'agent-verstalnyk': { x: 28, y: 25 },
 }
 
 const statusLabel: Record<Agent['status'], string> = {

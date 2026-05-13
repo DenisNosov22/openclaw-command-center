@@ -62,7 +62,12 @@
 }
 
 .command-bar__identity {
-  gap: 14px;
+  min-width: 0;
+  gap: 18px;
+}
+
+.command-bar__identity > div {
+  min-width: 0;
 }
 
 .command-subtitle {
@@ -72,17 +77,15 @@
 }
 
 .command-mark {
-  flex: 0 0 48px;
-  width: 48px;
+  flex: 0 0 92px;
+  width: 92px;
   aspect-ratio: 1;
   object-fit: contain;
-  padding: 3px;
-  background:
-    linear-gradient(135deg, rgba(215, 180, 92, 0.16), rgba(215, 180, 92, 0.08)),
-    rgba(32, 31, 28, 0.96);
-  border: 1px solid rgba(215, 180, 92, 0.42);
-  border-radius: 8px;
-  box-shadow: 0 0 26px rgba(215, 180, 92, 0.18);
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  filter: drop-shadow(0 0 18px rgba(215, 180, 92, 0.2));
 }
 
 .command-bar__telemetry {
@@ -908,6 +911,15 @@
     justify-content: flex-start;
   }
 
+  .command-bar__identity {
+    align-items: center;
+  }
+
+  .command-mark {
+    flex-basis: 78px;
+    width: 78px;
+  }
+
   .stage-header,
   .stage-actions {
     align-items: flex-start;
@@ -951,8 +963,17 @@
 }
 
 @media (max-width: 540px) {
+  .command-bar__identity {
+    gap: 12px;
+  }
+
   .command-room h1 {
     font-size: 1.62rem;
+  }
+
+  .command-mark {
+    flex-basis: clamp(68px, 20vw, 78px);
+    width: clamp(68px, 20vw, 78px);
   }
 
   .agent-card {
