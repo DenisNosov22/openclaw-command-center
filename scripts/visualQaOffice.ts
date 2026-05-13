@@ -167,6 +167,42 @@ async function verifyResponsiveOfficeComposition(page: Page, viewportCase: Viewp
   )
 }
 
+async function verifyReducedMotionOffice(page: Page) {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.reload({ waitUntil: 'networkidle' })
+  await verifyOfficeDom(page)
+
+  const animatedOfficeElements = await page.evaluate(() =>
+    [
+      '.office-desk',
+      '.office-terminal__ticks',
+      '.office-agent-avatar',
+      '.office-agent-tool',
+      '.office-agent-signal-prop',
+      '.office-agent-sprite__legs',
+      '.office-walker',
+      '.office-core__surface',
+      '.office-handoff-hub',
+      '.office-transfer',
+    ]
+      .flatMap((selector) => [...document.querySelectorAll(selector)])
+      .flatMap((element) => [
+        getComputedStyle(element).animationName,
+        getComputedStyle(element, '::before').animationName,
+        getComputedStyle(element, '::after').animationName,
+      ])
+      .filter((animationName) => animationName !== 'none' && animationName !== 'office-reduced-low-pulse'),
+  )
+
+  assert.deepEqual(
+    animatedOfficeElements,
+    [],
+    `Reduced-motion Office should disable choreographed movement and packet animations: ${animatedOfficeElements.join(', ')}`,
+  )
+
+  await page.emulateMedia({ reducedMotion: 'no-preference' })
+}
+
 async function expectVisible(locator: Locator, label: string) {
   await locator.first().waitFor({ state: 'visible', timeout: 8_000 })
 
@@ -219,6 +255,7 @@ try {
     console.log(`[qa:visual] captured ${join(outputDir, `office-${viewportCase.name}.png`)}`)
   }
 
+  await verifyReducedMotionOffice(page)
   console.log('[qa:visual] Office browser visual QA passed.')
 } catch (error) {
   throw new Error(

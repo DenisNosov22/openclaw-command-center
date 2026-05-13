@@ -2321,32 +2321,22 @@
 @keyframes office-desk-pulse {
   0%,
   100% {
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.05),
-      0 12px 28px rgba(0, 0, 0, 0.28);
+    border-color: rgba(215, 180, 92, 0.24);
   }
 
   50% {
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.06),
-      0 0 22px rgba(215, 180, 92, 0.12),
-      0 12px 28px rgba(0, 0, 0, 0.28);
+    border-color: rgba(215, 180, 92, 0.46);
   }
 }
 
 @keyframes office-blocked-pulse {
   0%,
   100% {
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.05),
-      0 12px 28px rgba(0, 0, 0, 0.28);
+    border-color: rgba(212, 84, 77, 0.34);
   }
 
   50% {
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.05),
-      0 0 12px rgba(212, 84, 77, 0.12),
-      0 12px 28px rgba(0, 0, 0, 0.28);
+    border-color: rgba(212, 84, 77, 0.58);
   }
 }
 
@@ -2606,11 +2596,18 @@
   .telemetry-pill--live span,
   .office-desk,
   .office-terminal__ticks,
+  .office-terminal--typing .office-terminal__ticks,
+  .office-terminal--monitoring .office-terminal__ticks,
   .office-agent-avatar,
   .office-agent-tool,
   .office-agent-signal-prop,
   .office-agent-sprite__legs::before,
   .office-agent-sprite__legs::after,
+  .office-behavior--type-monitor .office-agent-tool,
+  .office-behavior--path-step .office-agent-sprite__legs::before,
+  .office-behavior--path-step .office-agent-sprite__legs::after,
+  .office-behavior--signal-transfer .office-agent-signal-prop,
+  .office-behavior--scan-check .office-agent-signal-prop,
   .office-walker,
   .office-core__surface::after,
   .office-handoff-hub::after,
