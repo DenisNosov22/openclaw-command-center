@@ -7,8 +7,9 @@ import {
 } from '../../adapters'
 import type { ActivityEvent, Agent, Task, WorkflowNode } from '../../shared/types'
 import { formatKyivTime } from '../../shared/time/kyivTime'
+import { IsometricOfficeScene } from './IsometricOfficeScene'
 
-type StageView = 'room' | 'graph'
+type StageView = 'room' | 'office' | 'graph'
 type ActivityFilter = 'all' | 'selected' | 'critical' | 'system'
 type LiveSnapshot = ReturnType<typeof createLoadingCommandCenterSnapshotState>['snapshot'] & {
   lastUpdated: Date
@@ -469,8 +470,20 @@ export function CommandRoomPage() {
         <section className="panel center-stage" aria-label="Центральна панель">
           <div className="stage-header">
             <div>
-              <p className="eyebrow">{stageView === 'room' ? '2D Hologram' : 'Workflow Graph'}</p>
-              <h2>{stageView === 'room' ? 'Орбіта агентів' : 'Маршрут задач'}</h2>
+              <p className="eyebrow">
+                {stageView === 'room'
+                  ? '2D Hologram'
+                  : stageView === 'office'
+                    ? 'Orbit Office'
+                    : 'Workflow Graph'}
+              </p>
+              <h2>
+                {stageView === 'room'
+                  ? 'Орбіта агентів'
+                  : stageView === 'office'
+                    ? 'Орбітальний офіс'
+                    : 'Маршрут задач'}
+              </h2>
             </div>
             <div className="stage-actions">
               <div className="stage-toggle" aria-label="Режим центральної панелі" role="group">
@@ -481,6 +494,14 @@ export function CommandRoomPage() {
                   type="button"
                 >
                   Room
+                </button>
+                <button
+                  aria-label="Показати orbital office"
+                  aria-pressed={stageView === 'office'}
+                  onClick={() => setStageView('office')}
+                  type="button"
+                >
+                  Office
                 </button>
                 <button
                   aria-label="Показати workflow graph"
@@ -547,7 +568,18 @@ export function CommandRoomPage() {
                 )
               })}
             </div>
-          ) : (
+          ) : null}
+
+          {stageView === 'office' ? (
+            <IsometricOfficeScene
+              agents={snapshot.agents}
+              onSelectAgent={setSelectedAgentId}
+              selectedAgentId={selectedAgent.id}
+              tasks={snapshot.tasks}
+            />
+          ) : null}
+
+          {stageView === 'graph' ? (
             <div className="workflow-graph" aria-label="Read-only workflow graph">
               <svg aria-hidden="true" className="workflow-graph__edges" viewBox="0 0 100 100">
                 <defs>
@@ -629,7 +661,7 @@ export function CommandRoomPage() {
                 </div>
               ) : null}
             </div>
-          )}
+          ) : null}
 
           <div className="stage-legend" aria-label="Пояснення станів">
             <span><i className="legend-dot legend-dot--online" />В роботі / готово</span>

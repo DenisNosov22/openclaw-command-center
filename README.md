@@ -69,6 +69,7 @@ npm run test:content-density
 npm run test:state-copy
 npm run test:visual-polish
 npm run test:composition-qa
+npm run test:office-scene
 npm run smoke:html
 ```
 
@@ -86,6 +87,12 @@ Playwright browsers, Puppeteer, or screenshot tooling just for the MVP visual sm
 The command room visual direction is CSS-only 2.5D: layered graphite panels, projected hologram
 floor/rings, ambient scanlines, and gold/red/cyan/green glows around read-only command nodes. Keep
 this pass dependency-light: no WebGL, no canvas requirement, and no heavy rendering packages.
+
+Office Scene phase 1 adds a static CSS/SVG-free isometric orbital office skeleton inside the
+central stage. It maps the existing mock agents into read-only desks with terminals, abstract agent
+markers, status lamps, and a central command core. Future phases should add walking, typing, and
+signal-transfer animations plus richer state mapping, while keeping the surface mock-first and
+dependency-light.
 
 Manual viewport widths:
 
