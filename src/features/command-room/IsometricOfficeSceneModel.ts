@@ -46,6 +46,7 @@ export interface OfficeAgentStation {
   pulse: OfficeStationPulse
   terminalMode: OfficeTerminalMode
   choreography: OfficeBehaviorChoreography
+  slot: number
   x: number
   y: number
   lane: 'north' | 'east' | 'south' | 'west'
@@ -305,6 +306,7 @@ export function createOfficeAgentStations(agents: Agent[], tasks: Task[]): Offic
       pulse: getStationPulse(agent, task),
       terminalMode: getTerminalMode(agent, task),
       choreography: getStationChoreography(index, getStationAction(agent, task), agent.status),
+      slot: index % officeStationLayout.length,
       taskTitle: task?.title ?? 'Read-only station',
       ...layout,
     }

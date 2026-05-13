@@ -93,12 +93,11 @@ export function IsometricOfficeScene({
             className={getOfficeStationClassName(station.lane, station.activity, station.pulse, isSelected)}
             data-agent-id={station.agentId}
             data-action-phase={station.choreography.phaseLabel}
+            data-office-slot={station.slot}
             data-route-involved={station.choreography.routeInvolvement}
             key={station.id}
             onClick={() => onSelectAgent(station.agentId)}
             style={{
-              left: `${station.x}%`,
-              top: `${station.y}%`,
               '--office-agent-delay': station.choreography.animationDelay,
               '--office-agent-duration': station.choreography.animationDuration,
               '--office-agent-tempo': station.choreography.tempo,

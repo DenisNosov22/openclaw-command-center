@@ -136,6 +136,11 @@ carry clearer PC monitor stands and keyboard/tool trays, the lounge reads as a s
 core has a subtle status surface, walking routes are rendered as floor lanes, and the handoff area
 has a small data-transfer hub. The slice remains CSS-only, read-only, mock-first, and dependency-light.
 
+Office Scene phase 10 is a screenshot-driven responsive polish pass. Desktop stations have a little
+more label room, narrow Office viewports use stable station layout slots to keep side desks off the
+command core, and browser visual QA now fails if responsive stations overlap the core panel. The
+slice stays dependency-light and uses the existing Playwright Chromium QA tool from phase 9.
+
 Manual viewport widths:
 
 - Desktop: `1366` and `1440`
@@ -157,7 +162,7 @@ Acceptance criteria:
   diagnostics, and read-only status expose accessible labels/states and visible keyboard focus.
 - Office/Graph: Office is the default center-stage view; the Office and Graph toggles remain
   reachable; office stations/workflow nodes stay inside the stage and do not cover labels or
-  controls.
+  controls. On narrow mobile, Office stations must not overlap the command core panel.
 - Inspector: selected agent, risk/next-action block, task chips, and recent activity stay readable
   and scroll/stack cleanly on tablet and mobile.
 - Timeline: filters remain usable; newest events are readable; warning/critical styles remain

@@ -134,6 +134,39 @@ async function verifyOfficeDom(page: Page) {
   )
 }
 
+async function verifyResponsiveOfficeComposition(page: Page, viewportCase: ViewportCase) {
+  if (viewportCase.width > 430) {
+    return
+  }
+
+  const overlaps = await page.evaluate(() => {
+    const core = document.querySelector('.office-core')?.getBoundingClientRect()
+
+    if (!core) {
+      return ['Office core is missing']
+    }
+
+    return [...document.querySelectorAll('.office-desk')]
+      .map((station, index) => {
+        const box = station.getBoundingClientRect()
+        const overlapsCore =
+          box.left < core.right &&
+          box.right > core.left &&
+          box.top < core.bottom &&
+          box.bottom > core.top
+
+        return overlapsCore ? `station ${index + 1}` : ''
+      })
+      .filter(Boolean)
+  })
+
+  assert.equal(
+    overlaps.length,
+    0,
+    `Responsive Office stations should not overlap the command core: ${overlaps.join(', ')}`,
+  )
+}
+
 async function expectVisible(locator: Locator, label: string) {
   await locator.first().waitFor({ state: 'visible', timeout: 8_000 })
 
@@ -145,6 +178,7 @@ async function captureViewport(page: Page, viewportCase: ViewportCase, port: num
   await page.setViewportSize({ width: viewportCase.width, height: viewportCase.height })
   await page.goto(`http://${previewHost}:${port}${previewBasePath}`, { waitUntil: 'networkidle' })
   await verifyOfficeDom(page)
+  await verifyResponsiveOfficeComposition(page, viewportCase)
   await page.locator('.center-stage').screenshot({
     path: join(outputDir, `office-${viewportCase.name}.png`),
   })

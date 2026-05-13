@@ -66,3 +66,6 @@ The Office scene is final enough for this planned milestone when:
 - Step 47: browser visual QA is available through `npm run qa:visual`. It builds the app, serves the
   built preview, verifies the default Office DOM surface in Chromium, and captures desktop plus
   narrow responsive screenshots into the gitignored `artifacts/visual-qa/` directory.
+- Step 48: screenshot-driven Office polish gives desktop desks more label width and uses stable
+  responsive layout slots so narrow side stations no longer overlap the command core. Browser visual
+  QA now includes a mobile composition assertion for station/core overlap.
