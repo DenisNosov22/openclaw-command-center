@@ -1,3 +1,4 @@
+import type { CommandCenterAdapter } from './commandCenterAdapter'
 import type { CommandCenterSnapshot } from '../shared/types'
 
 const snapshot: CommandCenterSnapshot = {
@@ -368,6 +369,9 @@ const snapshot: CommandCenterSnapshot = {
   },
 }
 
-export function getCommandCenterSnapshot(): CommandCenterSnapshot {
-  return snapshot
+export const mockCommandCenterAdapter: CommandCenterAdapter = {
+  source: 'mock',
+  getSnapshot() {
+    return snapshot
+  },
 }
