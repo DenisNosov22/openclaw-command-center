@@ -71,6 +71,7 @@ npm run test:visual-polish
 npm run test:composition-qa
 npm run test:office-scene
 npm run smoke:html
+npm run qa:visual
 ```
 
 ## CI checks
@@ -81,8 +82,9 @@ workflow. It uses Node 24 with `npm ci`, `npm run smoke:html`, `npm run test:all
 
 ## Visual smoke runbook
 
-This project intentionally avoids a real browser dependency in local smoke checks. Do not install
-Playwright browsers, Puppeteer, or screenshot tooling just for the MVP visual smoke pass.
+Local browser visual QA uses Playwright Chromium as a dev-only tool. It is not part of the GitHub
+Pages deploy flow and should be run when changing the Office scene, stage layout, or responsive
+composition.
 
 The command room visual direction is CSS-only 2.5D: layered graphite panels, projected hologram
 floor/rings, ambient scanlines, and gold/red/cyan/green glows around read-only command nodes. Keep
@@ -173,3 +175,20 @@ The script builds three adapter modes, starts `vite preview` on local ephemeral 
 `200` for the HTML and linked assets, and verifies that the built bundle contains the expected
 adapter diagnostics labels. It does not execute React in a browser and does not create screenshots,
 so it complements but does not replace the manual viewport pass above.
+
+Browser visual QA:
+
+```sh
+npx playwright install chromium
+npm run qa:visual
+```
+
+The visual QA script builds the app, starts a local `vite preview`, opens the default Office scene in
+Chromium, verifies that the Office/Graph toggles, Office scene, zones, stations, sprite props, and
+behavior choreography classes are present, then captures screenshots into `artifacts/visual-qa/`:
+
+- `office-desktop.png` at `1366x900`
+- `office-responsive-390.png` at `390x900`
+
+`artifacts/visual-qa/` is gitignored; keep screenshots local unless a review explicitly asks for a
+specific image artifact.

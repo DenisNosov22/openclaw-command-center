@@ -51,7 +51,8 @@ The Office scene is final enough for this planned milestone when:
 - Zones and props make the space feel like an office, not only labels on a floor grid.
 - Selection stays synchronized with the shared inspector and remains keyboard accessible.
 - Source-level tests protect the blueprint, action definitions, token map, and default scene.
-- Local verification passes with `npm ci`, smoke, tests, build, lint, and `git diff --check`.
+- Local verification passes with `npm ci`, smoke, tests, browser visual QA screenshots, build, lint,
+  and `git diff --check`.
 
 ## Phase Progress
 
@@ -62,3 +63,6 @@ The Office scene is final enough for this planned milestone when:
   visible agent carries an action phase, route-involvement flag, intensity, tempo, and stable
   animation timing derived from station index/action/status; CSS consumes those tokens for
   type/monitor, path/step, sofa idle, signal transfer, scan/check, and resolve-pulse loops.
+- Step 47: browser visual QA is available through `npm run qa:visual`. It builds the app, serves the
+  built preview, verifies the default Office DOM surface in Chromium, and captures desktop plus
+  narrow responsive screenshots into the gitignored `artifacts/visual-qa/` directory.

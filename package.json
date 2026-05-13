@@ -20,6 +20,7 @@
     "test:office-scene": "node --experimental-strip-types scripts/verifyOfficeScene.ts",
     "test:all": "npm run test:redaction && npm run test:adapter-selection && npm run test:adapter-diagnostics && npm run test:snapshot-state && npm run test:keyboard-accessibility && npm run test:responsive-accessibility && npm run test:content-density && npm run test:state-copy && npm run test:visual-polish && npm run test:composition-qa && npm run test:office-scene",
     "smoke:html": "node --experimental-strip-types scripts/smokeHtml.ts",
+    "qa:visual": "npm run build && node --experimental-strip-types scripts/visualQaOffice.ts",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -28,6 +29,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.60.0",
     "@types/node": "^24.12.3",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
