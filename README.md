@@ -76,6 +76,10 @@ npm run smoke:html
 This project intentionally avoids a real browser dependency in local smoke checks. Do not install
 Playwright browsers, Puppeteer, or screenshot tooling just for the MVP visual smoke pass.
 
+The command room visual direction is CSS-only 2.5D: layered graphite panels, projected hologram
+floor/rings, ambient scanlines, and gold/red/cyan/green glows around read-only command nodes. Keep
+this pass dependency-light: no WebGL, no canvas requirement, and no heavy rendering packages.
+
 Manual viewport widths:
 
 - Desktop: `1366` and `1440`

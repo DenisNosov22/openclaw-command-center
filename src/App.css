@@ -1,9 +1,54 @@
 .command-room {
+  position: relative;
+  isolation: isolate;
   min-height: 100vh;
+  overflow-x: hidden;
   padding: 24px;
   background:
+    radial-gradient(ellipse at 50% 18%, rgba(240, 205, 116, 0.12), transparent 34%),
+    radial-gradient(ellipse at 18% 62%, rgba(70, 127, 158, 0.1), transparent 32%),
+    radial-gradient(ellipse at 82% 44%, rgba(212, 84, 77, 0.08), transparent 30%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent 180px),
-    radial-gradient(circle at 50% 118px, rgba(215, 180, 92, 0.08), transparent 32%);
+    linear-gradient(115deg, rgba(16, 26, 28, 0.42), transparent 44%),
+    #0b0b0a;
+}
+
+.command-room::before,
+.command-room::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.command-room::before {
+  opacity: 0.34;
+  background:
+    repeating-linear-gradient(
+      180deg,
+      rgba(240, 205, 116, 0.055) 0,
+      rgba(240, 205, 116, 0.055) 1px,
+      transparent 1px,
+      transparent 7px
+    );
+  mix-blend-mode: screen;
+  animation: ambient-scanline 14s linear infinite;
+}
+
+.command-room::after {
+  opacity: 0.72;
+  background:
+    radial-gradient(ellipse at 50% 94%, rgba(120, 212, 192, 0.13), transparent 38%),
+    radial-gradient(ellipse at 48% 78%, rgba(215, 180, 92, 0.1), transparent 42%),
+    linear-gradient(90deg, rgba(212, 84, 77, 0.08), transparent 20%, transparent 80%, rgba(70, 127, 158, 0.08)),
+    linear-gradient(180deg, transparent 62%, rgba(0, 0, 0, 0.36));
+}
+
+.command-bar,
+.command-room__grid {
+  position: relative;
+  z-index: 1;
 }
 
 .command-room h1,
@@ -426,6 +471,8 @@
     linear-gradient(180deg, rgba(32, 35, 33, 0.9), rgba(16, 16, 15, 0.9)),
     rgba(22, 22, 20, 0.82);
   border-color: rgba(215, 180, 92, 0.32);
+  perspective: 1120px;
+  transform-style: preserve-3d;
 }
 
 .stage-stats {
@@ -494,12 +541,57 @@
   overflow: hidden;
   overflow-clip-margin: 8px;
   background:
-    radial-gradient(circle at 50% 36%, rgba(120, 212, 192, 0.12), transparent 18%),
-    radial-gradient(circle at 50% 48%, rgba(215, 180, 92, 0.16), transparent 24%),
-    radial-gradient(circle at 50% 48%, rgba(215, 180, 92, 0.12), transparent 46%),
-    linear-gradient(180deg, rgba(8, 12, 13, 0.32), transparent 62%);
+    radial-gradient(ellipse at 50% 38%, rgba(120, 212, 192, 0.16), transparent 18%),
+    radial-gradient(ellipse at 50% 52%, rgba(215, 180, 92, 0.2), transparent 24%),
+    radial-gradient(ellipse at 50% 70%, rgba(212, 84, 77, 0.1), transparent 34%),
+    linear-gradient(180deg, rgba(8, 12, 13, 0.42), rgba(8, 10, 10, 0.1) 60%, rgba(215, 180, 92, 0.06));
   border: 1px solid rgba(215, 180, 92, 0.12);
   border-radius: 8px;
+  transform-style: preserve-3d;
+}
+
+.hologram::before,
+.hologram::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.hologram::before {
+  inset: 44% 7% -28%;
+  transform: rotateX(68deg) translateY(10px) translateZ(-46px);
+  transform-origin: 50% 0;
+  background:
+    linear-gradient(rgba(120, 212, 192, 0.13) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(120, 212, 192, 0.11) 1px, transparent 1px),
+    radial-gradient(ellipse at 50% 42%, rgba(240, 205, 116, 0.2), transparent 56%),
+    linear-gradient(180deg, rgba(215, 180, 92, 0.11), transparent 76%);
+  background-size:
+    34px 34px,
+    34px 34px,
+    auto,
+    auto;
+  border: 1px solid rgba(120, 212, 192, 0.18);
+  border-radius: 50%;
+  filter: blur(0.1px);
+  mask-image: radial-gradient(ellipse, black 45%, transparent 75%);
+}
+
+.hologram::after {
+  opacity: 0.48;
+  background:
+    repeating-linear-gradient(
+      180deg,
+      rgba(159, 224, 210, 0.08) 0,
+      rgba(159, 224, 210, 0.08) 1px,
+      transparent 1px,
+      transparent 6px
+    ),
+    linear-gradient(90deg, transparent, rgba(240, 205, 116, 0.12), transparent);
+  animation: scanline-drift 10s linear infinite;
+  mix-blend-mode: screen;
 }
 
 .workflow-graph {
@@ -509,10 +601,11 @@
   overflow: hidden;
   overflow-clip-margin: 8px;
   background:
-    linear-gradient(rgba(215, 180, 92, 0.06) 1px, transparent 1px),
+    linear-gradient(rgba(120, 212, 192, 0.065) 1px, transparent 1px),
     linear-gradient(90deg, rgba(215, 180, 92, 0.06) 1px, transparent 1px),
     radial-gradient(circle at 22% 72%, rgba(120, 212, 192, 0.09), transparent 24%),
     radial-gradient(circle at 50% 26%, rgba(215, 180, 92, 0.12), transparent 30%),
+    radial-gradient(circle at 76% 42%, rgba(212, 84, 77, 0.08), transparent 26%),
     rgba(10, 10, 9, 0.54);
   background-size:
     34px 34px,
@@ -623,6 +716,17 @@
     transform 160ms ease;
 }
 
+.workflow-node::before {
+  content: '';
+  position: absolute;
+  inset: -15px;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.58;
+  background: radial-gradient(circle, rgba(215, 180, 92, 0.18), transparent 66%);
+  filter: blur(3px);
+}
+
 .workflow-node:hover,
 .workflow-node--selected {
   border-color: rgba(215, 180, 92, 0.68);
@@ -694,7 +798,7 @@
   position: absolute;
   aspect-ratio: 1;
   border-radius: 50%;
-  transform: rotateX(64deg) rotateZ(-15deg);
+  transform: rotateX(64deg) rotateZ(-15deg) translateZ(18px);
 }
 
 .hologram__ring--outer {
@@ -709,6 +813,7 @@
 .hologram__ring--inner {
   width: min(62%, 360px);
   border: 1px dashed rgba(215, 180, 92, 0.38);
+  box-shadow: 0 0 34px rgba(120, 212, 192, 0.12);
 }
 
 .hologram__axis {
@@ -766,10 +871,11 @@
   z-index: 0;
   width: min(82%, 500px);
   height: min(58%, 280px);
-  transform: perspective(620px) rotateX(64deg);
+  transform: perspective(620px) rotateX(64deg) translateZ(-34px);
   background:
-    linear-gradient(rgba(215, 180, 92, 0.1) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(215, 180, 92, 0.1) 1px, transparent 1px);
+    linear-gradient(rgba(120, 212, 192, 0.11) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(215, 180, 92, 0.11) 1px, transparent 1px),
+    radial-gradient(ellipse at 50% 50%, rgba(240, 205, 116, 0.12), transparent 62%);
   background-size: 36px 36px;
   border: 1px solid rgba(215, 180, 92, 0.18);
   border-radius: 8px;
@@ -839,6 +945,17 @@
     transform 160ms ease;
 }
 
+.agent-node::before {
+  content: '';
+  position: absolute;
+  inset: -14px;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.64;
+  background: radial-gradient(circle, rgba(215, 180, 92, 0.24), transparent 68%);
+  filter: blur(3px);
+}
+
 .agent-node:hover,
 .agent-node--selected {
   border-color: rgba(215, 180, 92, 0.72);
@@ -891,6 +1008,34 @@
   45% {
     opacity: 1;
     transform: scale(1.16);
+  }
+}
+
+@keyframes ambient-scanline {
+  from {
+    background-position: 0 0;
+  }
+
+  to {
+    background-position: 0 112px;
+  }
+}
+
+@keyframes scanline-drift {
+  from {
+    transform: translateY(-12px);
+  }
+
+  to {
+    transform: translateY(18px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .command-room::before,
+  .hologram::after,
+  .telemetry-pill--live span {
+    animation: none;
   }
 }
 
