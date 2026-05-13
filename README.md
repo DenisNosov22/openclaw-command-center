@@ -94,6 +94,11 @@ markers, status lamps, and a central command core. Future phases should add walk
 signal-transfer animations plus richer state mapping, while keeping the surface mock-first and
 dependency-light.
 
+Office Scene phase 2 adds the first lightweight CSS-only animation layer: deterministic station
+activity classes, subtle typing/monitor pulses, two calm orbital walker markers, signal packets
+between the core and stations, and reduced-motion fallbacks. The scene remains mock-first,
+read-only, SVG-free, and dependency-light.
+
 Manual viewport widths:
 
 - Desktop: `1366` and `1440`

@@ -34,15 +34,21 @@ export function IsometricOfficeScene({
         <span className="office-route office-route--east" />
         <span className="office-route office-route--south" />
         <span className="office-route office-route--west" />
+        <span className="office-transfer office-transfer--core" />
+        <span className="office-transfer office-transfer--handoff" />
+      </div>
+      <div className="office-walkers" aria-hidden="true">
+        <span className="office-walker office-walker--inner" />
+        <span className="office-walker office-walker--outer" />
       </div>
       {stations.map((station) => {
         const isSelected = station.agentId === selectedAgentId
 
         return (
           <button
-            aria-label={`Select office station ${station.name}: ${station.role}, ${station.action}`}
+            aria-label={`Select office station ${station.name}: ${station.role}, ${station.activity}`}
             aria-pressed={isSelected}
-            className={`office-desk office-desk--${station.lane}${
+            className={`office-desk office-desk--${station.lane} office-desk--${station.activity}${
               isSelected ? ' office-desk--selected' : ''
             }`}
             key={station.id}
@@ -55,6 +61,7 @@ export function IsometricOfficeScene({
           >
             <span className="office-terminal">
               <i />
+              <span className="office-terminal__ticks" aria-hidden="true" />
             </span>
             <span className="office-chair" aria-hidden="true" />
             <span className={`office-agent-marker office-agent-marker--${station.action}`}>

@@ -1,11 +1,16 @@
 import type { Agent, Task } from '../../shared/types'
 
 export type OfficeStationAction =
+  | 'blocked'
   | 'coordinating'
+  | 'handoff'
+  | 'walking'
   | 'working'
   | 'monitoring'
   | 'signaling'
   | 'standby'
+
+export type OfficeStationActivity = OfficeStationAction
 
 export interface OfficeAgentStation {
   id: string
@@ -15,6 +20,7 @@ export interface OfficeAgentStation {
   marker: string
   status: Agent['status']
   action: OfficeStationAction
+  activity: OfficeStationActivity
   x: number
   y: number
   lane: 'north' | 'east' | 'south' | 'west'
@@ -53,24 +59,52 @@ function getAgentDisplayName(agent: Agent) {
   return agent.name.replace(/\s*\p{Extended_Pictographic}/gu, '')
 }
 
-function getStationAction(agent: Agent): OfficeStationAction {
+function getStationActivity(agent: Agent, task?: Task): OfficeStationActivity {
+  if (
+    agent.status === 'blocked' ||
+    agent.status === 'error' ||
+    task?.status === 'blocked' ||
+    task?.status === 'failed'
+  ) {
+    return 'blocked'
+  }
+
+  if (task?.status === 'delegated') {
+    return 'handoff'
+  }
+
   if (agent.role === 'main/orchestrator') {
     return 'coordinating'
   }
 
-  if (agent.status === 'working' || agent.status === 'done') {
+  if (
+    agent.status === 'working' ||
+    agent.status === 'done' ||
+    task?.status === 'in_progress' ||
+    task?.status === 'completed'
+  ) {
     return 'working'
   }
 
-  if (agent.status === 'blocked' || agent.status === 'error') {
-    return 'signaling'
-  }
-
-  if (agent.status === 'waiting') {
+  if (agent.status === 'waiting' || task?.status === 'waiting') {
     return 'monitoring'
   }
 
+  if (task?.status === 'queued') {
+    return 'walking'
+  }
+
   return 'standby'
+}
+
+function getStationAction(agent: Agent, task?: Task): OfficeStationAction {
+  const activity = getStationActivity(agent, task)
+
+  if (activity === 'blocked') {
+    return 'signaling'
+  }
+
+  return activity
 }
 
 export function getStationTone(status: Agent['status']) {
@@ -103,7 +137,8 @@ export function createOfficeAgentStations(agents: Agent[], tasks: Task[]): Offic
       role: roleLabel[agent.role] ?? agent.role,
       marker: getAgentMarker(agent),
       status: agent.status,
-      action: getStationAction(agent),
+      action: getStationAction(agent, task),
+      activity: getStationActivity(agent, task),
       taskTitle: task?.title ?? 'Read-only station',
       ...layout,
     }
