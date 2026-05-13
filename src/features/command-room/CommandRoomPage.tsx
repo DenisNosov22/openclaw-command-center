@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { getCommandCenterSnapshot } from '../../adapters'
-import type { Agent, Task, WorkflowNode } from '../../shared/types'
+import type { ActivityEvent, Agent, Task, WorkflowNode } from '../../shared/types'
 
 type StageView = 'room' | 'graph'
 
@@ -85,6 +85,51 @@ function getRoomAgentPosition(agent: Agent, index: number) {
   )
 }
 
+function isRiskTask(task?: Task) {
+  return task?.status === 'blocked' || task?.status === 'failed'
+}
+
+function getRiskReason(agent: Agent, task?: Task) {
+  return (
+    agent.blockerReason ??
+    task?.blockerReason ??
+    task?.dependency ??
+    'Потрібна увага оператора перед наступним кроком.'
+  )
+}
+
+function getSuggestedAction(agent: Agent, task?: Task, hasRisk = false) {
+  if (task?.nextStep) {
+    return task.nextStep
+  }
+
+  if (hasRisk || agent.status === 'waiting') {
+    return 'Очікує input'
+  }
+
+  if (agent.status === 'idle' || agent.status === 'done') {
+    return 'Перевірити timeline'
+  }
+
+  return 'Відкрити Graph'
+}
+
+function getInspectorEvents(events: ActivityEvent[], agentId: string) {
+  const latestEvents = [...events].reverse()
+  const relatedEvents = latestEvents.filter((event) => event.agentId === agentId)
+
+  if (relatedEvents.length >= 2) {
+    return relatedEvents.slice(0, 3)
+  }
+
+  const fallbackEvents = latestEvents.filter(
+    (event) =>
+      event.type === 'system' && !relatedEvents.some((relatedEvent) => relatedEvent.id === event.id),
+  )
+
+  return [...relatedEvents, ...fallbackEvents].slice(0, 3)
+}
+
 export function CommandRoomPage() {
   const snapshot = getCommandCenterSnapshot()
   const [selectedAgentId, setSelectedAgentId] = useState(snapshot.agents[0]?.id)
@@ -95,6 +140,12 @@ export function CommandRoomPage() {
   const selectedAgentTasks = snapshot.tasks.filter(
     (task) => task.ownerAgentId === selectedAgent.id,
   )
+  const selectedRiskTask =
+    (isRiskTask(selectedTask) ? selectedTask : selectedAgentTasks.find(isRiskTask)) ?? undefined
+  const hasSelectedRisk =
+    selectedAgent.status === 'error' || selectedAgent.status === 'blocked' || Boolean(selectedRiskTask)
+  const inspectorEvents = getInspectorEvents(snapshot.activity, selectedAgent.id)
+  const suggestedAction = getSuggestedAction(selectedAgent, selectedTask, hasSelectedRisk)
   const activeTasks = snapshot.tasks.filter((task) =>
     ['in_progress', 'delegated', 'waiting', 'blocked', 'queued'].includes(task.status),
   )
@@ -355,7 +406,7 @@ export function CommandRoomPage() {
           <div className="panel-heading">
             <div>
               <p className="eyebrow">Інспектор</p>
-              <h2>Обраний агент</h2>
+              <h2>Operator card</h2>
             </div>
             <span className={`status status--${selectedAgent.status}`}>
               {statusLabel[selectedAgent.status]}
@@ -370,6 +421,9 @@ export function CommandRoomPage() {
               <p>{getAgentRole(selectedAgent)}</p>
             </div>
           </div>
+          <p className="inspector-brief">
+            {selectedAgent.summary ?? 'Read-only agent snapshot без live керування.'}
+          </p>
           <dl>
             <div>
               <dt>Поточна задача</dt>
@@ -387,22 +441,65 @@ export function CommandRoomPage() {
               <dt>Задач у роботі</dt>
               <dd>{selectedAgentTasks.length}</dd>
             </div>
+            <div>
+              <dt>Останній сигнал</dt>
+              <dd>{selectedAgent.lastSeen ?? snapshot.generatedAt}</dd>
+            </div>
           </dl>
-          <div className="inspector-summary">
-            {selectedAgentTasks.length > 0 ? (
-              selectedAgentTasks.map((task) => (
-                <article key={task.id}>
-                  <strong>{task.title}</strong>
-                  <span>{taskLabel[task.status]}</span>
+          {hasSelectedRisk ? (
+            <section className="inspector-risk" aria-label="Risk or blocker">
+              <span>Risk / blocker</span>
+              <strong>{selectedRiskTask?.title ?? statusLabel[selectedAgent.status]}</strong>
+              <p>{getRiskReason(selectedAgent, selectedRiskTask)}</p>
+            </section>
+          ) : null}
+          <section className="inspector-block" aria-label="Related tasks">
+            <div className="inspector-block__heading">
+              <h3>Related tasks</h3>
+              <span>{selectedAgentTasks.length}</span>
+            </div>
+            <div className="inspector-summary">
+              {selectedAgentTasks.length > 0 ? (
+                selectedAgentTasks.map((task) => (
+                  <article key={task.id}>
+                    <div>
+                      <strong>{task.title}</strong>
+                      {task.dependency ? <small>Dependency: {task.dependency}</small> : null}
+                    </div>
+                    <span className={`task-state task-state--${task.status}`}>
+                      {taskLabel[task.status]}
+                    </span>
+                  </article>
+                ))
+              ) : (
+                <article>
+                  <div>
+                    <strong>Backlog порожній</strong>
+                    <small>Немає активних залежностей</small>
+                  </div>
+                  <span className="task-state task-state--completed">Резерв</span>
                 </article>
-              ))
-            ) : (
-              <article>
-                <strong>Backlog порожній</strong>
-                <span>Готовий до делегування</span>
-              </article>
-            )}
-          </div>
+              )}
+            </div>
+          </section>
+          <section className="inspector-block" aria-label="Agent activity">
+            <div className="inspector-block__heading">
+              <h3>Activity</h3>
+              <span>{inspectorEvents.length}</span>
+            </div>
+            <ol className="inspector-events">
+              {inspectorEvents.map((event) => (
+                <li key={event.id}>
+                  <time>{event.timestamp}</time>
+                  <p>{event.summary}</p>
+                </li>
+              ))}
+            </ol>
+          </section>
+          <section className="inspector-next" aria-label="Next suggested read-only action">
+            <span>Next read-only action</span>
+            <strong>{suggestedAction}</strong>
+          </section>
         </aside>
 
         <section className="panel timeline" aria-label="Таймлайн активності">

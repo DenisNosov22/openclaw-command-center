@@ -15,6 +15,9 @@ export interface Agent {
   role: string
   status: AgentStatus
   currentTaskId?: string
+  summary?: string
+  lastSeen?: string
+  blockerReason?: string
 }
 
 export interface Task {
@@ -23,6 +26,9 @@ export interface Task {
   status: TaskStatus
   ownerAgentId: string
   priority: 'low' | 'medium' | 'high'
+  dependency?: string
+  nextStep?: string
+  blockerReason?: string
 }
 
 export interface ActivityEvent {
