@@ -236,7 +236,13 @@ assertIncludes(getBlock('.office-transfer::before'), 'opacity: 0', 'quiet defaul
 assertIncludes(stylesheetSource, '.office-transfer--danger::before', 'selective danger route labels')
 assertIncludes(stylesheetSource, 'opacity: 0.54', 'selective route label opacity')
 assertIncludes(componentSource, 'focusedSignalRoutes', 'only selected workflow signal routes render in the office floor')
-assertIncludes(componentSource, 'routedStations', 'only moving/handoff/selected simulation paths render in the office floor')
+assertIncludes(componentSource, 'routedStations', 'only active moving/handoff simulation paths render in the office floor')
+assertIncludes(componentSource, 'canAgentMove(', 'route visibility is gated by office movement predicate')
+const routedStationsSource = componentSource.slice(
+  componentSource.indexOf('const routedStations'),
+  componentSource.indexOf('const focusedSignalRoutes'),
+)
+assertNotIncludes(routedStationsSource, 'selectedAgentId', 'selected inactive agents must not render route SVG paths')
 assertIncludes(getBlock('.office-desk--blocked'), 'office-blocked-pulse', 'blocked calm red pulse')
 assertIncludes(getBlock('.office-desk--blocked'), '9.2s', 'slowed blocked pulse')
 assertIncludes(getBlock('.office-status-lamp--danger'), '#d4544d', 'red danger lamp')
@@ -533,14 +539,14 @@ assert.equal(blockedStation?.choreography.phaseLabel, 'resolve-pulse', 'alert lo
 assert.equal(restingStation?.activity, 'resting', 'completed task state maps to resting')
 assert.equal(restingStation?.action, 'resting', 'completed task state maps to resting action')
 assert.equal(restingStation?.choreography.phaseLabel, 'sofa-idle', 'resting loops through sofa idle phase')
-assert.equal(walkingStation?.activity, 'walking', 'queued task state maps to walking')
+assert.equal(walkingStation?.activity, 'monitoring', 'queued task state stays local monitoring')
 assert.deepEqual(
   { x: walkingStation?.x, y: walkingStation?.y, lane: walkingStation?.lane },
   { x: 15, y: 23, lane: 'north' },
   'research station stays in the top-left workstation row',
 )
-assert.equal(walkingStation?.action, 'walking', 'queued task state maps to walking action')
-assert.equal(walkingStation?.choreography.phaseLabel, 'path-step', 'walking loops through path/step phase')
+assert.equal(walkingStation?.action, 'monitoring', 'queued task state maps to local monitoring action')
+assert.equal(walkingStation?.choreography.phaseLabel, 'scan-check', 'queued task loops through local scan/check phase')
 assert.equal(handoffStation?.activity, 'handoff', 'delegated task state maps to handoff')
 assert.deepEqual(
   { x: handoffStation?.x, y: handoffStation?.y, lane: handoffStation?.lane },

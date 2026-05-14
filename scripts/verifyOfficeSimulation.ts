@@ -2,6 +2,7 @@ import { strict as assert } from 'node:assert'
 import { readFileSync } from 'node:fs'
 import { createOfficeSceneViewModel } from '../src/features/command-room/IsometricOfficeSceneModel.ts'
 import {
+  canAgentMove,
   createOfficeSimulation,
   getOfficeAgentSimulationTick,
   getOfficeAgentRouteProgress,
@@ -74,6 +75,28 @@ const simulation = createOfficeSimulation(snapshot.agents, snapshot.tasks)
 assert(OFFICE_ZONES.length >= 4, 'Expected office simulation zones')
 assert(OFFICE_DESKS.length >= snapshot.agents.length, 'Expected enough desks for visible agents')
 assert(OFFICE_PATHS.length >= 3, 'Expected deterministic office movement paths')
+
+for (const state of [
+  'active',
+  'working',
+  'running',
+  'reviewing',
+  'handoff',
+  'routing',
+  'transferring',
+  'escalating',
+  'blocked_escalation',
+  'in_progress',
+  'delegated',
+]) {
+  assert.equal(canAgentMove(state), true, `${state} should allow office movement`)
+}
+
+for (const state of ['idle', 'waiting', 'done', 'paused', 'queued', 'blocked', 'failed', 'completed', 'error']) {
+  assert.equal(canAgentMove(state), false, `${state} should keep agent at home station`)
+}
+
+assert.equal(canAgentMove('running', 'queued'), false, 'Inactive task status should suppress decorative movement')
 
 for (const agent of snapshot.agents) {
   const profile = OFFICE_AGENT_PROFILES[agent.role]
@@ -168,19 +191,34 @@ assert.equal(liveAgent.currentTask, 'Live integration placeholder', 'Live seam s
 assert.equal(liveAgent.activity, 'monitoring', 'Live seam should override activity')
 assert.equal(liveAgent.posture, 'standing', 'Live seam should override posture')
 
-const walkingBaseline = snapshot.agents.find((agent) => agent.id === 'agent-shturman')
-assert(walkingBaseline, 'Expected walking fixture agent')
-const earlyTick = getOfficeAgentSimulationTick(walkingBaseline, snapshot.tasks, {
+const queuedBaseline = snapshot.agents.find((agent) => agent.id === 'agent-shturman')
+assert(queuedBaseline, 'Expected queued fixture agent')
+const earlyTick = getOfficeAgentSimulationTick(queuedBaseline, snapshot.tasks, {
   elapsedMs: 1_000,
   mode: 'animated',
 })
-const lateTick = getOfficeAgentSimulationTick(walkingBaseline, snapshot.tasks, {
+const lateTick = getOfficeAgentSimulationTick(queuedBaseline, snapshot.tasks, {
   elapsedMs: 9_000,
   mode: 'animated',
 })
-assert.notDeepEqual(earlyTick.position, lateTick.position, 'Walking agent position should progress over time')
-assert.equal(earlyTick.progress, getOfficeAgentRouteProgress(walkingBaseline, 1_000), 'Tick progress should use bounded route helper')
-assert.equal(lateTick.progress, getOfficeAgentRouteProgress(walkingBaseline, 9_000), 'Late tick progress should use bounded route helper')
+assert.deepEqual(earlyTick.position, lateTick.position, 'Queued agent should stay at home station over time')
+assert.deepEqual(earlyTick.position, { x: 15, y: 23 }, 'Queued research agent should stay at canonical home desk')
+assert.equal(earlyTick.progress, 0, 'Queued agent should not expose route progress')
+assert.equal(lateTick.progress, 0, 'Late queued tick should not expose route progress')
+assert.equal(earlyTick.posture, 'standing', 'Queued agent should use local waiting posture instead of walking')
+
+const activeBaseline = snapshot.agents.find((agent) => agent.id === 'agent-dev')
+assert(activeBaseline, 'Expected active fixture agent')
+const activeTick = getOfficeAgentSimulationTick(activeBaseline, snapshot.tasks, {
+  elapsedMs: 1_000,
+  mode: 'animated',
+})
+
+assert(canAgentMove(activeBaseline.status, 'delegated', activeTick.activity), 'Delegated active task should allow movement cues')
+assert(
+  activeTick.posture === 'walking' || activeTick.posture === 'handoff',
+  'Delegated active task should expose walking or handoff posture',
+)
 
 for (const state of timedSimulation.agents) {
   assert(
@@ -203,7 +241,7 @@ for (const state of timedSimulation.agents) {
 }
 
 for (const elapsedMs of [-1_000, 0, 8_000, 32_000, Number.MAX_SAFE_INTEGER]) {
-  const progress = getOfficeAgentRouteProgress(walkingBaseline, elapsedMs)
+  const progress = getOfficeAgentRouteProgress(activeBaseline, elapsedMs)
 
   assert(progress >= 0 && progress <= 1, `Expected helper progress ${progress} to stay bounded`)
 }

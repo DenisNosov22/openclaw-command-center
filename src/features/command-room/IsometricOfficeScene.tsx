@@ -5,6 +5,7 @@ import type {
   OfficeAgentLiveStatusInput,
   OfficeSimulationMode,
 } from './OfficeSimulationModel'
+import { canAgentMove } from './OfficeSimulationModel'
 import {
   getOfficeAgentMarkerClassName,
   getOfficeStationClassName,
@@ -134,9 +135,12 @@ export function IsometricOfficeScene({
   )
   const routedStations = stations.filter(
     (station) =>
-      station.simulation.posture === 'walking' ||
-      station.simulation.posture === 'handoff' ||
-      station.agentId === selectedAgentId,
+      (station.simulation.posture === 'walking' || station.simulation.posture === 'handoff') &&
+      canAgentMove(
+        station.simulation.statusBadge,
+        station.simulation.activity,
+        station.simulation.posture,
+      ),
   )
   const focusedSignalRoutes = signalRoutes.filter((route) => route.isSelected).slice(0, 2)
 
