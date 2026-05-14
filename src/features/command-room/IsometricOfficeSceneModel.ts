@@ -101,10 +101,10 @@ const officeStationLayout: Array<Pick<OfficeAgentStation, 'x' | 'y' | 'lane'>> =
   { x: 15, y: 76, lane: 'south' },
   { x: 13, y: 29, lane: 'north' },
   { x: 42, y: 31, lane: 'east' },
-  { x: 25, y: 43, lane: 'north' },
+  { x: 8, y: 49, lane: 'north' },
   { x: 84, y: 70, lane: 'east' },
   { x: 73, y: 62, lane: 'east' },
-  { x: 86, y: 51, lane: 'east' },
+  { x: 86, y: 22, lane: 'east' },
   { x: 72, y: 75, lane: 'south' },
 ]
 
@@ -114,10 +114,10 @@ const roleOfficeLayout: Record<string, Pick<OfficeAgentStation, 'x' | 'y' | 'lan
   ops: { x: 15, y: 76, lane: 'south' },
   research: { x: 13, y: 29, lane: 'north' },
   requirements: { x: 42, y: 31, lane: 'east' },
-  QA: { x: 25, y: 43, lane: 'north' },
+  QA: { x: 8, y: 49, lane: 'north' },
   video: { x: 84, y: 70, lane: 'east' },
   'UI/layout': { x: 73, y: 62, lane: 'east' },
-  marketing: { x: 86, y: 51, lane: 'east' },
+  marketing: { x: 86, y: 22, lane: 'east' },
   trading: { x: 72, y: 75, lane: 'south' },
 }
 

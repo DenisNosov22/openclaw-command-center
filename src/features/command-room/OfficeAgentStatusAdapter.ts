@@ -184,8 +184,10 @@ function getLiveHomePosture(
   const profile = getAgentProfile(agent)
   const desk = profile ? getOfficeDesk(profile.deskId) : undefined
   const seatedAnchorKinds = new Set([
+    'camera-studio-standing-mark',
     'meeting-table-chair-edge-seat',
     'pc-chair-workstation-seat',
+    'presentation-showcase-wall-spot',
     'server-admin-console-seat',
     'trading-monitor-chair',
   ])
@@ -241,23 +243,12 @@ export function createOfficeAgentStatusFixture(
     .filter((agent) => getAgentProfile(agent))
     .map((agent, index) => {
       const state = fixtureStates[index % fixtureStates.length]
-      const targetRoleByRole: Partial<Record<Agent['role'], string>> = {
-        coding: 'QA',
-        marketing: 'QA',
-      }
-      const targetRole = targetRoleByRole[agent.role]
-      const progressByRole: Partial<Record<Agent['role'], number>> = {
-        coding: 0.58,
-        marketing: 0.74,
-      }
-
       return {
         agentId: agent.id,
         name: agent.name,
         state,
         currentTask: agent.summary ?? 'Live status fixture',
         updatedAt,
-        ...(targetRole ? { progress: progressByRole[agent.role] ?? 0.5, targetRole } : {}),
       }
     })
 }

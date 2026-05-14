@@ -81,14 +81,14 @@ function usePrefersReducedMotion() {
 }
 
 function useOfficeSimulationElapsedMs(mode: OfficeSimulationMode, controlledElapsedMs?: number) {
-  const [elapsedMs, setElapsedMs] = useState(1_200)
+  const [elapsedMs, setElapsedMs] = useState(0)
 
   useEffect(() => {
     if (controlledElapsedMs !== undefined || mode === 'static') {
       return undefined
     }
 
-    const startedAt = performance.now() - 1_200
+    const startedAt = performance.now()
     const intervalId = window.setInterval(() => {
       setElapsedMs(Math.round(performance.now() - startedAt))
     }, 360)
@@ -112,7 +112,7 @@ export function IsometricOfficeScene({
   onSelectAgent,
   liveSimulation,
   simulationElapsedMs,
-  simulationMode = 'animated',
+  simulationMode = 'static',
 }: IsometricOfficeSceneProps) {
   const prefersReducedMotion = usePrefersReducedMotion()
   const effectiveSimulationMode = prefersReducedMotion ? 'static' : simulationMode

@@ -58,10 +58,10 @@ assertIncludes(modelSource, "coding: { x: 17, y: 46, lane: 'north' }", 'coding s
 assertIncludes(modelSource, "ops: { x: 15, y: 76, lane: 'south' }", 'ops station sits on the bottom-left server/admin console chair')
 assertIncludes(modelSource, "research: { x: 13, y: 29, lane: 'north' }", 'research station stays on the upper-left PC chair row')
 assertIncludes(modelSource, "requirements: { x: 42, y: 31, lane: 'east' }", 'spec station is seated at a central meeting-table chair')
-assertIncludes(modelSource, "QA: { x: 25, y: 43, lane: 'north' }", 'QA station is moved to a left workstation PC chair')
+assertIncludes(modelSource, "QA: { x: 8, y: 49, lane: 'north' }", 'QA station is moved to a left workstation PC chair')
 assertIncludes(modelSource, "video: { x: 84, y: 70, lane: 'east' }", 'director station stands by the camera/studio furniture without edge clipping')
 assertIncludes(modelSource, "'UI/layout': { x: 73, y: 62, lane: 'east' }", 'design/layout station sits at the right design workstation')
-assertIncludes(modelSource, "marketing: { x: 86, y: 51, lane: 'east' }", 'marketing visuals station stands beside the right visual wall')
+assertIncludes(modelSource, "marketing: { x: 86, y: 22, lane: 'east' }", 'marketing visuals station anchors beside the right visual wall furniture')
 assertIncludes(modelSource, "trading: { x: 72, y: 75, lane: 'south' }", 'trading station sits at the bottom-right multi-monitor desk chair')
 assertIncludes(modelSource, "marketing: 'Вітрина'", 'marketing visuals agent gets a readable station label')
 assertIncludes(modelSource, 'export interface OfficeSignalRoute', 'typed office signal route model')
@@ -542,7 +542,7 @@ assert.equal(onlineStation?.choreography.routeInvolvement, true, 'working routed
 assert.equal(busyStation?.activity, 'monitoring', 'waiting status maps to monitoring')
 assert.deepEqual(
   { x: busyStation?.x, y: busyStation?.y, lane: busyStation?.lane },
-  { x: 25, y: 43, lane: 'north' },
+  { x: 8, y: 49, lane: 'north' },
   'QA station sits at a visible left workstation PC chair with aisle clearance',
 )
 assert.equal(busyStation?.terminalMode, 'monitoring', 'waiting task maps to monitoring')
@@ -579,10 +579,10 @@ assert.equal(handoffStation?.choreography.phaseLabel, 'signal-transfer', 'handof
 assert.equal(marketingStation?.name, 'Вітрина', 'marketing visuals agent renders as its own office station')
 assert.deepEqual(
   { x: marketingStation?.x, y: marketingStation?.y, lane: marketingStation?.lane },
-  { x: 86, y: 51, lane: 'east' },
+  { x: 86, y: 22, lane: 'east' },
   'marketing visuals station sits fully inside the right visual presentation wall',
 )
-assert.equal(marketingStation?.simulation.posture, 'standing', 'marketing visuals agent stands at the visual wall instead of sitting at a generic desk')
+assert.equal(marketingStation?.simulation.posture, 'sitting', 'marketing visuals agent sits at the visual wall furniture instead of standing in open floor')
 assert.equal(marketingStation?.professionProp, 'canvas', 'marketing visuals station uses visual canvas profession prop')
 assert.equal(marketingStation?.activityState, 'presenting', 'marketing visuals station has its own activity state')
 assert.equal(marketingStation?.simulation.deskId, 'desk-marketing', 'marketing visuals simulation maps to dedicated desk')

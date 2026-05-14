@@ -270,13 +270,13 @@ async function verifyOfficeDom(page: Page) {
     const checks = [
       ['agent-krab', getCenter(".office-floor-agent[data-agent-id='agent-krab']"), 44, 52, 33, 40],
       ['agent-dev', getCenter(".office-floor-agent[data-agent-id='agent-dev']"), 16, 24, 41, 49],
-      ['agent-varta', getCenter(".office-floor-agent[data-agent-id='agent-varta']"), 24, 32, 41, 49],
+      ['agent-varta', getCenter(".office-floor-agent[data-agent-id='agent-varta']"), 6, 12, 48, 54],
       ['agent-shturman', getCenter(".office-floor-agent[data-agent-id='agent-shturman']"), 9, 17, 25, 33],
       ['agent-spec', getCenter(".office-floor-agent[data-agent-id='agent-spec']"), 40, 48, 29, 37],
       ['agent-bastion', getCenter(".office-floor-agent[data-agent-id='agent-bastion']"), 12, 20, 70, 78],
       ['agent-desk', getCenter(".office-floor-agent[data-agent-id='agent-desk']"), 68, 76, 70, 80],
       ['agent-verstalnyk', getCenter(".office-floor-agent[data-agent-id='agent-verstalnyk']"), 70, 84, 52, 64],
-      ['agent-vitryna', getCenter(".office-floor-agent[data-agent-id='agent-vitryna']"), 76, 90, 42, 56],
+      ['agent-vitryna', getCenter(".office-floor-agent[data-agent-id='agent-vitryna']"), 82, 90, 20, 26],
       ['agent-rezhyser', getCenter(".office-floor-agent[data-agent-id='agent-rezhyser']"), 80, 88, 66, 74],
     ] as const
 
@@ -412,7 +412,7 @@ async function verifyOfficeDom(page: Page) {
 
     const checks = [
       ['agent-verstalnyk', getCenter('agent-verstalnyk'), 70, 84, 52, 64],
-      ['agent-varta', getCenter('agent-varta'), 24, 32, 41, 49],
+      ['agent-varta', getCenter('agent-varta'), 6, 12, 48, 54],
       ['agent-spec', getCenter('agent-spec'), 40, 48, 29, 37],
     ] as const
 
@@ -481,14 +481,14 @@ async function verifyOfficeDom(page: Page) {
       issues.push('agent-varta: missing')
     } else {
       const inCentralLane = varta.x >= 36 && varta.x <= 64 && varta.y >= 45 && varta.y <= 70
-      const atPcChair = varta.x >= 24 && varta.x <= 32 && varta.y >= 41 && varta.y <= 49
+      const atPcChair = varta.x >= 6 && varta.x <= 12 && varta.y >= 48 && varta.y <= 54
 
       if (varta.posture !== 'sitting' && varta.posture !== 'working') {
         issues.push(`agent-varta: ${varta.posture ?? 'unknown'} posture`)
       }
 
       if (inCentralLane || !atPcChair) {
-        issues.push(`agent-varta: ${Math.round(varta.x)},${Math.round(varta.y)} not anchored to left PC chair`)
+        issues.push(`agent-varta: ${Math.round(varta.x)},${Math.round(varta.y)} not anchored to lower-left PC chair`)
       }
     }
 
@@ -535,6 +535,48 @@ async function verifyOfficeDom(page: Page) {
     `Inactive/home agents should not occupy the central wooden movement corridor: ${stationaryCentralWalkwayIssues.join('; ')}`,
   )
 
+  const rightOpenFloorIssues = await page.evaluate(() => {
+    if (window.innerWidth <= 430) {
+      return []
+    }
+
+    const office = document.querySelector<HTMLElement>('.isometric-office')
+    const officeBox = office?.getBoundingClientRect()
+
+    if (!officeBox) {
+      return ['missing office bounds']
+    }
+
+    return ['agent-vitryna', 'agent-rezhyser', 'agent-verstalnyk', 'agent-desk']
+      .map((agentId) => {
+        const agent = document.querySelector<HTMLElement>(`.office-floor-agent[data-agent-id='${agentId}']`)
+        const box = agent?.getBoundingClientRect()
+
+        if (!agent || !box) {
+          return `${agentId}: missing`
+        }
+
+        if (agent.dataset.agentPosture === 'walking' || agent.dataset.agentPosture === 'handoff') {
+          return `${agentId}: unexpected route posture`
+        }
+
+        const x = ((box.left + box.width / 2 - officeBox.left) / officeBox.width) * 100
+        const y = ((box.top + box.height / 2 - officeBox.top) / officeBox.height) * 100
+        const inRightOpenRug = x >= 78 && x <= 94 && y >= 33 && y <= 64
+
+        return inRightOpenRug
+          ? `${agentId}: ${Math.round(x)},${Math.round(y)} in right open floor`
+          : ''
+      })
+      .filter(Boolean)
+  })
+
+  assert.deepEqual(
+    rightOpenFloorIssues,
+    [],
+    `Right-side roles should anchor to workstation/showcase/camera furniture, not the open rug: ${rightOpenFloorIssues.join('; ')}`,
+  )
+
   assert.equal(await page.locator('.office-core, .command-core').count(), 0, 'Large central core/card block should not render in the office scene')
   assert.equal(await page.locator('.office-zones, .office-zone, .office-zone-label, .debug-rect, [data-debug-rect]').count(), 0, 'Office zone/debug overlays should not render')
   assert((await page.locator('.office-desk').count()) >= 4, 'Expected multiple office stations')
@@ -545,23 +587,16 @@ async function verifyOfficeDom(page: Page) {
   const isReducedMotion = await page.evaluate(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches)
   const walkingAgentCount = await page.locator(".office-floor-agent[data-agent-posture='walking']").count()
   const routeActiveAgentCount = await page.locator(".office-floor-agent[data-agent-posture='walking'], .office-floor-agent[data-agent-posture='handoff']").count()
-  if (isReducedMotion) {
-    assert(routeActiveAgentCount <= 1, `Reduced-motion Office should keep route/handoff fallback capped, found ${routeActiveAgentCount}`)
-  } else {
-    assert(walkingAgentCount >= 1, `Expected at least one simulation walking posture in default/mock view, found ${walkingAgentCount}`)
-    assert(routeActiveAgentCount <= 1, `Expected active moving/handoff agents to stay capped, found ${routeActiveAgentCount}`)
-  }
+  assert.equal(walkingAgentCount, 0, `Default/mock desktop Office should start seated with no walking agents, found ${walkingAgentCount}`)
+  assert.equal(routeActiveAgentCount, 0, `Default/mock desktop Office should not expose moving/handoff agents, found ${routeActiveAgentCount}`)
   assert((await page.locator(".office-floor-agent[data-agent-posture='working'], .office-floor-agent[data-agent-posture='sitting']").count()) >= 1, 'Expected at least one calmer desk posture')
   assert((await page.locator(".office-floor-agent[data-agent-posture='blocked'], .office-floor-agent[data-agent-activity='monitoring']").count()) >= 1, 'Expected blocked or monitoring status marker state')
   assert((await page.locator('.office-agent-route-map').count()) === 1, 'Expected simulation route SVG overlay')
   const routePathCount = await page.locator('.office-agent-route[data-agent-path] polyline').count()
-  assert(routePathCount >= 1, 'Expected focused agent path cues keyed by path id')
-  assert(routePathCount <= 1, `Expected routes to stay focused and not clutter the floor, found ${routePathCount}`)
-  assert((await page.locator(".office-agent-route--walking, .office-agent-route--handoff").count()) >= 1, 'Expected active movement or handoff route cues')
-  if (!isReducedMotion) {
-    assert((await page.locator(".office-floor-agent[data-agent-posture='walking'] .office-agent-trail").count()) >= 1, 'Expected walking agents to expose movement trails')
-  }
-  assert((await page.locator(".office-floor-agent[data-agent-posture='walking'] .office-agent-direction-arrow, .office-floor-agent[data-agent-posture='handoff'] .office-agent-direction-arrow").count()) >= 1, 'Expected moving/handoff agents to expose direction arrows')
+  assert.equal(routePathCount, 0, `Default/mock desktop Office should keep central route overlay quiet, found ${routePathCount}`)
+  assert.equal(await page.locator(".office-agent-route--walking, .office-agent-route--handoff").count(), 0, 'Default/mock desktop Office should not render active movement or handoff route cues')
+  assert.equal(await page.locator(".office-floor-agent[data-agent-posture='walking'] .office-agent-trail").count(), 0, 'Default/mock desktop Office should not show walking trails')
+  assert.equal(await page.locator(".office-floor-agent[data-agent-posture='walking'] .office-agent-direction-arrow, .office-floor-agent[data-agent-posture='handoff'] .office-agent-direction-arrow").count(), 0, 'Default/mock desktop Office should not show moving/handoff direction arrows')
   assert((await page.locator('.office-agent-status-cue').count()) >= 10, 'Expected compact status cues on simulation agents')
   assert((await page.locator('.office-agent-action-cue').count()) >= 10, 'Expected role-specific action cues on simulation agents')
   assert((await page.locator(".office-floor-agent[data-activity-state='coding'] .office-agent-action-cue").count()) >= 1, 'Expected coding spark cue')
@@ -688,51 +723,7 @@ async function verifyOfficeDom(page: Page) {
     `Floor agents should expose simulation position and target CSS variables: ${agentsMissingSimulationPosition.join('; ')}`,
   )
 
-  if (!isReducedMotion) {
-    const firstMovementSample = await page.evaluate(() =>
-      [...document.querySelectorAll<HTMLElement>(".office-floor-agent[data-agent-posture='walking']")]
-        .slice(0, 4)
-        .map((agent) => {
-          const box = agent.getBoundingClientRect()
-
-          return {
-            id: agent.dataset.agentId ?? 'unknown',
-            progress: agent.dataset.agentProgress ?? '',
-            x: Math.round(box.left + box.width / 2),
-            y: Math.round(box.top + box.height / 2),
-          }
-        }),
-    )
-
-    await page.waitForTimeout(900)
-
-    const secondMovementSample = await page.evaluate(() =>
-      [...document.querySelectorAll<HTMLElement>(".office-floor-agent[data-agent-posture='walking']")]
-        .slice(0, 4)
-        .map((agent) => {
-          const box = agent.getBoundingClientRect()
-
-          return {
-            id: agent.dataset.agentId ?? 'unknown',
-            progress: agent.dataset.agentProgress ?? '',
-            x: Math.round(box.left + box.width / 2),
-            y: Math.round(box.top + box.height / 2),
-          }
-        }),
-    )
-    const movingEvidence = firstMovementSample.some((first) => {
-      const second = secondMovementSample.find((sample) => sample.id === first.id)
-
-      return second
-        ? second.progress !== first.progress || Math.hypot(second.x - first.x, second.y - first.y) >= 2
-        : false
-    })
-
-    assert(
-      movingEvidence,
-      `Expected walking agents to change route progress/position over time; before ${JSON.stringify(firstMovementSample)}, after ${JSON.stringify(secondMovementSample)}`,
-    )
-  }
+  assert(!isReducedMotion || routeActiveAgentCount === 0, 'Reduced-motion Office also keeps the default seated screenshot static')
 
   const deskSpreadIssues = await page.evaluate(() => {
     if (window.innerWidth <= 430) {

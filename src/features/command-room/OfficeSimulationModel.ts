@@ -241,7 +241,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     label: 'QA/Sec',
     anchorKind: 'pc-chair-workstation-seat',
     defaultAction: 'reviewing',
-    point: { x: 25, y: 43 },
+    point: { x: 8, y: 49 },
     lane: 'north',
   },
   {
@@ -271,7 +271,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     label: 'Вітрина',
     anchorKind: 'presentation-showcase-wall-spot',
     defaultAction: 'working',
-    point: { x: 86, y: 51 },
+    point: { x: 86, y: 22 },
     lane: 'east',
   },
   {
@@ -319,10 +319,7 @@ export const OFFICE_PATHS: OfficePath[] = [
   },
 ]
 
-const standingHomeRoles = new Set([
-  'marketing',
-  'video',
-])
+const standingHomeRoles = new Set<string>()
 
 const seatedHomeRoles = new Set([
   'main/orchestrator',
@@ -330,8 +327,11 @@ const seatedHomeRoles = new Set([
   'coding',
   'ops',
   'research',
+  'requirements',
   'trading',
   'UI/layout',
+  'marketing',
+  'video',
 ])
 
 export const OFFICE_AGENT_PROFILES: Record<string, OfficeAgentProfile> = {
@@ -562,10 +562,10 @@ const officeHubCorridorsByDesk: Record<OfficeDeskId, OfficePoint[]> = {
   'desk-ops': [{ x: 16, y: 73 }, { x: 22, y: 66 }, { x: 38, y: 55 }, { x: 49, y: 49 }],
   'desk-research': [{ x: 16, y: 35 }, { x: 35, y: 39 }, { x: 46, y: 46 }],
   'desk-spec': [{ x: 43, y: 36 }, { x: 47, y: 42 }],
-  'desk-qa': [{ x: 28, y: 47 }, { x: 37, y: 53 }, { x: 45, y: 52 }],
+  'desk-qa': [{ x: 12, y: 50 }, { x: 24, y: 52 }, { x: 37, y: 53 }, { x: 45, y: 52 }],
   'desk-video': [{ x: 82, y: 69 }, { x: 70, y: 64 }, { x: 58, y: 55 }, { x: 49, y: 49 }],
   'desk-layout': [{ x: 72, y: 61 }, { x: 62, y: 55 }, { x: 52, y: 48 }],
-  'desk-marketing': [{ x: 84, y: 51 }, { x: 68, y: 51 }, { x: 56, y: 48 }],
+  'desk-marketing': [{ x: 86, y: 30 }, { x: 68, y: 44 }, { x: 56, y: 48 }],
   'desk-trading': [{ x: 69, y: 73 }, { x: 58, y: 61 }, { x: 49, y: 49 }],
 }
 
@@ -706,11 +706,11 @@ function getSimulationPosture(
   }
 
   if (activity === 'working') {
-    return 'working'
+    return profile.role === 'marketing' || profile.role === 'video' ? 'sitting' : 'working'
   }
 
   if (activity === 'idle') {
-    return 'idle'
+    return seatedHomeRoles.has(profile.role) ? 'sitting' : 'idle'
   }
 
   if (activity === 'monitoring') {

@@ -1478,28 +1478,34 @@
 
 .office-floor-agent[data-agent-posture='working'],
 .office-floor-agent[data-agent-posture='sitting'] {
+  --office-agent-shift-x: 0px;
+  --office-agent-shift-y: 0px;
   --office-agent-state-color: #bdb5aa;
   opacity: 0.92;
 }
 
 .office-floor-agent--north[data-agent-posture='working'],
 .office-floor-agent--north[data-agent-posture='sitting'] {
-  --office-agent-shift-y: 66px;
+  --office-agent-shift-x: 0px;
+  --office-agent-shift-y: 0px;
 }
 
 .office-floor-agent--east[data-agent-posture='working'],
 .office-floor-agent--east[data-agent-posture='sitting'] {
-  --office-agent-shift-x: -66px;
+  --office-agent-shift-x: 0px;
+  --office-agent-shift-y: 0px;
 }
 
 .office-floor-agent--south[data-agent-posture='working'],
 .office-floor-agent--south[data-agent-posture='sitting'] {
-  --office-agent-shift-y: -66px;
+  --office-agent-shift-x: 0px;
+  --office-agent-shift-y: 0px;
 }
 
 .office-floor-agent--west[data-agent-posture='working'],
 .office-floor-agent--west[data-agent-posture='sitting'] {
-  --office-agent-shift-x: 66px;
+  --office-agent-shift-x: 0px;
+  --office-agent-shift-y: 0px;
 }
 
 .office-floor-agent[data-agent-posture='handoff'] {

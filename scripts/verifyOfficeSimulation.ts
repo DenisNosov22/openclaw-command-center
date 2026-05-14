@@ -171,7 +171,7 @@ assert.deepEqual(
 const redistributedDeskIssues = ([
   ['desk-command', 44, 48, 33, 37],
   ['desk-spec', 40, 48, 29, 37],
-  ['desk-qa', 23, 28, 40, 46],
+  ['desk-qa', 7, 10, 48, 51],
   ['desk-layout', 72, 76, 59, 65],
   ['desk-ops', 13, 18, 73, 79],
   ['desk-video', 82, 86, 68, 72],
@@ -391,7 +391,7 @@ const liveHandoffSimulation = createOfficeSimulation(snapshot.agents, snapshot.t
       activity: 'handoff',
       posture: 'handoff',
       statusBadge: 'transferring',
-      target: { x: 25, y: 43 },
+      target: { x: 8, y: 49 },
     },
   },
 })
@@ -402,7 +402,7 @@ assert(
   routeIncludesPoint(liveHandoffAgent.route, OFFICE_COORDINATION_HUB_POINT),
   'Live handoff route should pass through Краб central hub before continuing',
 )
-assert.deepEqual(liveHandoffAgent.target, { x: 25, y: 43 }, 'Live handoff route may continue from hub to target station')
+assert.deepEqual(liveHandoffAgent.target, { x: 8, y: 49 }, 'Live handoff route may continue from hub to target station')
 
 const queuedBaseline = snapshot.agents.find((agent) => agent.id === 'agent-shturman')
 assert(queuedBaseline, 'Expected queued fixture agent')
@@ -437,7 +437,7 @@ assert.deepEqual(completedSpec.position, { x: 42, y: 31 }, 'Completed spec stays
 assert.equal(completedSpec.posture, 'sitting', 'Completed spec sits at the table instead of floating in the aisle')
 assert.deepEqual(completedSpec.route, [{ x: 42, y: 31 }], 'Completed spec should not expose a walking route to the hub')
 assert.deepEqual(idleDirector.position, { x: 84, y: 70 }, 'Idle director stays by the camera/studio home station')
-assert.equal(idleDirector.posture, 'standing', 'Idle director stands near the camera/studio setup')
+assert.equal(idleDirector.posture, 'sitting', 'Idle director stays seated at the camera/studio workstation')
 assert.deepEqual(idleDirector.route, [{ x: 84, y: 70 }], 'Idle director should not expose a walking route to the hub')
 assert.deepEqual(waitingOps.position, { x: 15, y: 76 }, 'Waiting ops stays at the bottom-left server/admin console')
 assert.equal(waitingOps.posture, 'sitting', 'Waiting ops monitors from the admin console')
