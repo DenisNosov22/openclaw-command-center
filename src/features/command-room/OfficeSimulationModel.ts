@@ -136,6 +136,8 @@ export interface OfficeSimulation {
   agents: OfficeAgentSimulationState[]
 }
 
+export const OFFICE_COORDINATION_HUB_POINT: OfficePoint = { x: 51, y: 40 }
+
 export const OFFICE_ZONES: OfficeZone[] = [
   {
     id: 'command',
@@ -439,23 +441,23 @@ function interpolatePoint(from: OfficePoint, to: OfficePoint, progress: number):
   })
 }
 
-function getPathPoint(path: OfficePath, progress: number) {
+function getRoutePoint(points: OfficePoint[], progress: number) {
   const boundedProgress = clamp(progress, 0, 1)
 
-  if (path.points.length === 0) {
+  if (points.length === 0) {
     return { x: 0, y: 0 }
   }
 
-  if (path.points.length === 1) {
-    return path.points[0]
+  if (points.length === 1) {
+    return points[0]
   }
 
-  const segmentCount = path.points.length - 1
+  const segmentCount = points.length - 1
   const rawSegment = boundedProgress * segmentCount
   const segmentIndex = Math.min(Math.floor(rawSegment), segmentCount - 1)
   const segmentProgress = rawSegment - segmentIndex
-  const start = path.points[segmentIndex]
-  const end = path.points[segmentIndex + 1]
+  const start = points[segmentIndex]
+  const end = points[segmentIndex + 1]
 
   return interpolatePoint(start, end, segmentProgress)
 }
@@ -518,6 +520,57 @@ export function getOfficeDeskForProfession(role: string) {
 
 export function getOfficePath(pathId: OfficePathId) {
   return OFFICE_PATHS.find((path) => path.id === pathId)
+}
+
+function sameOfficePoint(left: OfficePoint, right: OfficePoint) {
+  return Math.abs(left.x - right.x) < 0.01 && Math.abs(left.y - right.y) < 0.01
+}
+
+const officeHubCorridorsByDesk: Record<OfficeDeskId, OfficePoint[]> = {
+  'desk-command': [],
+  'desk-coding': [{ x: 16, y: 50 }, { x: 34, y: 52 }, { x: 44, y: 50 }],
+  'desk-ops': [{ x: 20, y: 74 }, { x: 27, y: 67 }, { x: 34, y: 60 }, { x: 44, y: 54 }, { x: 51, y: 48 }],
+  'desk-research': [{ x: 20, y: 32 }, { x: 35, y: 38 }, { x: 46, y: 45 }],
+  'desk-spec': [{ x: 18, y: 32 }, { x: 35, y: 38 }, { x: 46, y: 45 }],
+  'desk-qa': [{ x: 24, y: 51 }, { x: 34, y: 52 }, { x: 44, y: 50 }],
+  'desk-video': [{ x: 78, y: 70 }, { x: 68, y: 60 }, { x: 56, y: 52 }, { x: 51, y: 48 }],
+  'desk-layout': [{ x: 17, y: 44 }, { x: 34, y: 52 }, { x: 44, y: 50 }],
+  'desk-marketing': [{ x: 70, y: 44 }, { x: 64, y: 50 }, { x: 56, y: 48 }],
+  'desk-trading': [{ x: 58, y: 64 }, { x: 52, y: 55 }, { x: 51, y: 48 }],
+}
+
+function getDeskByPoint(point: OfficePoint) {
+  return OFFICE_DESKS.find((desk) => sameOfficePoint(desk.point, point))
+}
+
+function getCoordinationHubRoute(desk: OfficeDesk, finalTarget = OFFICE_COORDINATION_HUB_POINT) {
+  const route = [
+    roundPoint(desk.point),
+    ...officeHubCorridorsByDesk[desk.id].map(roundPoint),
+    roundPoint(OFFICE_COORDINATION_HUB_POINT),
+  ]
+
+  if (sameOfficePoint(finalTarget, OFFICE_COORDINATION_HUB_POINT)) {
+    return route
+  }
+
+  const targetDesk = getDeskByPoint(finalTarget)
+  const continuation = targetDesk
+    ? [...officeHubCorridorsByDesk[targetDesk.id]].reverse()
+    : []
+
+  return [
+    ...route,
+    ...continuation.map(roundPoint),
+    roundPoint(finalTarget),
+  ]
+}
+
+function canContinueFromHub(...states: OfficeMovementState[]) {
+  return states
+    .filter(Boolean)
+    .map((state) => String(state))
+    .some((state) => state === 'handoff' || state === 'transferring' || state === 'delegated')
 }
 
 function getTaskLabel(task?: Task) {
@@ -635,15 +688,19 @@ function getSimulationPosture(
 
 function getAgentPosition(
   desk: OfficeDesk,
-  path: OfficePath | undefined,
+  route: OfficePoint[],
   posture: OfficeAgentPosture,
   progress = 0.5,
 ) {
-  if (posture !== 'walking' || !path) {
+  if (posture === 'handoff') {
+    return OFFICE_COORDINATION_HUB_POINT
+  }
+
+  if (posture !== 'walking') {
     return desk.point
   }
 
-  return getPathPoint(path, progress)
+  return getRoutePoint(route, progress)
 }
 
 function normalizeAgentHomeState(
@@ -694,14 +751,23 @@ function applyLiveStatus(
     ...liveStatus,
     position: liveStatus.position ? roundPoint(liveStatus.position) : state.position,
     target: liveStatus.target ? roundPoint(liveStatus.target) : state.target,
-    route: liveStatus.position
-      ? [roundPoint(liveStatus.position), liveStatus.target ? roundPoint(liveStatus.target) : state.target]
-      : state.route,
+    route: state.route,
   }
 
-  return canAgentMove(merged.statusBadge, merged.activity, merged.posture)
-    ? merged
-    : normalizeAgentHomeState(merged, getOfficeDesk(merged.deskId))
+  if (!canAgentMove(merged.statusBadge, merged.activity, merged.posture)) {
+    return normalizeAgentHomeState(merged, getOfficeDesk(merged.deskId))
+  }
+
+  const desk = getOfficeDesk(merged.deskId)
+  const target = liveStatus.target && canContinueFromHub(merged.statusBadge, merged.activity, merged.posture)
+    ? roundPoint(liveStatus.target)
+    : OFFICE_COORDINATION_HUB_POINT
+
+  return {
+    ...merged,
+    target: roundPoint(target),
+    route: getCoordinationHubRoute(desk, target),
+  }
 }
 
 export function getOfficeAgentSimulationTick(
@@ -712,7 +778,6 @@ export function getOfficeAgentSimulationTick(
   const profile = OFFICE_AGENT_PROFILES[agent.role] ?? { ...fallbackProfile, role: agent.role }
   const desk = getOfficeDesk(profile.deskId)
   const task = getAssignedTask(agent, tasks)
-  const path = getOfficePath(profile.pathId)
   const shouldAnimate = options.mode !== 'static' && Boolean(options.elapsedMs)
   const elapsedMs = shouldAnimate ? options.elapsedMs ?? 0 : 0
   const activity = shouldAnimate
@@ -720,7 +785,8 @@ export function getOfficeAgentSimulationTick(
     : getSimulationActivity(agent, profile, task)
   const posture = getSimulationPosture(activity, profile)
   const progress = getOfficeAgentRouteProgress(agent, elapsedMs)
-  const position = getAgentPosition(desk, path, posture, progress)
+  const route = getCoordinationHubRoute(desk)
+  const position = getAgentPosition(desk, route, posture, progress)
   const baseState = {
     agentId: agent.id,
     role: agent.role,
@@ -728,10 +794,10 @@ export function getOfficeAgentSimulationTick(
     deskId: profile.deskId,
     zoneId: profile.zoneId,
     pathId: profile.pathId,
-    route: path?.points.map(roundPoint) ?? [desk.point],
+    route,
     position,
     progress,
-    target: desk.point,
+    target: OFFICE_COORDINATION_HUB_POINT,
     activity,
     currentTask: getTimedTaskLabel(task, activity, elapsedMs),
     posture,
