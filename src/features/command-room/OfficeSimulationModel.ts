@@ -188,7 +188,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'Developer',
     label: 'Coding',
     defaultAction: 'working',
-    point: { x: 15, y: 49 },
+    point: { x: 15, y: 43 },
     lane: 'west',
   },
   {
@@ -197,7 +197,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'Operator',
     label: 'Ops',
     defaultAction: 'monitoring',
-    point: { x: 24, y: 82 },
+    point: { x: 19, y: 79 },
     lane: 'south',
   },
   {
@@ -206,7 +206,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'Researcher',
     label: 'Research',
     defaultAction: 'walking',
-    point: { x: 13, y: 24 },
+    point: { x: 15, y: 23 },
     lane: 'north',
   },
   {
@@ -215,7 +215,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'Spec writer',
     label: 'Spec',
     defaultAction: 'reviewing',
-    point: { x: 30, y: 32 },
+    point: { x: 30, y: 27 },
     lane: 'north',
   },
   {
@@ -224,7 +224,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'QA analyst',
     label: 'QA/Sec',
     defaultAction: 'reviewing',
-    point: { x: 38, y: 48 },
+    point: { x: 36, y: 42 },
     lane: 'east',
   },
   {
@@ -233,7 +233,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'Video director',
     label: 'Director',
     defaultAction: 'idle',
-    point: { x: 86, y: 76 },
+    point: { x: 87, y: 78 },
     lane: 'east',
   },
   {
@@ -242,7 +242,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'Layout designer',
     label: 'Layout',
     defaultAction: 'reviewing',
-    point: { x: 75, y: 58 },
+    point: { x: 83, y: 51 },
     lane: 'east',
   },
   {
@@ -251,7 +251,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'Marketing visuals',
     label: 'Вітрина',
     defaultAction: 'working',
-    point: { x: 84, y: 43 },
+    point: { x: 72, y: 34 },
     lane: 'east',
   },
   {
@@ -260,7 +260,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'Market watcher',
     label: 'Trading',
     defaultAction: 'monitoring',
-    point: { x: 59, y: 80 },
+    point: { x: 62, y: 76 },
     lane: 'south',
   },
 ]
@@ -270,31 +270,31 @@ export const OFFICE_PATHS: OfficePath[] = [
     id: 'path-command-delivery',
     fromZoneId: 'command',
     toZoneId: 'delivery',
-    points: [{ x: 51, y: 38 }, { x: 41, y: 44 }, { x: 27, y: 44 }, { x: 15, y: 49 }],
+    points: [{ x: 51, y: 38 }, { x: 45, y: 48 }, { x: 34, y: 51 }, { x: 24, y: 49 }, { x: 15, y: 43 }],
   },
   {
     id: 'path-delivery-ops',
     fromZoneId: 'delivery',
     toZoneId: 'ops',
-    points: [{ x: 38, y: 48 }, { x: 33, y: 59 }, { x: 26, y: 66 }, { x: 24, y: 82 }],
+    points: [{ x: 36, y: 42 }, { x: 34, y: 54 }, { x: 28, y: 64 }, { x: 21, y: 70 }, { x: 19, y: 79 }],
   },
   {
     id: 'path-research-design',
     fromZoneId: 'research',
     toZoneId: 'design',
-    points: [{ x: 13, y: 24 }, { x: 30, y: 32 }, { x: 47, y: 43 }, { x: 64, y: 55 }, { x: 75, y: 58 }],
+    points: [{ x: 15, y: 23 }, { x: 36, y: 34 }, { x: 47, y: 52 }, { x: 64, y: 52 }, { x: 83, y: 51 }],
   },
   {
     id: 'path-design-marketing',
     fromZoneId: 'design',
     toZoneId: 'marketing',
-    points: [{ x: 75, y: 58 }, { x: 82, y: 56 }, { x: 84, y: 43 }],
+    points: [{ x: 83, y: 51 }, { x: 78, y: 42 }, { x: 72, y: 34 }],
   },
   {
     id: 'path-market-handoff',
     fromZoneId: 'market',
     toZoneId: 'delivery',
-    points: [{ x: 59, y: 80 }, { x: 57, y: 70 }, { x: 49, y: 66 }, { x: 42, y: 70 }, { x: 34, y: 62 }],
+    points: [{ x: 62, y: 76 }, { x: 55, y: 63 }, { x: 45, y: 58 }, { x: 35, y: 55 }, { x: 28, y: 50 }],
   },
 ]
 

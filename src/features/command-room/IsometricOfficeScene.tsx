@@ -11,7 +11,7 @@ import {
   getOfficeStatusLampClassName,
   getOfficeTerminalClassName,
   OFFICE_SPRITE_TOKENS,
-  OFFICE_ZONE_TOKENS,
+  OFFICE_ROUTE_TOKENS,
 } from './IsometricOfficeSpriteSystem'
 
 function getOfficeFloorAgentClassName(station: ReturnType<typeof createOfficeSceneViewModel>['stations'][number]) {
@@ -153,14 +153,6 @@ export function IsometricOfficeScene({
         className="office-floor"
         role="img"
       />
-      <div className="office-zones" aria-hidden="true">
-        <span className={`office-area ${OFFICE_ZONE_TOKENS.desk}`} data-label="Desk rows" />
-        <span className={`office-area ${OFFICE_ZONE_TOKENS.sofa}`} data-label="Director corner" />
-        <span className={`office-area ${OFFICE_ZONE_TOKENS.hologram}`} data-label="Board wall" />
-        <span className="office-area office-area--marketing" data-label="Visual wall" />
-        <span className={OFFICE_ZONE_TOKENS.loungeSofa} />
-        <span className={OFFICE_ZONE_TOKENS.statusBoard} data-label="Live board" />
-      </div>
       <div className="office-room-props" aria-hidden="true">
         <span className="office-wall office-wall--back" />
         <span className="office-wall office-wall--left" />
@@ -172,10 +164,10 @@ export function IsometricOfficeScene({
         <span className="office-social-board office-social-board--marketing" />
         <span className="office-desk-cluster office-desk-cluster--north" />
         <span className="office-desk-cluster office-desk-cluster--south" />
-        <span className="office-zone-label office-zone-label--ops">Ops corner</span>
-        <span className="office-zone-label office-zone-label--design">Design wall</span>
-        <span className="office-zone-label office-zone-label--marketing">Visual wall</span>
-        <span className="office-zone-label office-zone-label--trade">Trading desk</span>
+        <span className="office-zone-label office-zone-label--ops">Ops</span>
+        <span className="office-zone-label office-zone-label--design">Studio</span>
+        <span className="office-zone-label office-zone-label--marketing">Visual</span>
+        <span className="office-zone-label office-zone-label--trade">Trading</span>
       </div>
       <div className="office-routes" aria-hidden="true">
         <svg
@@ -231,9 +223,9 @@ export function IsometricOfficeScene({
             )
           })}
         </svg>
-        <span className={`${OFFICE_ZONE_TOKENS.path} office-lane--inner`} />
-        <span className={`${OFFICE_ZONE_TOKENS.path} office-lane--outer`} />
-        <span className={OFFICE_ZONE_TOKENS.handoff} data-link="handoff" />
+        <span className={`${OFFICE_ROUTE_TOKENS.path} office-lane--inner`} />
+        <span className={`${OFFICE_ROUTE_TOKENS.path} office-lane--outer`} />
+        <span className={OFFICE_ROUTE_TOKENS.handoff} data-link="handoff" />
         {focusedSignalRoutes.map((route) => (
           <span
             className={`office-transfer office-transfer--${route.lane} office-transfer--${route.activity} office-transfer--${route.tone}${

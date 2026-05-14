@@ -130,15 +130,9 @@ export const OFFICE_SPRITE_TOKENS = {
   label: 'office-desk__label',
 } as const
 
-export const OFFICE_ZONE_TOKENS = {
-  desk: 'office-area--desk',
-  sofa: 'office-area--sofa',
-  hologram: 'office-area--hologram',
+export const OFFICE_ROUTE_TOKENS = {
   path: 'office-lane',
-  route: 'office-transfer',
   handoff: 'office-handoff-hub',
-  loungeSofa: 'office-lounge-sofa',
-  statusBoard: 'office-status-board',
 } as const
 
 export function getOfficeSpriteActionDefinition(

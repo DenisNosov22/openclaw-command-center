@@ -165,10 +165,8 @@ async function verifyOfficeDom(page: Page) {
     [],
     `Office scene wrapper should be visually flattened while room stays tall: ${officeWrapperIssues.join('; ')}`,
   )
-  await expectVisible(page.locator('.office-area--desk'), 'Desk/PC zone')
-  await expectVisible(page.locator('.office-area--sofa'), 'Sofa/rest zone')
-  await expectVisible(page.locator('.office-area--hologram'), 'Hologram/status zone')
-  await expectVisible(page.locator('.office-lounge-sofa'), 'Lounge sofa prop')
+  assert.equal(await page.locator('.office-zones').count(), 0, 'Removed office-zones DOM layer should not render')
+  assert.equal(await page.locator('.office-zones span, .office-area, .office-lounge-sofa, .office-status-board').count(), 0, 'Removed office-zone span/prop overlays should not render')
   await expectVisible(page.locator('.office-handoff-hub'), 'Handoff hub prop')
   await expectVisible(page.locator('.office-room-props'), 'Physical office room props layer')
   await expectVisible(page.locator('.office-wall--back'), 'Back wall room plane')

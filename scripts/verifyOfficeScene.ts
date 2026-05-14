@@ -8,7 +8,7 @@ import {
   getOfficeTerminalClassName,
   OFFICE_SPRITE_ACTIONS,
   OFFICE_SPRITE_TOKENS,
-  OFFICE_ZONE_TOKENS,
+  OFFICE_ROUTE_TOKENS,
 } from '../src/features/command-room/IsometricOfficeSpriteSystem.ts'
 import type { ActivityEvent, Agent, Task, WorkflowEdge, WorkflowNode } from '../src/shared/types/index.ts'
 
@@ -56,12 +56,12 @@ assertIncludes(modelSource, 'roleActivityState', 'profession-specific office act
 assertIncludes(modelSource, 'roleActivityLabel', 'compact profession activity labels')
 assertIncludes(modelSource, 'activityState: OfficeActivityState', 'typed profession activity state on stations')
 assertIncludes(modelSource, "'main/orchestrator': { x: 51, y: 38, lane: 'south' }", 'coordinator desk sits at the central meeting table')
-assertIncludes(modelSource, "coding: { x: 15, y: 49, lane: 'west' }", 'coding station sits on the mid-left row instead of the crowded top-left row')
-assertIncludes(modelSource, "ops: { x: 24, y: 82, lane: 'south' }", 'ops station sits by the server/admin console')
-assertIncludes(modelSource, "requirements: { x: 30, y: 32, lane: 'north' }", 'spec station is staggered below the research row')
-assertIncludes(modelSource, "QA: { x: 38, y: 48, lane: 'east' }", 'QA station is separated from the dev/spec cluster')
-assertIncludes(modelSource, "'UI/layout': { x: 75, y: 58, lane: 'east' }", 'design/layout station sits on the right presentation/design wall')
-assertIncludes(modelSource, "marketing: { x: 84, y: 43, lane: 'east' }", 'marketing visuals station sits inside the right visual wall zone without edge clipping')
+assertIncludes(modelSource, "coding: { x: 15, y: 43, lane: 'west' }", 'coding station sits on the lower-left workstation row')
+assertIncludes(modelSource, "ops: { x: 19, y: 79, lane: 'south' }", 'ops station sits by the bottom-left server/admin console')
+assertIncludes(modelSource, "requirements: { x: 30, y: 27, lane: 'north' }", 'spec station is staggered across the upper-left workstation row')
+assertIncludes(modelSource, "QA: { x: 36, y: 42, lane: 'east' }", 'QA station is separated on the lower-left row with aisle clearance')
+assertIncludes(modelSource, "'UI/layout': { x: 83, y: 51, lane: 'east' }", 'design/layout station sits in the right presentation/design wall')
+assertIncludes(modelSource, "marketing: { x: 72, y: 34, lane: 'east' }", 'marketing visuals station sits inside the right visual wall zone without edge clipping')
 assertIncludes(modelSource, "marketing: 'Вітрина'", 'marketing visuals agent gets a readable station label')
 assertIncludes(modelSource, 'export interface OfficeSignalRoute', 'typed office signal route model')
 assertIncludes(modelSource, 'export interface OfficeBehaviorChoreography', 'typed office behavior choreography metadata')
@@ -80,17 +80,14 @@ assertIncludes(componentSource, "from './IsometricOfficeSpriteSystem'", 'visual 
 assertIncludes(componentSource, 'getOfficeStationClassName', 'station view model to visual class mapper')
 assertIncludes(componentSource, 'getOfficeAgentMarkerClassName', 'sprite action to visual class mapper')
 assertIncludes(componentSource, 'OFFICE_SPRITE_TOKENS', 'sprite part token map usage')
-assertIncludes(componentSource, 'OFFICE_ZONE_TOKENS', 'office zone token map usage')
+assertNotIncludes(componentSource, 'className="office-zones"', 'removed office zone DOM wrapper')
+assertNotIncludes(componentSource, 'office-area', 'removed old office-zone span areas')
+assertIncludes(componentSource, 'OFFICE_ROUTE_TOKENS', 'office route token map usage')
 assertIncludes(componentSource, 'export function IsometricOfficeScene', 'office scene component')
 assertIncludes(componentSource, 'role="img"', 'accessible scene role')
 assertIncludes(componentSource, 'aria-label="2D game-like real office floor plan with agents working at profession stations"', 'scene aria label')
-assertIncludes(componentSource, 'OFFICE_ZONE_TOKENS.desk', 'desk/computer office zones')
-assertIncludes(componentSource, 'OFFICE_ZONE_TOKENS.sofa', 'sofa/rest office zone')
-assertIncludes(componentSource, 'OFFICE_ZONE_TOKENS.hologram', 'subtle hologram UI zone')
-assertIncludes(componentSource, 'OFFICE_ZONE_TOKENS.path', 'structured floor lane zone token')
-assertIncludes(componentSource, 'OFFICE_ZONE_TOKENS.handoff', 'structured handoff/signal zone token')
-assertIncludes(componentSource, 'OFFICE_ZONE_TOKENS.loungeSofa', 'structured visible lounge sofa token')
-assertIncludes(componentSource, 'OFFICE_ZONE_TOKENS.statusBoard', 'structured live office status board token')
+assertIncludes(componentSource, 'OFFICE_ROUTE_TOKENS.path', 'structured floor lane route token')
+assertIncludes(componentSource, 'OFFICE_ROUTE_TOKENS.handoff', 'structured handoff/signal route token')
 assertIncludes(componentSource, 'office-room-props', 'physical room props layer')
 assertIncludes(componentSource, 'office-wall office-wall--back', 'back wall room composition prop')
 assertIncludes(componentSource, 'office-rug office-rug--center', 'central rug/path room composition prop')
@@ -98,10 +95,10 @@ assertIncludes(componentSource, 'office-cabinet office-cabinet--ops', 'ops cabin
 assertIncludes(componentSource, 'office-whiteboard office-whiteboard--research', 'research whiteboard room prop')
 assertIncludes(componentSource, 'office-social-board office-social-board--marketing', 'marketing visuals wall prop')
 assertIncludes(componentSource, 'office-desk-cluster office-desk-cluster--north', 'desk cluster grounding prop')
-assertIncludes(componentSource, 'office-zone-label office-zone-label--ops', 'ops/server corner label')
-assertIncludes(componentSource, 'office-zone-label office-zone-label--design', 'design/marketing wall label')
-assertIncludes(componentSource, 'office-zone-label office-zone-label--marketing', 'marketing/visual wall label')
-assertIncludes(componentSource, 'office-zone-label office-zone-label--trade', 'trading desk label')
+assertIncludes(componentSource, 'office-zone-label office-zone-label--ops', 'tiny ops/server anchor label')
+assertIncludes(componentSource, 'office-zone-label office-zone-label--design', 'tiny design/studio anchor label')
+assertIncludes(componentSource, 'office-zone-label office-zone-label--marketing', 'tiny marketing/visual anchor label')
+assertIncludes(componentSource, 'office-zone-label office-zone-label--trade', 'tiny trading anchor label')
 assertNotIncludes(componentSource, 'office-core', 'office component source')
 assertNotIncludes(componentSource, 'command-core', 'office component source')
 assertNotIncludes(componentSource.toLowerCase(), 'orbital', 'office component source')
@@ -192,15 +189,10 @@ assertIncludes(getBlock('.office-whiteboard--research'), 'rgba(120, 212, 192, 0.
 assertIncludes(getBlock('.office-social-board--marketing'), 'linear-gradient(135deg', 'marketing/social board wall prop')
 assertIncludes(stylesheetSource, 'radial-gradient(ellipse, rgba(0, 0, 0, 0.24), transparent 70%)', 'muted desk cluster floor shadows')
 assertIncludes(getBlock('.office-zone-label'), 'text-transform: uppercase', 'office zone labels')
-assertIncludes(getBlock('.office-area'), 'position: absolute', 'office functional zones')
-assertIncludes(getBlock('.office-area--desk'), 'rgba(120, 212, 192', 'desk/computer zone cyan signal')
-assertIncludes(getBlock('.office-area--sofa'), 'rgba(215, 180, 92', 'sofa/rest zone gold accent')
-assertIncludes(getBlock('.office-area--hologram'), 'rgba(120, 212, 192', 'subtle hologram zone')
-assertIncludes(getBlock('.office-area--marketing'), 'rgba(212, 84, 77', 'marketing/visual wall zone')
-assertIncludes(getBlock('.office-lounge-sofa'), 'linear-gradient', 'visible sofa lounge shape')
-assertIncludes(getBlock('.office-lounge-sofa::before'), 'rgba(215, 180, 92', 'sofa cushion/back detail')
-assertIncludes(getBlock('.office-status-board'), 'repeating-linear-gradient', 'visible live status board lanes')
-assertIncludes(getBlock('.office-status-board::after'), 'office-board-pulse', 'subtle live board activity')
+assertNotIncludes(stylesheetSource, '.office-zones', 'removed office zone wrapper CSS')
+assertNotIncludes(stylesheetSource, '.office-area', 'removed old office-zone span CSS')
+assertNotIncludes(stylesheetSource, '.office-lounge-sofa', 'removed duplicate lounge furniture overlay')
+assertNotIncludes(stylesheetSource, '.office-status-board', 'removed duplicate status board overlay')
 assertNotIncludes(stylesheetSource, '.office-core', 'office CSS')
 assertNotIncludes(stylesheetSource, '.command-core', 'office CSS')
 assertNotIncludes(stylesheetSource, 'office-core-scan', 'office CSS')
@@ -374,12 +366,8 @@ assert.equal(OFFICE_SPRITE_TOKENS.activityChip, 'office-activity-chip', 'activit
 assert.equal(OFFICE_SPRITE_TOKENS.keyboardTray, 'office-keyboard-tray', 'keyboard/tool tray token is stable')
 assert.equal(OFFICE_SPRITE_TOKENS.worklog, 'office-desk-worklog', 'desk worklog token is stable')
 assert.equal(OFFICE_SPRITE_TOKENS.hands, 'office-agent-sprite__hands', 'worker hands token is stable')
-assert.equal(OFFICE_ZONE_TOKENS.desk, 'office-area--desk', 'desk zone token is stable')
-assert.equal(OFFICE_ZONE_TOKENS.sofa, 'office-area--sofa', 'sofa zone token is stable')
-assert.equal(OFFICE_ZONE_TOKENS.path, 'office-lane', 'walking path zone token is stable')
-assert.equal(OFFICE_ZONE_TOKENS.handoff, 'office-handoff-hub', 'handoff signal zone token is stable')
-assert.equal(OFFICE_ZONE_TOKENS.loungeSofa, 'office-lounge-sofa', 'lounge sofa prop token is stable')
-assert.equal(OFFICE_ZONE_TOKENS.statusBoard, 'office-status-board', 'live status board token is stable')
+assert.equal(OFFICE_ROUTE_TOKENS.path, 'office-lane', 'walking path route token is stable')
+assert.equal(OFFICE_ROUTE_TOKENS.handoff, 'office-handoff-hub', 'handoff signal route token is stable')
 assert.equal(
   getOfficeStationClassName('north', 'working', 'active', 'coding', true),
   'office-desk office-workstation office-desk--north office-desk--working office-desk--state-coding office-desk--pulse-active office-desk--selected',
@@ -545,7 +533,7 @@ const marketingStation = viewModel.stations.find((station) => station.agentId ==
 assert.equal(onlineStation?.activity, 'working', 'in-progress current task maps to working')
 assert.deepEqual(
   { x: onlineStation?.x, y: onlineStation?.y, lane: onlineStation?.lane },
-  { x: 15, y: 49, lane: 'west' },
+  { x: 15, y: 43, lane: 'west' },
   'coding station sits on the mid-left workstation row with a clear aisle',
 )
 assert.equal(onlineStation?.terminalMode, 'typing', 'in-progress current task maps to typing')
@@ -557,7 +545,7 @@ assert.equal(onlineStation?.choreography.routeInvolvement, true, 'working routed
 assert.equal(busyStation?.activity, 'monitoring', 'waiting status maps to monitoring')
 assert.deepEqual(
   { x: busyStation?.x, y: busyStation?.y, lane: busyStation?.lane },
-  { x: 38, y: 48, lane: 'east' },
+  { x: 36, y: 42, lane: 'east' },
   'QA station sits on the right side of the left workstation row with more aisle clearance',
 )
 assert.equal(busyStation?.terminalMode, 'monitoring', 'waiting task maps to monitoring')
@@ -565,7 +553,7 @@ assert.equal(busyStation?.choreography.phaseLabel, 'scan-check', 'monitoring loo
 assert.equal(blockedStation?.activity, 'blocked', 'failed task state maps to blocked')
 assert.deepEqual(
   { x: blockedStation?.x, y: blockedStation?.y, lane: blockedStation?.lane },
-  { x: 24, y: 82, lane: 'south' },
+  { x: 19, y: 79, lane: 'south' },
   'ops station is in the server/admin console zone, not a radial position',
 )
 assert.equal(blockedStation?.action, 'alert', 'failed task state maps to alert action')
@@ -578,7 +566,7 @@ assert.equal(restingStation?.choreography.phaseLabel, 'sofa-idle', 'resting loop
 assert.equal(walkingStation?.activity, 'walking', 'queued task state maps to walking')
 assert.deepEqual(
   { x: walkingStation?.x, y: walkingStation?.y, lane: walkingStation?.lane },
-  { x: 13, y: 24, lane: 'north' },
+  { x: 15, y: 23, lane: 'north' },
   'research station stays in the top-left workstation row',
 )
 assert.equal(walkingStation?.action, 'walking', 'queued task state maps to walking action')
@@ -594,7 +582,7 @@ assert.equal(handoffStation?.choreography.phaseLabel, 'signal-transfer', 'handof
 assert.equal(marketingStation?.name, 'Вітрина', 'marketing visuals agent renders as its own office station')
 assert.deepEqual(
   { x: marketingStation?.x, y: marketingStation?.y, lane: marketingStation?.lane },
-  { x: 84, y: 43, lane: 'east' },
+  { x: 72, y: 34, lane: 'east' },
   'marketing visuals station sits fully inside the right visual presentation wall',
 )
 assert.equal(marketingStation?.professionProp, 'canvas', 'marketing visuals station uses visual canvas profession prop')
