@@ -201,7 +201,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     label: 'Coding',
     anchorKind: 'pc-chair-workstation-seat',
     defaultAction: 'working',
-    point: { x: 17, y: 46 },
+    point: { x: 17, y: 44 },
     lane: 'north',
   },
   {
@@ -558,7 +558,7 @@ function sameOfficePoint(left: OfficePoint, right: OfficePoint) {
 
 const officeHubCorridorsByDesk: Record<OfficeDeskId, OfficePoint[]> = {
   'desk-command': [],
-  'desk-coding': [{ x: 18, y: 47 }, { x: 20, y: 47 }, { x: 24, y: 49 }, { x: 34, y: 53 }, { x: 43, y: 51 }],
+  'desk-coding': [{ x: 18, y: 45 }, { x: 20, y: 45 }, { x: 24, y: 48 }, { x: 34, y: 53 }, { x: 43, y: 51 }],
   'desk-ops': [{ x: 16, y: 73 }, { x: 22, y: 66 }, { x: 38, y: 55 }, { x: 49, y: 49 }],
   'desk-research': [{ x: 16, y: 35 }, { x: 35, y: 39 }, { x: 46, y: 46 }],
   'desk-spec': [{ x: 43, y: 36 }, { x: 47, y: 42 }],

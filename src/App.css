@@ -6228,70 +6228,46 @@
 }
 
 .office-floor-agent[data-floor-render='badge']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) {
-  width: 24px;
-  height: 24px;
-  opacity: 0.9;
+  width: 40px;
+  height: 48px;
+  opacity: 0.96;
   transform:
     translate(
       calc(-50% + var(--office-agent-shift-x)),
-      calc(-50% + var(--office-agent-shift-y))
-    );
+      calc(-56% + var(--office-agent-shift-y))
+    )
+    scale(0.82);
 }
 
 .office-floor-agent[data-floor-render='badge']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) .office-agent-marker {
-  width: 22px;
-  height: 22px;
-  display: grid;
-  place-items: center;
-  background:
-    radial-gradient(circle at 50% 38%, rgba(244, 241, 234, 0.16), transparent 42%),
-    color-mix(in srgb, var(--office-agent-accent) 48%, rgba(9, 12, 11, 0.72));
-  border: 1px solid color-mix(in srgb, var(--office-agent-accent) 58%, rgba(244, 241, 234, 0.24));
-  border-radius: 50%;
-  box-shadow:
-    0 0 0 2px rgba(7, 8, 7, 0.34),
-    0 5px 10px rgba(0, 0, 0, 0.24);
-  transform: none;
+  width: 40px;
+  height: 48px;
+  display: block;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  transform: translateY(2px) rotate(-2deg);
 }
 
 .office-floor-agent[data-floor-render='badge']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) .office-agent-sprite {
-  width: 18px;
-  height: 18px;
-  display: grid;
-  place-items: center;
-  filter: none;
-  transform: none;
+  display: block;
+  filter: drop-shadow(0 9px 10px rgba(0, 0, 0, 0.34));
+  transform: translateY(3px) scale(0.92);
 }
 
 .office-floor-agent[data-floor-render='badge']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) .office-agent-sprite__body {
-  width: 18px;
-  height: 18px;
-  display: grid;
-  place-items: center;
   color: rgba(244, 241, 234, 0.96);
-  background: transparent;
-  border: 0;
-  box-shadow: none;
-  font-size: 0.68rem;
+  font-size: 0.62rem;
   line-height: 1;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.72);
 }
 
-.office-floor-agent[data-floor-render='badge']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) .office-agent-sprite__head,
-.office-floor-agent[data-floor-render='badge']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) .office-agent-sprite__hands,
-.office-floor-agent[data-floor-render='badge']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) .office-agent-sprite__legs,
-.office-floor-agent[data-floor-render='badge']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) .office-agent-rest-prop,
-.office-floor-agent[data-floor-render='badge']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) .office-agent-signal-prop,
-.office-floor-agent[data-floor-render='badge']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) .office-agent-tool,
 .office-floor-agent[data-floor-render='badge']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) .office-agent-status-cue,
 .office-floor-agent[data-floor-render='badge']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) .office-agent-action-cue,
 .office-floor-agent[data-floor-render='badge']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) .office-agent-state-badge,
 .office-floor-agent[data-floor-render='badge']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) .office-task-bubble,
-.office-floor-agent[data-floor-render='badge']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) .office-agent-sprite__body::before,
-.office-floor-agent[data-floor-render='badge']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) .office-agent-sprite__body::after,
-.office-floor-agent[data-floor-render='badge']:not([data-agent-posture='walking']):not([data-agent-posture='handoff'])::after,
-.office-floor-agent[data-floor-render='badge']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) .office-agent-marker::before,
-.office-floor-agent[data-floor-render='badge']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) .office-agent-marker::after {
+.office-floor-agent[data-floor-render='badge']:not([data-agent-posture='walking']):not([data-agent-posture='handoff'])::after {
   display: none;
 }
 

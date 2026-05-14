@@ -54,7 +54,7 @@ assertIncludes(modelSource, 'roleActivityState', 'profession-specific office act
 assertIncludes(modelSource, 'roleActivityLabel', 'compact profession activity labels')
 assertIncludes(modelSource, 'activityState: OfficeActivityState', 'typed profession activity state on stations')
 assertIncludes(modelSource, "'main/orchestrator': { x: 46, y: 35, lane: 'south' }", 'coordinator home is a meeting-table chair anchor')
-assertIncludes(modelSource, "coding: { x: 17, y: 46, lane: 'north' }", 'coding station sits at a left workstation PC chair')
+assertIncludes(modelSource, "coding: { x: 17, y: 44, lane: 'north' }", 'coding station sits at a left workstation PC chair')
 assertIncludes(modelSource, "ops: { x: 15, y: 76, lane: 'south' }", 'ops station sits on the bottom-left server/admin console chair')
 assertIncludes(modelSource, "research: { x: 13, y: 29, lane: 'north' }", 'research station stays on the upper-left PC chair row')
 assertIncludes(modelSource, "requirements: { x: 42, y: 31, lane: 'east' }", 'spec station is seated at a central meeting-table chair')
@@ -530,7 +530,7 @@ const marketingStation = viewModel.stations.find((station) => station.agentId ==
 assert.equal(onlineStation?.activity, 'working', 'in-progress current task maps to working')
 assert.deepEqual(
   { x: onlineStation?.x, y: onlineStation?.y, lane: onlineStation?.lane },
-  { x: 17, y: 46, lane: 'north' },
+  { x: 17, y: 44, lane: 'north' },
   'coding station sits at a lower top-left workstation PC with a clear aisle',
 )
 assert.equal(onlineStation?.terminalMode, 'typing', 'in-progress current task maps to typing')

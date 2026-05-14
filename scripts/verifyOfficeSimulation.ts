@@ -382,7 +382,7 @@ assert(liveAgent, 'Expected live override target')
 assert.equal(liveAgent.currentTask, 'Live integration placeholder', 'Live seam should override task copy')
 assert.equal(liveAgent.activity, 'monitoring', 'Live seam should override activity')
 assert.equal(liveAgent.posture, 'standing', 'Live seam should override posture')
-assert.deepEqual(liveAgent.route, [{ x: 17, y: 46 }], 'Inactive live status should keep the agent at the home station')
+assert.deepEqual(liveAgent.route, [{ x: 17, y: 44 }], 'Inactive live status should keep the agent at the home station')
 
 const liveHandoffSimulation = createOfficeSimulation(snapshot.agents, snapshot.tasks, {
   elapsedMs: 8_000,
@@ -397,7 +397,7 @@ const liveHandoffSimulation = createOfficeSimulation(snapshot.agents, snapshot.t
 })
 const liveHandoffAgent = liveHandoffSimulation.agents.find((agent) => agent.agentId === 'agent-dev')
 assert(liveHandoffAgent, 'Expected live handoff override target')
-assert.deepEqual(liveHandoffAgent.route[0], { x: 17, y: 46 }, 'Live handoff route should start at the home station')
+assert.deepEqual(liveHandoffAgent.route[0], { x: 17, y: 44 }, 'Live handoff route should start at the home station')
 assert(
   routeIncludesPoint(liveHandoffAgent.route, OFFICE_COORDINATION_HUB_POINT),
   'Live handoff route should pass through Краб central hub before continuing',
@@ -455,7 +455,7 @@ assert(
   activeTick.posture === 'walking' || activeTick.posture === 'handoff',
   'Delegated active task should expose walking or handoff posture',
 )
-assert.deepEqual(activeTick.route[0], { x: 17, y: 46 }, 'Delegated active task should start its route from the coding desk')
+assert.deepEqual(activeTick.route[0], { x: 17, y: 44 }, 'Delegated active task should start its route from the coding desk')
 assert(
   routeIncludesPoint(activeTick.route, OFFICE_COORDINATION_HUB_POINT),
   'Delegated active task should route through Краб central coordination hub',

@@ -97,7 +97,7 @@ export type OfficeTerminalMode = 'idle' | 'monitoring' | 'typing'
 
 const officeStationLayout: Array<Pick<OfficeAgentStation, 'x' | 'y' | 'lane'>> = [
   { x: 46, y: 35, lane: 'south' },
-  { x: 17, y: 46, lane: 'north' },
+  { x: 17, y: 44, lane: 'north' },
   { x: 15, y: 76, lane: 'south' },
   { x: 13, y: 29, lane: 'north' },
   { x: 42, y: 31, lane: 'east' },
@@ -110,7 +110,7 @@ const officeStationLayout: Array<Pick<OfficeAgentStation, 'x' | 'y' | 'lane'>> =
 
 const roleOfficeLayout: Record<string, Pick<OfficeAgentStation, 'x' | 'y' | 'lane'>> = {
   'main/orchestrator': { x: 46, y: 35, lane: 'south' },
-  coding: { x: 17, y: 46, lane: 'north' },
+  coding: { x: 17, y: 44, lane: 'north' },
   ops: { x: 15, y: 76, lane: 'south' },
   research: { x: 13, y: 29, lane: 'north' },
   requirements: { x: 42, y: 31, lane: 'east' },

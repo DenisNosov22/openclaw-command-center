@@ -574,7 +574,8 @@ async function verifyOfficeDom(page: Page) {
     [...document.querySelectorAll<HTMLElement>(".office-floor-agent[data-floor-render='badge']")]
       .map((agent) => {
         const box = agent.getBoundingClientRect()
-        const tooLarge = box.width > 30 || box.height > 30
+        const tooSmall = box.width < 30 || box.height < 36
+        const tooLarge = box.width > 46 || box.height > 56
         const visibleLabels = [...agent.querySelectorAll<HTMLElement>('.office-task-bubble, .office-agent-state-badge')]
           .some((element) => {
             const style = getComputedStyle(element)
@@ -583,7 +584,7 @@ async function verifyOfficeDom(page: Page) {
             return style.display !== 'none' && Number.parseFloat(style.opacity || '1') > 0.03 && labelBox.width > 0 && labelBox.height > 0
           })
 
-        return tooLarge || visibleLabels
+        return tooSmall || tooLarge || visibleLabels
           ? `${agent.dataset.agentId ?? 'unknown'}: ${Math.round(box.width)}x${Math.round(box.height)} labels=${visibleLabels}`
           : ''
       })
@@ -593,7 +594,7 @@ async function verifyOfficeDom(page: Page) {
   assert.deepEqual(
     compactBadgeIssues,
     [],
-    `Default compact workstation badges should stay tiny and label-free: ${compactBadgeIssues.join('; ')}`,
+    `Default mini workstation agents should stay visible but label-free: ${compactBadgeIssues.join('; ')}`,
   )
 
   const rightOpenFloorIssues = await page.evaluate(() => {
