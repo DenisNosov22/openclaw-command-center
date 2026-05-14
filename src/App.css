@@ -3516,6 +3516,56 @@
   --office-agent-prop: #f0cd74;
 }
 
+.office-floor-agent[data-agent-id='agent-krab']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) {
+  --office-agent-shift-x: 10px;
+  --office-agent-shift-y: -16px;
+}
+
+.office-floor-agent[data-agent-id='agent-dev']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) {
+  --office-agent-shift-x: 44px;
+  --office-agent-shift-y: 22px;
+}
+
+.office-floor-agent[data-agent-id='agent-varta']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) {
+  --office-agent-shift-x: -18px;
+  --office-agent-shift-y: -8px;
+}
+
+.office-floor-agent[data-agent-id='agent-shturman']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) {
+  --office-agent-shift-x: 34px;
+  --office-agent-shift-y: 8px;
+}
+
+.office-floor-agent[data-agent-id='agent-spec']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) {
+  --office-agent-shift-x: -12px;
+  --office-agent-shift-y: 22px;
+}
+
+.office-floor-agent[data-agent-id='agent-bastion']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) {
+  --office-agent-shift-x: 0px;
+  --office-agent-shift-y: -22px;
+}
+
+.office-floor-agent[data-agent-id='agent-desk']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) {
+  --office-agent-shift-x: 0px;
+  --office-agent-shift-y: -34px;
+}
+
+.office-floor-agent[data-agent-id='agent-verstalnyk']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) {
+  --office-agent-shift-x: -24px;
+  --office-agent-shift-y: -30px;
+}
+
+.office-floor-agent[data-agent-id='agent-vitryna']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) {
+  --office-agent-shift-x: -16px;
+  --office-agent-shift-y: 6px;
+}
+
+.office-floor-agent[data-agent-id='agent-rezhyser']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) {
+  --office-agent-shift-x: 16px;
+  --office-agent-shift-y: -8px;
+}
+
 .office-floor-agent[data-profession-prop='trading'] {
   --office-agent-suit: #d7c58f;
   --office-agent-accent: #d4544d;

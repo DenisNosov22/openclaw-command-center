@@ -96,29 +96,29 @@ export type OfficeStationPulse = 'active' | 'calm' | 'danger' | 'idle'
 export type OfficeTerminalMode = 'idle' | 'monitoring' | 'typing'
 
 const officeStationLayout: Array<Pick<OfficeAgentStation, 'x' | 'y' | 'lane'>> = [
-  { x: 51, y: 38, lane: 'south' },
-  { x: 15, y: 43, lane: 'west' },
-  { x: 19, y: 79, lane: 'south' },
-  { x: 15, y: 23, lane: 'north' },
-  { x: 30, y: 27, lane: 'north' },
-  { x: 36, y: 42, lane: 'east' },
-  { x: 87, y: 78, lane: 'east' },
-  { x: 83, y: 51, lane: 'east' },
-  { x: 72, y: 34, lane: 'east' },
-  { x: 62, y: 76, lane: 'south' },
+  { x: 51, y: 40, lane: 'south' },
+  { x: 16, y: 47, lane: 'west' },
+  { x: 16, y: 82, lane: 'south' },
+  { x: 14, y: 25, lane: 'north' },
+  { x: 38, y: 27, lane: 'north' },
+  { x: 37, y: 49, lane: 'east' },
+  { x: 81, y: 81, lane: 'east' },
+  { x: 83, y: 55, lane: 'east' },
+  { x: 76, y: 38, lane: 'east' },
+  { x: 63, y: 76, lane: 'south' },
 ]
 
 const roleOfficeLayout: Record<string, Pick<OfficeAgentStation, 'x' | 'y' | 'lane'>> = {
-  'main/orchestrator': { x: 51, y: 38, lane: 'south' },
-  coding: { x: 15, y: 43, lane: 'west' },
-  ops: { x: 19, y: 79, lane: 'south' },
-  research: { x: 15, y: 23, lane: 'north' },
-  requirements: { x: 30, y: 27, lane: 'north' },
-  QA: { x: 36, y: 42, lane: 'east' },
-  video: { x: 87, y: 78, lane: 'east' },
-  'UI/layout': { x: 83, y: 51, lane: 'east' },
-  marketing: { x: 72, y: 34, lane: 'east' },
-  trading: { x: 62, y: 76, lane: 'south' },
+  'main/orchestrator': { x: 51, y: 40, lane: 'south' },
+  coding: { x: 16, y: 47, lane: 'west' },
+  ops: { x: 16, y: 82, lane: 'south' },
+  research: { x: 14, y: 25, lane: 'north' },
+  requirements: { x: 38, y: 27, lane: 'north' },
+  QA: { x: 37, y: 49, lane: 'east' },
+  video: { x: 81, y: 81, lane: 'east' },
+  'UI/layout': { x: 83, y: 55, lane: 'east' },
+  marketing: { x: 76, y: 38, lane: 'east' },
+  trading: { x: 63, y: 76, lane: 'south' },
 }
 
 const roleLabel: Record<string, string> = {
@@ -277,6 +277,10 @@ function getAgentDisplayName(agent: Agent) {
 function getStationActionFromSimulation(simulationState: OfficeAgentSimulationState): OfficeStationAction {
   if (simulationState.activity === 'blocked') {
     return 'alert'
+  }
+
+  if (simulationState.posture === 'standing' && simulationState.activity === 'reviewing') {
+    return 'monitoring'
   }
 
   if (simulationState.activity === 'idle') {

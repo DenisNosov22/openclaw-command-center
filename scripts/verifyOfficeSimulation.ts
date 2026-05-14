@@ -202,10 +202,30 @@ const lateTick = getOfficeAgentSimulationTick(queuedBaseline, snapshot.tasks, {
   mode: 'animated',
 })
 assert.deepEqual(earlyTick.position, lateTick.position, 'Queued agent should stay at home station over time')
-assert.deepEqual(earlyTick.position, { x: 15, y: 23 }, 'Queued research agent should stay at canonical home desk')
+assert.deepEqual(earlyTick.position, { x: 14, y: 25 }, 'Queued research agent should stay at upper-left planning home station')
 assert.equal(earlyTick.progress, 0, 'Queued agent should not expose route progress')
 assert.equal(lateTick.progress, 0, 'Late queued tick should not expose route progress')
 assert.equal(earlyTick.posture, 'standing', 'Queued agent should use local waiting posture instead of walking')
+
+const completedSpec = getOfficeAgentSimulationTick(
+  snapshot.agents.find((agent) => agent.id === 'agent-spec')!,
+  snapshot.tasks,
+)
+const idleDirector = getOfficeAgentSimulationTick(
+  snapshot.agents.find((agent) => agent.id === 'agent-rezhyser')!,
+  snapshot.tasks,
+)
+const waitingOps = getOfficeAgentSimulationTick(
+  snapshot.agents.find((agent) => agent.id === 'agent-bastion')!,
+  snapshot.tasks,
+)
+
+assert.deepEqual(completedSpec.position, { x: 38, y: 27 }, 'Completed spec stays at the whiteboard/planning home station')
+assert.equal(completedSpec.posture, 'standing', 'Completed spec stands by the board instead of resting on a generic seat')
+assert.deepEqual(idleDirector.position, { x: 81, y: 81 }, 'Idle director stays by the camera/studio home station')
+assert.equal(idleDirector.posture, 'standing', 'Idle director stands near the camera/studio setup')
+assert.deepEqual(waitingOps.position, { x: 16, y: 82 }, 'Waiting ops stays at the bottom-left server/admin console')
+assert.equal(waitingOps.posture, 'sitting', 'Waiting ops monitors from the admin console')
 
 const activeBaseline = snapshot.agents.find((agent) => agent.id === 'agent-dev')
 assert(activeBaseline, 'Expected active fixture agent')

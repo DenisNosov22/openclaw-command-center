@@ -181,7 +181,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'Coordinator',
     label: 'Command',
     defaultAction: 'coordinating',
-    point: { x: 51, y: 38 },
+    point: { x: 51, y: 40 },
     lane: 'south',
   },
   {
@@ -190,7 +190,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'Developer',
     label: 'Coding',
     defaultAction: 'working',
-    point: { x: 15, y: 43 },
+    point: { x: 16, y: 47 },
     lane: 'west',
   },
   {
@@ -199,7 +199,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'Operator',
     label: 'Ops',
     defaultAction: 'monitoring',
-    point: { x: 19, y: 79 },
+    point: { x: 16, y: 82 },
     lane: 'south',
   },
   {
@@ -208,7 +208,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'Researcher',
     label: 'Research',
     defaultAction: 'reviewing',
-    point: { x: 15, y: 23 },
+    point: { x: 14, y: 25 },
     lane: 'north',
   },
   {
@@ -217,7 +217,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'Spec writer',
     label: 'Spec',
     defaultAction: 'reviewing',
-    point: { x: 30, y: 27 },
+    point: { x: 38, y: 27 },
     lane: 'north',
   },
   {
@@ -226,7 +226,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'QA analyst',
     label: 'QA/Sec',
     defaultAction: 'reviewing',
-    point: { x: 36, y: 42 },
+    point: { x: 37, y: 49 },
     lane: 'east',
   },
   {
@@ -235,7 +235,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'Video director',
     label: 'Director',
     defaultAction: 'idle',
-    point: { x: 87, y: 78 },
+    point: { x: 81, y: 81 },
     lane: 'east',
   },
   {
@@ -244,7 +244,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'Layout designer',
     label: 'Layout',
     defaultAction: 'reviewing',
-    point: { x: 83, y: 51 },
+    point: { x: 83, y: 55 },
     lane: 'east',
   },
   {
@@ -253,7 +253,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'Marketing visuals',
     label: 'Вітрина',
     defaultAction: 'working',
-    point: { x: 72, y: 34 },
+    point: { x: 76, y: 38 },
     lane: 'east',
   },
   {
@@ -262,7 +262,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'Market watcher',
     label: 'Trading',
     defaultAction: 'monitoring',
-    point: { x: 62, y: 76 },
+    point: { x: 63, y: 76 },
     lane: 'south',
   },
 ]
@@ -272,33 +272,49 @@ export const OFFICE_PATHS: OfficePath[] = [
     id: 'path-command-delivery',
     fromZoneId: 'command',
     toZoneId: 'delivery',
-    points: [{ x: 51, y: 47 }, { x: 44, y: 49 }, { x: 34, y: 51 }, { x: 24, y: 49 }, { x: 15, y: 49 }],
+    points: [{ x: 51, y: 48 }, { x: 44, y: 50 }, { x: 34, y: 52 }, { x: 24, y: 51 }, { x: 16, y: 50 }],
   },
   {
     id: 'path-delivery-ops',
     fromZoneId: 'delivery',
     toZoneId: 'ops',
-    points: [{ x: 36, y: 50 }, { x: 36, y: 57 }, { x: 30, y: 64 }, { x: 22, y: 70 }, { x: 19, y: 75 }],
+    points: [{ x: 37, y: 53 }, { x: 34, y: 60 }, { x: 27, y: 67 }, { x: 20, y: 74 }, { x: 16, y: 79 }],
   },
   {
     id: 'path-research-design',
     fromZoneId: 'research',
     toZoneId: 'design',
-    points: [{ x: 15, y: 35 }, { x: 34, y: 38 }, { x: 47, y: 52 }, { x: 64, y: 52 }, { x: 83, y: 57 }],
+    points: [{ x: 14, y: 35 }, { x: 35, y: 38 }, { x: 48, y: 52 }, { x: 64, y: 53 }, { x: 83, y: 58 }],
   },
   {
     id: 'path-design-marketing',
     fromZoneId: 'design',
     toZoneId: 'marketing',
-    points: [{ x: 83, y: 57 }, { x: 79, y: 47 }, { x: 72, y: 40 }],
+    points: [{ x: 83, y: 58 }, { x: 80, y: 48 }, { x: 76, y: 41 }],
   },
   {
     id: 'path-market-handoff',
     fromZoneId: 'market',
     toZoneId: 'delivery',
-    points: [{ x: 62, y: 72 }, { x: 55, y: 63 }, { x: 45, y: 58 }, { x: 35, y: 55 }, { x: 28, y: 50 }],
+    points: [{ x: 63, y: 72 }, { x: 56, y: 63 }, { x: 45, y: 58 }, { x: 35, y: 55 }, { x: 28, y: 51 }],
   },
 ]
+
+const standingHomeRoles = new Set([
+  'main/orchestrator',
+  'marketing',
+  'research',
+  'requirements',
+  'video',
+])
+
+const seatedHomeRoles = new Set([
+  'QA',
+  'UI/layout',
+  'coding',
+  'ops',
+  'trading',
+])
 
 export const OFFICE_AGENT_PROFILES: Record<string, OfficeAgentProfile> = {
   'main/orchestrator': {
@@ -575,9 +591,12 @@ function getTimedSimulationActivity(
   return baseActivity
 }
 
-function getSimulationPosture(activity: OfficeAgentActivity): OfficeAgentPosture {
+function getSimulationPosture(
+  activity: OfficeAgentActivity,
+  profile: OfficeAgentProfile,
+): OfficeAgentPosture {
   if (activity === 'blocked') {
-    return 'blocked'
+    return standingHomeRoles.has(profile.role) ? 'standing' : 'blocked'
   }
 
   if (activity === 'handoff') {
@@ -588,7 +607,19 @@ function getSimulationPosture(activity: OfficeAgentActivity): OfficeAgentPosture
     return 'walking'
   }
 
-  if (activity === 'working' || activity === 'coordinating') {
+  if (activity === 'coordinating') {
+    return 'standing'
+  }
+
+  if (standingHomeRoles.has(profile.role)) {
+    return 'standing'
+  }
+
+  if (seatedHomeRoles.has(profile.role) && activity === 'monitoring') {
+    return 'sitting'
+  }
+
+  if (activity === 'working') {
     return 'working'
   }
 
@@ -688,7 +719,7 @@ export function getOfficeAgentSimulationTick(
   const activity = shouldAnimate
     ? getTimedSimulationActivity(agent, profile, task, elapsedMs)
     : getSimulationActivity(agent, profile, task)
-  const posture = getSimulationPosture(activity)
+  const posture = getSimulationPosture(activity, profile)
   const progress = getOfficeAgentRouteProgress(agent, elapsedMs)
   const position = getAgentPosition(desk, path, posture, progress)
   const baseState = {

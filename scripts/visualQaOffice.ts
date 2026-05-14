@@ -190,14 +190,19 @@ async function verifyOfficeDom(page: Page) {
   await expectVisible(page.locator(".office-floor-agent[data-agent-id='agent-vitryna'][data-physical-agent='true']"), 'Вітрина physical office agent')
   await expectVisible(page.locator(".office-floor-agent[data-agent-id='agent-vitryna'] .office-agent-status-cue"), 'Вітрина status cue')
   await expectVisible(page.locator(".office-floor-agent[data-agent-id='agent-vitryna'] .office-task-bubble"), 'Вітрина task bubble')
+  await expectVisible(page.locator(".office-desk[data-agent-id='agent-rezhyser']"), 'Режисер camera/director station')
+  await expectVisible(page.locator(".office-floor-agent[data-agent-id='agent-rezhyser'][data-physical-agent='true']"), 'Режисер physical office agent')
 
-  const vitrinaClippingIssues = await page.evaluate(() => {
+  const edgeRoleClippingIssues = await page.evaluate(() => {
     const office = document.querySelector<HTMLElement>('.isometric-office')
     const officeBox = office?.getBoundingClientRect()
     const elements = [
       document.querySelector<HTMLElement>(".office-desk[data-agent-id='agent-vitryna']"),
       document.querySelector<HTMLElement>(".office-floor-agent[data-agent-id='agent-vitryna']"),
       document.querySelector<HTMLElement>(".office-desk[data-agent-id='agent-vitryna'] .office-desk__label strong"),
+      document.querySelector<HTMLElement>(".office-desk[data-agent-id='agent-rezhyser']"),
+      document.querySelector<HTMLElement>(".office-floor-agent[data-agent-id='agent-rezhyser']"),
+      document.querySelector<HTMLElement>(".office-desk[data-agent-id='agent-rezhyser'] .office-desk__label strong"),
     ].filter(Boolean) as HTMLElement[]
 
     if (!officeBox) {
@@ -209,7 +214,7 @@ async function verifyOfficeDom(page: Page) {
         const box = element.getBoundingClientRect()
         const style = getComputedStyle(element)
         const id = element.dataset.agentId ?? element.textContent?.trim() ?? element.className
-        const hasReadableText = element.textContent?.includes('Вітрина')
+        const hasReadableText = element.textContent?.includes('Вітрина') || element.textContent?.includes('Режисер')
           ? box.width >= 42 && box.height >= 7 && style.visibility !== 'hidden'
           : true
         const visibleEnough =
@@ -228,9 +233,63 @@ async function verifyOfficeDom(page: Page) {
   })
 
   assert.deepEqual(
-    vitrinaClippingIssues,
+    edgeRoleClippingIssues,
     [],
-    `Вітрина desk and physical agent should be fully visible, especially at 390px: ${vitrinaClippingIssues.join('; ')}`,
+    `Вітрина and Режисер stations should be fully visible, especially at 390px: ${edgeRoleClippingIssues.join('; ')}`,
+  )
+
+  const rolePlacementIssues = await page.evaluate(() => {
+    if (window.innerWidth <= 430) {
+      return []
+    }
+
+    const office = document.querySelector<HTMLElement>('.isometric-office')
+    const officeBox = office?.getBoundingClientRect()
+
+    if (!officeBox) {
+      return ['missing office bounds']
+    }
+
+    const getCenter = (selector: string) => {
+      const element = document.querySelector<HTMLElement>(selector)
+      const box = element?.getBoundingClientRect()
+
+      return box
+        ? {
+            x: ((box.left + box.width / 2 - officeBox.left) / officeBox.width) * 100,
+            y: ((box.top + box.height / 2 - officeBox.top) / officeBox.height) * 100,
+          }
+        : undefined
+    }
+
+    const checks = [
+      ['agent-krab', getCenter(".office-floor-agent[data-agent-id='agent-krab']"), 38, 64, 34, 56],
+      ['agent-dev', getCenter(".office-floor-agent[data-agent-id='agent-dev']"), 7, 34, 34, 58],
+      ['agent-varta', getCenter(".office-floor-agent[data-agent-id='agent-varta']"), 20, 45, 32, 62],
+      ['agent-shturman', getCenter(".office-floor-agent[data-agent-id='agent-shturman']"), 6, 36, 18, 44],
+      ['agent-spec', getCenter(".office-floor-agent[data-agent-id='agent-spec']"), 24, 52, 20, 50],
+      ['agent-bastion', getCenter(".office-floor-agent[data-agent-id='agent-bastion']"), 4, 34, 62, 90],
+      ['agent-desk', getCenter(".office-floor-agent[data-agent-id='agent-desk']"), 48, 76, 58, 84],
+      ['agent-verstalnyk', getCenter(".office-floor-agent[data-agent-id='agent-verstalnyk']"), 66, 94, 42, 72],
+      ['agent-vitryna', getCenter(".office-floor-agent[data-agent-id='agent-vitryna']"), 62, 88, 24, 54],
+      ['agent-rezhyser', getCenter(".office-floor-agent[data-agent-id='agent-rezhyser']"), 70, 98, 60, 88],
+    ] as const
+
+    return checks.map(([id, center, minX, maxX, minY, maxY]) => {
+      if (!center) {
+        return `${id}: missing`
+      }
+
+      return center.x >= minX && center.x <= maxX && center.y >= minY && center.y <= maxY
+        ? ''
+        : `${id}: ${Math.round(center.x)},${Math.round(center.y)} outside ${minX}-${maxX}/${minY}-${maxY}`
+    }).filter(Boolean)
+  })
+
+  assert.deepEqual(
+    rolePlacementIssues,
+    [],
+    `Office agents should sit/stand at role-specific background furniture: ${rolePlacementIssues.join('; ')}`,
   )
 
   assert.equal(await page.locator('.office-core, .command-core').count(), 0, 'Large central core/card block should not render in the office scene')
