@@ -134,6 +134,13 @@ export function IsometricOfficeScene({
       ),
     [activity, agents, effectiveSimulationMode, elapsedMs, liveSimulation, selectedAgentId, tasks, workflow],
   )
+  const routedStations = stations.filter(
+    (station) =>
+      station.simulation.posture === 'walking' ||
+      station.simulation.posture === 'handoff' ||
+      station.agentId === selectedAgentId,
+  )
+  const focusedSignalRoutes = signalRoutes.filter((route) => route.isSelected).slice(0, 2)
 
   return (
     <div
@@ -189,7 +196,7 @@ export function IsometricOfficeScene({
               <path d="M0,0 L6,2.5 L0,5 Z" />
             </marker>
           </defs>
-          {stations.map((station) => {
+          {routedStations.map((station) => {
             const routePoints = station.simulation.route.length
               ? station.simulation.route
               : [station.simulation.position, station.simulation.target]
@@ -226,13 +233,8 @@ export function IsometricOfficeScene({
         </svg>
         <span className={`${OFFICE_ZONE_TOKENS.path} office-lane--inner`} />
         <span className={`${OFFICE_ZONE_TOKENS.path} office-lane--outer`} />
-        <span className="office-route office-route--north" />
-        <span className="office-route office-route--east" />
-        <span className="office-route office-route--south" />
-        <span className="office-route office-route--west" />
-        <span className="office-transfer office-transfer--handoff" />
         <span className={OFFICE_ZONE_TOKENS.handoff} data-link="handoff" />
-        {signalRoutes.map((route) => (
+        {focusedSignalRoutes.map((route) => (
           <span
             className={`office-transfer office-transfer--${route.lane} office-transfer--${route.activity} office-transfer--${route.tone}${
               route.isSelected ? ' office-transfer--selected' : ''

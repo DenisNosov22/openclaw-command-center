@@ -55,10 +55,10 @@ assertIncludes(modelSource, 'roleOfficeLayout', 'profession-specific office floo
 assertIncludes(modelSource, 'roleActivityState', 'profession-specific office activity state map')
 assertIncludes(modelSource, 'roleActivityLabel', 'compact profession activity labels')
 assertIncludes(modelSource, 'activityState: OfficeActivityState', 'typed profession activity state on stations')
-assertIncludes(modelSource, "'main/orchestrator': { x: 18, y: 51, lane: 'west' }", 'coordinator desk sits in office coordinator zone')
-assertIncludes(modelSource, "ops: { x: 85, y: 22, lane: 'east' }", 'ops station sits by server corner')
-assertIncludes(modelSource, "'UI/layout': { x: 47, y: 76, lane: 'south' }", 'design/layout station sits near design wall')
-assertIncludes(modelSource, "marketing: { x: 68, y: 61, lane: 'south' }", 'marketing visuals station sits on its own visual wall zone')
+assertIncludes(modelSource, "'main/orchestrator': { x: 10, y: 49, lane: 'west' }", 'coordinator desk sits in a clear west office zone')
+assertIncludes(modelSource, "ops: { x: 84, y: 22, lane: 'east' }", 'ops station sits by server corner')
+assertIncludes(modelSource, "'UI/layout': { x: 44, y: 76, lane: 'south' }", 'design/layout station sits near design wall with walkway spacing')
+assertIncludes(modelSource, "marketing: { x: 66, y: 66, lane: 'south' }", 'marketing visuals station sits on its own visual wall zone')
 assertIncludes(modelSource, "marketing: 'Вітрина'", 'marketing visuals agent gets a readable station label')
 assertIncludes(modelSource, 'export interface OfficeSignalRoute', 'typed office signal route model')
 assertIncludes(modelSource, 'export interface OfficeBehaviorChoreography', 'typed office behavior choreography metadata')
@@ -172,13 +172,13 @@ assertIncludes(stylesheetSource, '#ff827b', 'office stale/error source gets warn
 assertIncludes(getBlock('.office-floor'), 'perspective(900px) rotateX(50deg)', 'isometric office floor plan')
 assertIncludes(getBlock('.office-floor'), 'inset 0 0 0 1px rgba(244, 241, 234', 'mature floor material edge')
 assertIncludes(getBlock('.office-room-props'), 'pointer-events: none', 'physical room props layer does not block station selection')
-assertIncludes(getBlock('.office-wall--back'), 'repeating-linear-gradient', 'back wall panels')
-assertIncludes(getBlock('.office-rug--center'), 'repeating-linear-gradient', 'central rug/path material')
+assertIncludes(getBlock('.office-wall--back'), 'rgba(244, 241, 234, 0.035)', 'muted back wall plane')
+assertIncludes(getBlock('.office-rug--center'), 'rgba(244, 241, 234, 0.035)', 'quiet central walkway material')
 assertIncludes(getBlock('.office-cabinet--ops'), 'repeating-linear-gradient', 'ops cabinet/server prop')
 assertIncludes(getBlock('.office-plant::after'), 'radial-gradient', 'office plant leaf prop')
-assertIncludes(getBlock('.office-whiteboard--research'), 'repeating-linear-gradient', 'research/search whiteboard prop')
+assertIncludes(getBlock('.office-whiteboard--research'), 'rgba(120, 212, 192, 0.08)', 'muted research/search whiteboard prop')
 assertIncludes(getBlock('.office-social-board--marketing'), 'linear-gradient(135deg', 'marketing/social board wall prop')
-assertIncludes(stylesheetSource, 'radial-gradient(ellipse, rgba(0, 0, 0, 0.3), transparent 70%)', 'desk cluster floor shadows')
+assertIncludes(stylesheetSource, 'radial-gradient(ellipse, rgba(0, 0, 0, 0.24), transparent 70%)', 'muted desk cluster floor shadows')
 assertIncludes(getBlock('.office-zone-label'), 'text-transform: uppercase', 'office zone labels')
 assertIncludes(getBlock('.office-area'), 'position: absolute', 'office functional zones')
 assertIncludes(getBlock('.office-area--desk'), 'rgba(120, 212, 192', 'desk/computer zone cyan signal')
@@ -249,6 +249,7 @@ assertIncludes(getBlock('.office-desk'), 'top: var(--office-station-y)', 'desks 
 assertIncludes(getBlock('.office-lane'), 'linear-gradient(90deg', 'office walking lane floor treatment')
 assertIncludes(getBlock('.office-lane'), 'linear-gradient(90deg', 'office walking lane floor treatment')
 assertIncludes(getBlock('.office-lane--inner'), 'height: 248px', 'vertical walking lane path geometry')
+assertIncludes(getBlock('.office-lane'), 'opacity: 0.24', 'walking lanes are quiet enough not to dominate the room')
 assertIncludes(getBlock('.office-desk--coordinating'), 'width: clamp(96px, 12%, 112px)', 'coordinator desk remains a small side overview desk')
 assertIncludes(getBlock('.office-handoff-hub::before'), 'data-link', 'handoff hub communicates data transfer')
 assertIncludes(getBlock('.office-handoff-hub::after'), 'office-handoff-bus', 'handoff hub packet animation')
@@ -261,6 +262,8 @@ assertIncludes(getBlock('.office-transfer::before'), 'attr(data-label)', 'packet
 assertIncludes(getBlock('.office-transfer::before'), 'opacity: 0', 'quiet default route labels')
 assertIncludes(stylesheetSource, '.office-transfer--danger::before', 'selective danger route labels')
 assertIncludes(stylesheetSource, 'opacity: 0.54', 'selective route label opacity')
+assertIncludes(componentSource, 'focusedSignalRoutes', 'only selected workflow signal routes render in the office floor')
+assertIncludes(componentSource, 'routedStations', 'only moving/handoff/selected simulation paths render in the office floor')
 assertIncludes(getBlock('.office-desk--blocked'), 'office-blocked-pulse', 'blocked calm red pulse')
 assertIncludes(getBlock('.office-desk--blocked'), '9.2s', 'slowed blocked pulse')
 assertIncludes(getBlock('.office-status-lamp--danger'), '#d4544d', 'red danger lamp')
@@ -293,10 +296,10 @@ assertIncludes(getBlock(".office-floor-agent[data-agent-posture='working'] .offi
 assertIncludes(getBlock(".office-floor-agent[data-agent-posture='handoff'] .office-agent-marker"), 'rgba(215, 180, 92', 'handoff posture gets document-transfer tone')
 assertIncludes(getBlock(".office-floor-agent[data-agent-posture='blocked'] .office-agent-marker"), 'rgba(212, 84, 77', 'blocked posture gets distinct marker tone')
 assertIncludes(getBlock(".office-floor-agent[data-agent-activity='monitoring'] .office-agent-marker::before"), '#78d4c0', 'monitoring activity gets distinct status marker')
-assertIncludes(getBlock('.office-floor-agent--north'), '--office-agent-shift-y: 52px', 'north agents stand away from desk blocks')
-assertIncludes(getBlock(".office-floor-agent[data-activity-state='coding']"), '--office-agent-shift-x: 40px', 'coding floor agent is offset out of the central desk pinch')
-assertIncludes(getBlock(".office-floor-agent[data-activity-state='checking']"), '--office-agent-shift-y: -62px', 'QA floor agent keeps a clear lower walkway')
-assertIncludes(getBlock(".office-floor-agent[data-activity-state='designing']"), '--office-agent-shift-x: 28px', 'layout floor agent moves toward the design wall')
+assertIncludes(getBlock('.office-floor-agent--north'), '--office-agent-shift-y: 46px', 'north agents stand away from desk blocks without drifting into labels')
+assertIncludes(getBlock(".office-floor-agent[data-activity-state='coding']"), '--office-agent-shift-x: 34px', 'coding floor agent is offset out of the central desk pinch')
+assertIncludes(getBlock(".office-floor-agent[data-activity-state='checking']"), '--office-agent-shift-y: -52px', 'QA floor agent keeps a clear lower walkway')
+assertIncludes(getBlock(".office-floor-agent[data-activity-state='designing']"), '--office-agent-shift-x: 24px', 'layout floor agent moves toward the design wall')
 assertIncludes(getBlock('.office-floor-agent.office-behavior--path-step'), 'office-floor-agent-route', 'walking physical agents use floor route animation')
 assertIncludes(stylesheetSource, '@keyframes office-floor-agent-route', 'physical floor walking route keyframes')
 assertIncludes(getBlock('.office-terminal--typing .office-terminal__ticks'), '3s', 'measured typing cadence')
@@ -524,8 +527,8 @@ const marketingStation = viewModel.stations.find((station) => station.agentId ==
 assert.equal(onlineStation?.activity, 'working', 'in-progress current task maps to working')
 assert.deepEqual(
   { x: onlineStation?.x, y: onlineStation?.y, lane: onlineStation?.lane },
-  { x: 25, y: 38, lane: 'north' },
-  'coding station sits left of the central walkway in the main desk row',
+  { x: 31, y: 43, lane: 'north' },
+  'coding station sits in the main desk row with a clear center walkway',
 )
 assert.equal(onlineStation?.terminalMode, 'typing', 'in-progress current task maps to typing')
 assert.equal(onlineStation?.pulse, 'active', 'working health maps to active pulse')
@@ -536,7 +539,7 @@ assert.equal(onlineStation?.choreography.routeInvolvement, true, 'working routed
 assert.equal(busyStation?.activity, 'monitoring', 'waiting status maps to monitoring')
 assert.deepEqual(
   { x: busyStation?.x, y: busyStation?.y, lane: busyStation?.lane },
-  { x: 20, y: 77, lane: 'south' },
+  { x: 14, y: 76, lane: 'south' },
   'QA station is pulled down-left to open the central desk cluster',
 )
 assert.equal(busyStation?.terminalMode, 'monitoring', 'waiting task maps to monitoring')
@@ -544,7 +547,7 @@ assert.equal(busyStation?.choreography.phaseLabel, 'scan-check', 'monitoring loo
 assert.equal(blockedStation?.activity, 'blocked', 'failed task state maps to blocked')
 assert.deepEqual(
   { x: blockedStation?.x, y: blockedStation?.y, lane: blockedStation?.lane },
-  { x: 85, y: 22, lane: 'east' },
+  { x: 84, y: 22, lane: 'east' },
   'ops station is in the server corner, not a radial position',
 )
 assert.equal(blockedStation?.action, 'alert', 'failed task state maps to alert action')
@@ -557,7 +560,7 @@ assert.equal(restingStation?.choreography.phaseLabel, 'sofa-idle', 'resting loop
 assert.equal(walkingStation?.activity, 'walking', 'queued task state maps to walking')
 assert.deepEqual(
   { x: walkingStation?.x, y: walkingStation?.y, lane: walkingStation?.lane },
-  { x: 24, y: 20, lane: 'north' },
+  { x: 25, y: 20, lane: 'north' },
   'research station stays in the north profession zone with more top-row spacing',
 )
 assert.equal(walkingStation?.action, 'walking', 'queued task state maps to walking action')
@@ -565,7 +568,7 @@ assert.equal(walkingStation?.choreography.phaseLabel, 'path-step', 'walking loop
 assert.equal(handoffStation?.activity, 'handoff', 'delegated task state maps to handoff')
 assert.deepEqual(
   { x: handoffStation?.x, y: handoffStation?.y, lane: handoffStation?.lane },
-  { x: 18, y: 51, lane: 'west' },
+  { x: 10, y: 49, lane: 'west' },
   'coordinator desk stays on the side of the office floor',
 )
 assert.equal(handoffStation?.action, 'handoff', 'delegated task state maps to handoff action')
@@ -573,7 +576,7 @@ assert.equal(handoffStation?.choreography.phaseLabel, 'signal-transfer', 'handof
 assert.equal(marketingStation?.name, 'Вітрина', 'marketing visuals agent renders as its own office station')
 assert.deepEqual(
   { x: marketingStation?.x, y: marketingStation?.y, lane: marketingStation?.lane },
-  { x: 68, y: 61, lane: 'south' },
+  { x: 66, y: 66, lane: 'south' },
   'marketing visuals station sits in a separate lower-right visual wall zone',
 )
 assert.equal(marketingStation?.professionProp, 'canvas', 'marketing visuals station uses visual canvas profession prop')

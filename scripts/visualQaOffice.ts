@@ -122,7 +122,7 @@ async function verifyOfficeDom(page: Page) {
   await expectVisible(page.locator('.office-social-board--marketing'), 'Marketing visuals/social board')
   await expectVisible(page.locator(".office-desk[data-agent-id='agent-vitryna']"), 'Вітрина marketing visuals desk')
   await expectVisible(page.locator(".office-floor-agent[data-agent-id='agent-vitryna'][data-physical-agent='true']"), 'Вітрина physical office agent')
-  await expectVisible(page.locator(".office-floor-agent[data-agent-id='agent-vitryna'] .office-agent-state-badge"), 'Вітрина state badge')
+  await expectVisible(page.locator(".office-floor-agent[data-agent-id='agent-vitryna'] .office-agent-status-cue"), 'Вітрина status cue')
   await expectVisible(page.locator(".office-floor-agent[data-agent-id='agent-vitryna'] .office-task-bubble"), 'Вітрина task bubble')
 
   assert.equal(await page.locator('.office-core, .command-core').count(), 0, 'Large central core/card block should not render in the office scene')
@@ -138,12 +138,14 @@ async function verifyOfficeDom(page: Page) {
   assert((await page.locator(".office-floor-agent[data-agent-posture='handoff']").count()) >= 1, 'Expected at least one handoff posture')
   assert((await page.locator(".office-floor-agent[data-agent-posture='blocked'], .office-floor-agent[data-agent-activity='monitoring']").count()) >= 1, 'Expected blocked or monitoring status marker state')
   assert((await page.locator('.office-agent-route-map').count()) === 1, 'Expected simulation route SVG overlay')
-  assert((await page.locator('.office-agent-route[data-agent-path] polyline').count()) >= 4, 'Expected visible agent path cues keyed by path id')
+  const routePathCount = await page.locator('.office-agent-route[data-agent-path] polyline').count()
+  assert(routePathCount >= 1, 'Expected focused agent path cues keyed by path id')
+  assert(routePathCount <= 4, `Expected routes to stay focused and not clutter the floor, found ${routePathCount}`)
   assert((await page.locator(".office-agent-route--walking, .office-agent-route--handoff").count()) >= 1, 'Expected active movement or handoff route cues')
   assert((await page.locator(".office-floor-agent[data-agent-posture='walking'] .office-agent-trail").count()) >= 1, 'Expected walking agents to expose movement trails')
   assert((await page.locator(".office-floor-agent[data-agent-posture='walking'] .office-agent-direction-arrow, .office-floor-agent[data-agent-posture='handoff'] .office-agent-direction-arrow").count()) >= 1, 'Expected moving/handoff agents to expose direction arrows')
   assert((await page.locator(".office-floor-agent[data-agent-posture='handoff'] .office-agent-document-transfer").count()) >= 1, 'Expected handoff agents to expose document transfer marker')
-  assert((await page.locator('.office-agent-state-badge').count()) >= 4, 'Expected compact state badges on simulation agents')
+  assert((await page.locator('.office-agent-status-cue').count()) >= 10, 'Expected compact status cues on simulation agents')
   assert((await page.locator('.office-desk .office-agent-sprite').count()) === 0, 'Office agents should not be rendered inside desk blocks')
   assert.equal(await page.locator('.office-walkers, .office-walker').count(), 0, 'Standalone walking overlay should not render')
   assert((await page.locator('.office-monitor-stand').count()) >= 4, 'Expected monitor stands')
@@ -210,6 +212,59 @@ async function verifyOfficeDom(page: Page) {
     agentsMissingSimulationPosition,
     [],
     `Floor agents should expose simulation position and target CSS variables: ${agentsMissingSimulationPosition.join('; ')}`,
+  )
+
+  const deskSpreadIssues = await page.evaluate(() => {
+    if (window.innerWidth <= 430) {
+      return []
+    }
+
+    const office = document.querySelector<HTMLElement>('.isometric-office')
+    const officeBox = office?.getBoundingClientRect()
+    const desks = [...document.querySelectorAll<HTMLElement>('.office-desk[data-agent-id]')]
+      .map((desk) => {
+        const box = desk.getBoundingClientRect()
+
+        return {
+          id: desk.dataset.agentId ?? 'unknown',
+          x: box.left + box.width / 2,
+          y: box.top + box.height / 2,
+        }
+      })
+
+    if (desks.length < 8) {
+      return [`only ${desks.length} desks visible`]
+    }
+
+    const xs = desks.map((desk) => desk.x)
+    const ys = desks.map((desk) => desk.y)
+    const spreadX = Math.max(...xs) - Math.min(...xs)
+    const spreadY = Math.max(...ys) - Math.min(...ys)
+    const closePairs = desks.flatMap((firstDesk, firstIndex) =>
+      desks.slice(firstIndex + 1).map((secondDesk) => {
+        const distance = Math.hypot(firstDesk.x - secondDesk.x, firstDesk.y - secondDesk.y)
+
+        return distance < 92
+          ? `${firstDesk.id}-${secondDesk.id}: ${Math.round(distance)}px`
+          : ''
+      }),
+    ).filter(Boolean)
+
+    return [
+      !officeBox || spreadX < officeBox.width * 0.68
+        ? `x-spread ${Math.round(spreadX)}px of ${Math.round(officeBox?.width ?? 0)}px`
+        : '',
+      !officeBox || spreadY < officeBox.height * 0.54
+        ? `y-spread ${Math.round(spreadY)}px of ${Math.round(officeBox?.height ?? 0)}px`
+        : '',
+      ...closePairs,
+    ].filter(Boolean)
+  })
+
+  assert.deepEqual(
+    deskSpreadIssues,
+    [],
+    `Office desks should use the full room with readable spacing: ${deskSpreadIssues.join('; ')}`,
   )
 
   const oversizedLabels = await page.evaluate(() =>
