@@ -145,6 +145,11 @@ Office Scene phase 11 continues the lightweight 2D office pass: the room now inc
 board, each workstation has a small desk worklog stack, and 2D agent sprites include animated hands
 so active workers read as seated at real stations rather than static labels.
 
+Office Scene phase 12 separates the people from the furniture. Workstations remain selectable
+desk/monitor zones, but agent sprites now render on a dedicated physical office-floor layer with
+lane offsets, route walking, idle/typing/monitoring poses, and reduced-motion fallbacks. The main
+scene now reads more like a compact 2D game office instead of agents placed inside dashboard blocks.
+
 Manual viewport widths:
 
 - Desktop: `1366` and `1440`

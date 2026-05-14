@@ -81,8 +81,22 @@ export function IsometricOfficeScene({
         ))}
       </div>
       <div className="office-walkers" aria-hidden="true">
-        <span className="office-walker office-walker--inner" />
-        <span className="office-walker office-walker--outer" />
+        <span className="office-walker office-walker--inner">
+          <span className={OFFICE_SPRITE_TOKENS.sprite}>
+            <span className={OFFICE_SPRITE_TOKENS.head} />
+            <span className={OFFICE_SPRITE_TOKENS.body} />
+            <span className={OFFICE_SPRITE_TOKENS.hands} />
+            <span className={OFFICE_SPRITE_TOKENS.legs} />
+          </span>
+        </span>
+        <span className="office-walker office-walker--outer">
+          <span className={OFFICE_SPRITE_TOKENS.sprite}>
+            <span className={OFFICE_SPRITE_TOKENS.head} />
+            <span className={OFFICE_SPRITE_TOKENS.body} />
+            <span className={OFFICE_SPRITE_TOKENS.hands} />
+            <span className={OFFICE_SPRITE_TOKENS.legs} />
+          </span>
+        </span>
       </div>
       {stations.map((station) => {
         const isSelected = station.agentId === selectedAgentId
@@ -102,6 +116,8 @@ export function IsometricOfficeScene({
               '--office-agent-delay': station.choreography.animationDelay,
               '--office-agent-duration': station.choreography.animationDuration,
               '--office-agent-tempo': station.choreography.tempo,
+              '--office-station-x': `${station.x}%`,
+              '--office-station-y': `${station.y}%`,
             } as CSSProperties}
             type="button"
           >
@@ -113,17 +129,6 @@ export function IsometricOfficeScene({
             <span className={OFFICE_SPRITE_TOKENS.keyboardTray} aria-hidden="true" />
             <span className={OFFICE_SPRITE_TOKENS.worklog} aria-hidden="true" />
             <span className={OFFICE_SPRITE_TOKENS.chair} aria-hidden="true" />
-            <span className={`${getOfficeAgentMarkerClassName(station.action)} ${station.choreography.className}`}>
-              <span className={OFFICE_SPRITE_TOKENS.restProp} aria-hidden="true" />
-              <span className={OFFICE_SPRITE_TOKENS.sprite} aria-hidden="true">
-                <span className={OFFICE_SPRITE_TOKENS.head} />
-                <span className={OFFICE_SPRITE_TOKENS.body}>{station.marker}</span>
-                <span className={OFFICE_SPRITE_TOKENS.hands} />
-                <span className={OFFICE_SPRITE_TOKENS.legs} />
-              </span>
-              <span className={OFFICE_SPRITE_TOKENS.signalProp} aria-hidden="true" />
-              <span className={OFFICE_SPRITE_TOKENS.tool} aria-hidden="true" />
-            </span>
             <span className={getOfficeStatusLampClassName(station.tone)} />
             <span className={OFFICE_SPRITE_TOKENS.label}>
               <strong>{station.name}</strong>
@@ -132,6 +137,37 @@ export function IsometricOfficeScene({
           </button>
         )
       })}
+      <div className="office-agent-floor" aria-hidden="true">
+        {stations.map((station) => (
+          <span
+            className={`office-floor-agent office-floor-agent--${station.lane} ${station.choreography.className}`}
+            data-action-phase={station.choreography.phaseLabel}
+            data-agent-id={station.agentId}
+            data-physical-agent="true"
+            data-route-involved={station.choreography.routeInvolvement}
+            key={`floor-agent-${station.id}`}
+            style={{
+              '--office-agent-delay': station.choreography.animationDelay,
+              '--office-agent-duration': station.choreography.animationDuration,
+              '--office-agent-tempo': station.choreography.tempo,
+              '--office-agent-x': `${station.x}%`,
+              '--office-agent-y': `${station.y}%`,
+            } as CSSProperties}
+          >
+            <span className={getOfficeAgentMarkerClassName(station.action)}>
+              <span className={OFFICE_SPRITE_TOKENS.restProp} />
+              <span className={OFFICE_SPRITE_TOKENS.sprite}>
+                <span className={OFFICE_SPRITE_TOKENS.head} />
+                <span className={OFFICE_SPRITE_TOKENS.body}>{station.marker}</span>
+                <span className={OFFICE_SPRITE_TOKENS.hands} />
+                <span className={OFFICE_SPRITE_TOKENS.legs} />
+              </span>
+              <span className={OFFICE_SPRITE_TOKENS.signalProp} />
+              <span className={OFFICE_SPRITE_TOKENS.tool} />
+            </span>
+          </span>
+        ))}
+      </div>
     </div>
   )
 }

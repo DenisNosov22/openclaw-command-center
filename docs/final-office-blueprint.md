@@ -72,3 +72,7 @@ The Office scene is final enough for this planned milestone when:
 - Step 51: the Office scene adds a lightweight live status board, per-station desk worklog props,
   and animated worker hands on the 2D sprites. This keeps the same CSS-only/read-only direction while
   making agents read more clearly as active office workers at their stations.
+- Step 52: agents are no longer children of the workstation blocks. The live scene renders desks,
+  monitors, chairs, and labels as the selectable station layer, then renders agent sprites on a
+  separate physical office-floor layer with lane offsets and a walking route animation. Reduced
+  motion disables the new route motion while preserving the readable office layout.

@@ -109,6 +109,10 @@ async function verifyOfficeDom(page: Page) {
 
   assert((await page.locator('.office-desk').count()) >= 4, 'Expected multiple office stations')
   assert((await page.locator('.office-agent-sprite').count()) >= 4, 'Expected office agent sprites')
+  assert((await page.locator('.office-agent-floor').count()) === 1, 'Expected physical agent floor layer')
+  assert((await page.locator('.office-floor-agent[data-physical-agent="true"]').count()) >= 4, 'Expected physical agent sprites on the office floor')
+  assert((await page.locator('.office-desk .office-agent-sprite').count()) === 0, 'Office agents should not be rendered inside desk blocks')
+  assert((await page.locator('.office-walker .office-agent-sprite').count()) >= 2, 'Expected sprite-like walking agents on route layer')
   assert((await page.locator('.office-monitor-stand').count()) >= 4, 'Expected monitor stands')
   assert((await page.locator('.office-keyboard-tray').count()) >= 4, 'Expected keyboard/tool trays')
   assert(
@@ -200,6 +204,7 @@ async function verifyReducedMotionOffice(page: Page) {
       '.office-agent-tool',
       '.office-agent-signal-prop',
       '.office-agent-sprite__legs',
+      '.office-floor-agent',
       '.office-walker',
       '.office-core__surface',
       '.office-handoff-hub',
