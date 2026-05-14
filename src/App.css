@@ -476,6 +476,22 @@
   transform-style: preserve-3d;
 }
 
+.center-stage--office {
+  padding: 0;
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.center-stage--office::before {
+  display: none;
+}
+
+.center-stage--office .stage-header,
+.center-stage--office .stage-legend {
+  padding-inline: 2px;
+}
+
 .stage-stats {
   flex-wrap: wrap;
   justify-content: flex-end;
@@ -712,19 +728,16 @@
 .office-floor {
   --office-floor-reference-transform: perspective(900px) rotateX(50deg);
   position: absolute;
-  inset: 0;
+  inset: -44px 0 -54px;
   z-index: 0;
   transform: none;
   background:
-    linear-gradient(180deg, rgba(7, 8, 7, 0.08), rgba(7, 8, 7, 0.24)),
-    radial-gradient(ellipse at 50% 58%, rgba(244, 241, 234, 0.055), transparent 48%),
-    url('./assets/office-background.png') center / cover no-repeat,
-    linear-gradient(180deg, rgba(24, 25, 23, 0.94), rgba(10, 11, 10, 0.72));
+    linear-gradient(180deg, rgba(244, 241, 234, 0.04), rgba(215, 180, 92, 0.035)),
+    radial-gradient(ellipse at 50% 58%, rgba(244, 241, 234, 0.04), transparent 50%),
+    url('./assets/office-background.png') center / cover no-repeat;
   border: 0;
   border-radius: 0;
-  box-shadow:
-    inset 0 0 0 1px rgba(244, 241, 234, 0.035),
-    inset 0 0 54px rgba(0, 0, 0, 0.36);
+  box-shadow: none;
 }
 
 .office-floor::before,

@@ -508,7 +508,10 @@ export function CommandRoomPage() {
           </div>
         </aside>
 
-        <section className="panel center-stage" aria-label="Центральна панель">
+        <section
+          className={`panel center-stage${stageView === 'office' ? ' center-stage--office' : ''}`}
+          aria-label="Центральна панель"
+        >
           <div className="stage-header">
             <div>
               <p className="eyebrow">

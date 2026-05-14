@@ -111,14 +111,25 @@ async function verifyOfficeDom(page: Page) {
   await expectVisible(page.locator('.office-floor'), 'Office floor')
   const officeWrapperIssues = await page.evaluate(() => {
     const office = document.querySelector<HTMLElement>('.isometric-office')
+    const officePanel = document.querySelector<HTMLElement>('.center-stage--office')
+    const officeFloor = document.querySelector<HTMLElement>('.office-floor')
     const officeBox = office?.getBoundingClientRect()
     const style = office ? getComputedStyle(office) : undefined
+    const panelStyle = officePanel ? getComputedStyle(officePanel) : undefined
+    const floorStyle = officeFloor ? getComputedStyle(officeFloor) : undefined
 
-    if (!office || !officeBox || !style) {
+    if (!office || !officeBox || !style || !officePanel || !panelStyle || !officeFloor || !floorStyle) {
       return ['missing office wrapper']
     }
 
     return [
+      panelStyle.backgroundImage !== 'none' || panelStyle.backgroundColor !== 'rgba(0, 0, 0, 0)'
+        ? `office panel background ${panelStyle.backgroundImage} / ${panelStyle.backgroundColor}`
+        : '',
+      Number.parseFloat(panelStyle.borderTopWidth) > 0 && panelStyle.borderTopColor !== 'rgba(0, 0, 0, 0)'
+        ? `office panel border ${panelStyle.borderTopWidth} ${panelStyle.borderTopColor}`
+        : '',
+      panelStyle.boxShadow !== 'none' ? `office panel shadow ${panelStyle.boxShadow}` : '',
       style.backgroundImage !== 'none' || style.backgroundColor !== 'rgba(0, 0, 0, 0)'
         ? `wrapper background ${style.backgroundImage} / ${style.backgroundColor}`
         : '',
@@ -128,6 +139,16 @@ async function verifyOfficeDom(page: Page) {
       style.boxShadow !== 'none' ? `wrapper shadow ${style.boxShadow}` : '',
       Number.parseFloat(style.borderTopLeftRadius) > 0
         ? `wrapper radius ${style.borderTopLeftRadius}`
+        : '',
+      floorStyle.boxShadow !== 'none' ? `office floor shadow ${floorStyle.boxShadow}` : '',
+      Number.parseFloat(floorStyle.borderTopWidth) > 0
+        ? `office floor border ${floorStyle.borderTopWidth}`
+        : '',
+      Number.parseFloat(floorStyle.borderTopLeftRadius) > 0
+        ? `office floor radius ${floorStyle.borderTopLeftRadius}`
+        : '',
+      !floorStyle.backgroundSize.split(',').some((layerSize) => layerSize.trim() === 'cover')
+        ? `office floor background-size ${floorStyle.backgroundSize}`
         : '',
       window.innerWidth >= 821 && officeBox.height < 520
         ? `desktop room height ${Math.round(officeBox.height)}px`
