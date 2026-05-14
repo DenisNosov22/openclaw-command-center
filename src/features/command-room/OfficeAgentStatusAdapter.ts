@@ -149,13 +149,25 @@ function createTargetRouteOverride(
   if (!target || !path) {
     return {}
   }
+  const sourceProfile = getAgentProfile(agent)
+  const targetProfile = OFFICE_AGENT_PROFILES[snapshot.targetRole]
   const progress = clamp(snapshot.progress ?? 0.5, 0, 1)
   const isArrivingAtHandoff = progress >= 0.8
+  const sameZonePosition =
+    sourceProfile &&
+    targetProfile &&
+    sourceProfile.zoneId === targetProfile.zoneId
+      ? interpolatePoint(
+          getOfficeDesk(sourceProfile.deskId).point,
+          target,
+          Math.min(progress, 0.34),
+        )
+      : getPathPoint(path, progress)
 
   return {
     activity: isArrivingAtHandoff ? 'handoff' : 'walking',
     pathId: path.id,
-    position: getPathPoint(path, progress),
+    position: sameZonePosition,
     posture: isArrivingAtHandoff ? 'handoff' : 'walking',
     target: roundPoint(target),
   }

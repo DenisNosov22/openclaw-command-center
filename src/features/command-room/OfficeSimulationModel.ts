@@ -211,7 +211,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     label: 'Ops',
     anchorKind: 'server-admin-console-seat',
     defaultAction: 'monitoring',
-    point: { x: 20, y: 78 },
+    point: { x: 15, y: 76 },
     lane: 'south',
   },
   {
@@ -251,17 +251,17 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     label: 'Director',
     anchorKind: 'camera-studio-standing-mark',
     defaultAction: 'idle',
-    point: { x: 87, y: 75 },
+    point: { x: 84, y: 70 },
     lane: 'east',
   },
   {
     id: 'desk-layout',
-    zoneId: 'delivery',
+    zoneId: 'design',
     profession: 'Layout designer',
     label: 'Layout',
-    anchorKind: 'presentation-showcase-wall-spot',
+    anchorKind: 'pc-chair-workstation-seat',
     defaultAction: 'reviewing',
-    point: { x: 76, y: 63 },
+    point: { x: 73, y: 62 },
     lane: 'east',
   },
   {
@@ -271,7 +271,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     label: 'Вітрина',
     anchorKind: 'presentation-showcase-wall-spot',
     defaultAction: 'working',
-    point: { x: 86, y: 46 },
+    point: { x: 86, y: 51 },
     lane: 'east',
   },
   {
@@ -281,7 +281,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     label: 'Trading',
     anchorKind: 'trading-monitor-chair',
     defaultAction: 'monitoring',
-    point: { x: 64, y: 82 },
+    point: { x: 72, y: 75 },
     lane: 'south',
   },
 ]
@@ -320,7 +320,6 @@ export const OFFICE_PATHS: OfficePath[] = [
 ]
 
 const standingHomeRoles = new Set([
-  'UI/layout',
   'marketing',
   'video',
 ])
@@ -332,6 +331,7 @@ const seatedHomeRoles = new Set([
   'ops',
   'research',
   'trading',
+  'UI/layout',
 ])
 
 export const OFFICE_AGENT_PROFILES: Record<string, OfficeAgentProfile> = {
@@ -394,7 +394,7 @@ export const OFFICE_AGENT_PROFILES: Record<string, OfficeAgentProfile> = {
   'UI/layout': {
     role: 'UI/layout',
     profession: 'Layout designer',
-    zoneId: 'delivery',
+    zoneId: 'design',
     deskId: 'desk-layout',
     defaultAction: 'reviewing',
     pathId: 'path-command-delivery',
@@ -485,8 +485,17 @@ function getRoutePoint(points: OfficePoint[], progress: number) {
 
 export function getOfficeAgentRouteProgress(agent: Agent, elapsedMs = 0) {
   const phase = getScenarioPhase(agent, elapsedMs)
+  const profile = OFFICE_AGENT_PROFILES[agent.role] ?? fallbackProfile
+  const desktopRouteLimitByDesk: Partial<Record<OfficeDeskId, number>> = {
+    'desk-coding': 0.16,
+    'desk-qa': 0.18,
+    'desk-layout': 0.16,
+    'desk-marketing': 0.14,
+    'desk-trading': 0.16,
+  }
+  const routeLimit = desktopRouteLimitByDesk[profile.deskId] ?? 0.22
 
-  return clamp(phase <= 0.5 ? phase * 2 : (1 - phase) * 2, 0, 1)
+  return clamp(phase <= 0.5 ? phase * 2 : (1 - phase) * 2, 0, 1) * routeLimit
 }
 
 export function canAgentMove(...states: OfficeMovementState[]) {
@@ -549,15 +558,15 @@ function sameOfficePoint(left: OfficePoint, right: OfficePoint) {
 
 const officeHubCorridorsByDesk: Record<OfficeDeskId, OfficePoint[]> = {
   'desk-command': [],
-  'desk-coding': [{ x: 22, y: 48 }, { x: 32, y: 53 }, { x: 43, y: 51 }],
-  'desk-ops': [{ x: 20, y: 72 }, { x: 29, y: 63 }, { x: 42, y: 55 }, { x: 49, y: 49 }],
+  'desk-coding': [{ x: 18, y: 47 }, { x: 20, y: 47 }, { x: 24, y: 49 }, { x: 34, y: 53 }, { x: 43, y: 51 }],
+  'desk-ops': [{ x: 16, y: 73 }, { x: 22, y: 66 }, { x: 38, y: 55 }, { x: 49, y: 49 }],
   'desk-research': [{ x: 16, y: 35 }, { x: 35, y: 39 }, { x: 46, y: 46 }],
   'desk-spec': [{ x: 43, y: 36 }, { x: 47, y: 42 }],
   'desk-qa': [{ x: 28, y: 47 }, { x: 37, y: 53 }, { x: 45, y: 52 }],
-  'desk-video': [{ x: 84, y: 72 }, { x: 72, y: 64 }, { x: 60, y: 55 }, { x: 49, y: 49 }],
-  'desk-layout': [{ x: 73, y: 62 }, { x: 62, y: 55 }, { x: 52, y: 48 }],
-  'desk-marketing': [{ x: 82, y: 49 }, { x: 64, y: 50 }, { x: 56, y: 48 }],
-  'desk-trading': [{ x: 60, y: 74 }, { x: 54, y: 61 }, { x: 49, y: 49 }],
+  'desk-video': [{ x: 82, y: 69 }, { x: 70, y: 64 }, { x: 58, y: 55 }, { x: 49, y: 49 }],
+  'desk-layout': [{ x: 72, y: 61 }, { x: 62, y: 55 }, { x: 52, y: 48 }],
+  'desk-marketing': [{ x: 84, y: 51 }, { x: 68, y: 51 }, { x: 56, y: 48 }],
+  'desk-trading': [{ x: 69, y: 73 }, { x: 58, y: 61 }, { x: 49, y: 49 }],
 }
 
 function getDeskByPoint(point: OfficePoint) {

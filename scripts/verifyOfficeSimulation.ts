@@ -172,10 +172,10 @@ const redistributedDeskIssues = ([
   ['desk-command', 44, 48, 33, 37],
   ['desk-spec', 40, 48, 29, 37],
   ['desk-qa', 23, 28, 40, 46],
-  ['desk-layout', 74, 79, 60, 66],
-  ['desk-ops', 20, 24, 74, 82],
-  ['desk-video', 85, 89, 72, 78],
-  ['desk-trading', 62, 66, 79, 85],
+  ['desk-layout', 72, 76, 59, 65],
+  ['desk-ops', 13, 18, 73, 79],
+  ['desk-video', 82, 86, 68, 72],
+  ['desk-trading', 70, 74, 72, 78],
 ] as const)
   .map(([deskId, minX, maxX, minY, maxY]) => {
     const desk = getOfficeDesk(deskId)
@@ -436,12 +436,12 @@ const waitingOps = getOfficeAgentSimulationTick(
 assert.deepEqual(completedSpec.position, { x: 42, y: 31 }, 'Completed spec stays seated at the meeting-table home station')
 assert.equal(completedSpec.posture, 'sitting', 'Completed spec sits at the table instead of floating in the aisle')
 assert.deepEqual(completedSpec.route, [{ x: 42, y: 31 }], 'Completed spec should not expose a walking route to the hub')
-assert.deepEqual(idleDirector.position, { x: 87, y: 75 }, 'Idle director stays by the camera/studio home station')
+assert.deepEqual(idleDirector.position, { x: 84, y: 70 }, 'Idle director stays by the camera/studio home station')
 assert.equal(idleDirector.posture, 'standing', 'Idle director stands near the camera/studio setup')
-assert.deepEqual(idleDirector.route, [{ x: 87, y: 75 }], 'Idle director should not expose a walking route to the hub')
-assert.deepEqual(waitingOps.position, { x: 20, y: 78 }, 'Waiting ops stays at the bottom-left server/admin console')
+assert.deepEqual(idleDirector.route, [{ x: 84, y: 70 }], 'Idle director should not expose a walking route to the hub')
+assert.deepEqual(waitingOps.position, { x: 15, y: 76 }, 'Waiting ops stays at the bottom-left server/admin console')
 assert.equal(waitingOps.posture, 'sitting', 'Waiting ops monitors from the admin console')
-assert.deepEqual(waitingOps.route, [{ x: 20, y: 78 }], 'Waiting ops should not expose a walking route to the hub')
+assert.deepEqual(waitingOps.route, [{ x: 15, y: 76 }], 'Waiting ops should not expose a walking route to the hub')
 
 const activeBaseline = snapshot.agents.find((agent) => agent.id === 'agent-dev')
 assert(activeBaseline, 'Expected active fixture agent')

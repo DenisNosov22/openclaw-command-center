@@ -273,11 +273,11 @@ async function verifyOfficeDom(page: Page) {
       ['agent-varta', getCenter(".office-floor-agent[data-agent-id='agent-varta']"), 24, 32, 41, 49],
       ['agent-shturman', getCenter(".office-floor-agent[data-agent-id='agent-shturman']"), 9, 17, 25, 33],
       ['agent-spec', getCenter(".office-floor-agent[data-agent-id='agent-spec']"), 40, 48, 29, 37],
-      ['agent-bastion', getCenter(".office-floor-agent[data-agent-id='agent-bastion']"), 20, 28, 70, 78],
-      ['agent-desk', getCenter(".office-floor-agent[data-agent-id='agent-desk']"), 48, 76, 70, 84],
-      ['agent-verstalnyk', getCenter(".office-floor-agent[data-agent-id='agent-verstalnyk']"), 72, 84, 52, 64],
+      ['agent-bastion', getCenter(".office-floor-agent[data-agent-id='agent-bastion']"), 12, 20, 70, 78],
+      ['agent-desk', getCenter(".office-floor-agent[data-agent-id='agent-desk']"), 68, 76, 70, 80],
+      ['agent-verstalnyk', getCenter(".office-floor-agent[data-agent-id='agent-verstalnyk']"), 70, 84, 52, 64],
       ['agent-vitryna', getCenter(".office-floor-agent[data-agent-id='agent-vitryna']"), 76, 90, 42, 56],
-      ['agent-rezhyser', getCenter(".office-floor-agent[data-agent-id='agent-rezhyser']"), 84, 92, 72, 80],
+      ['agent-rezhyser', getCenter(".office-floor-agent[data-agent-id='agent-rezhyser']"), 80, 88, 66, 74],
     ] as const
 
     return checks.map(([id, center, minX, maxX, minY, maxY]) => {
@@ -411,7 +411,7 @@ async function verifyOfficeDom(page: Page) {
     }
 
     const checks = [
-      ['agent-verstalnyk', getCenter('agent-verstalnyk'), 72, 84, 52, 64],
+      ['agent-verstalnyk', getCenter('agent-verstalnyk'), 70, 84, 52, 64],
       ['agent-varta', getCenter('agent-varta'), 24, 32, 41, 49],
       ['agent-spec', getCenter('agent-spec'), 40, 48, 29, 37],
     ] as const
@@ -769,6 +769,8 @@ async function verifyOfficeDom(page: Page) {
       'agent-vitryna-agent-verstalnyk',
       'agent-verstalnyk-agent-desk',
       'agent-desk-agent-verstalnyk',
+      'agent-rezhyser-agent-desk',
+      'agent-desk-agent-rezhyser',
     ])
     const xs = desks.map((desk) => desk.x)
     const ys = desks.map((desk) => desk.y)
