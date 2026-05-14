@@ -533,6 +533,51 @@
   background: rgba(215, 180, 92, 0.18);
 }
 
+.office-source-chip {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 5px;
+  min-height: 22px;
+  max-width: 76px;
+  padding: 3px 7px;
+  color: #bdb5aa;
+  font-size: 0.64rem;
+  font-weight: 800;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0;
+  background: rgba(13, 13, 12, 0.5);
+  border: 1px solid rgba(215, 180, 92, 0.14);
+  border-radius: 999px;
+}
+
+.office-source-chip::before {
+  width: 5px;
+  height: 5px;
+  flex: 0 0 auto;
+  content: '';
+  background: currentcolor;
+  border-radius: 999px;
+  box-shadow: 0 0 8px currentcolor;
+}
+
+.office-source-chip--json {
+  color: #78d4c0;
+  border-color: rgba(120, 212, 192, 0.2);
+}
+
+.office-source-chip--fixture,
+.office-source-chip--loading {
+  color: #d7b45c;
+}
+
+.office-source-chip--stale,
+.office-source-chip--error {
+  color: #ff827b;
+  border-color: rgba(212, 84, 77, 0.22);
+}
+
 .hologram {
   position: relative;
   z-index: 1;

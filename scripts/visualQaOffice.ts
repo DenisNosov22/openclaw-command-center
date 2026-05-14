@@ -98,6 +98,15 @@ async function verifyOfficeDom(page: Page) {
   await expectVisible(graphToggle, 'Graph toggle')
   assert.equal(await officeToggle.getAttribute('aria-pressed'), 'true', 'Office is the default scene')
 
+  const officeSourceChip = page.locator('[data-office-status-source]')
+  await expectVisible(officeSourceChip, 'Office status source indicator')
+  assert(
+    ['fixture', 'json', 'loading', 'stale', 'error'].includes(
+      (await officeSourceChip.first().getAttribute('data-office-status-source')) ?? '',
+    ),
+    'Office status source indicator should expose fixture/json/loading/stale/error state',
+  )
+
   await expectVisible(page.locator('.isometric-office'), 'Office scene')
   await expectVisible(page.locator('.office-floor'), 'Office floor')
   await expectVisible(page.locator('.office-area--desk'), 'Desk/PC zone')
@@ -215,6 +224,24 @@ async function verifyOfficeDom(page: Page) {
     oversizedLabels,
     [],
     `Office labels and chips should stay compact attached metadata, not dashboard cards: ${oversizedLabels.join('; ')}`,
+  )
+
+  const oversizedSourceChip = await page.evaluate(() =>
+    [...document.querySelectorAll('.office-source-chip')]
+      .map((element, index) => {
+        const box = element.getBoundingClientRect()
+
+        return box.width > 86 || box.height > 28
+          ? `source ${index + 1}: ${Math.round(box.width)}x${Math.round(box.height)}`
+          : ''
+      })
+      .filter(Boolean),
+  )
+
+  assert.deepEqual(
+    oversizedSourceChip,
+    [],
+    `Office status source indicator should stay small and unobtrusive: ${oversizedSourceChip.join('; ')}`,
   )
 
   const noisyHandoffElements = await page.evaluate(() =>

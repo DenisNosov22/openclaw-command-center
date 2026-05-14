@@ -9,7 +9,10 @@ import type { ActivityEvent, Agent, Task, WorkflowNode } from '../../shared/type
 import { formatKyivTime } from '../../shared/time/kyivTime'
 import { IsometricOfficeScene } from './IsometricOfficeScene'
 import { createOfficeAgentStatusSimulationOverrides } from './OfficeAgentStatusAdapter'
-import { useOfficeAgentStatus } from './OfficeAgentStatusDataSource'
+import {
+  useOfficeAgentStatus,
+  type OfficeAgentStatusDataSourceState,
+} from './OfficeAgentStatusDataSource'
 
 type StageView = 'office' | 'graph'
 type ActivityFilter = 'all' | 'selected' | 'critical' | 'system'
@@ -69,6 +72,11 @@ const activitySeverityLabel: Record<ActivityEvent['severity'], string> = {
   success: 'Success',
 }
 
+type OfficeSourceIndicator = {
+  label: 'error' | 'fixture' | 'json' | 'loading' | 'stale'
+  title: string
+}
+
 const heartbeatSummaries = [
   'Mock live heartbeat: активні агенти синхронізовані без real backend.',
   'Mock live heartbeat: task timeline оновлено read-only знімком.',
@@ -126,6 +134,47 @@ function getSuggestedAction(agent: Agent, task?: Task, hasRisk = false) {
   }
 
   return 'Відкрити Graph'
+}
+
+function getOfficeSourceIndicator(
+  officeAgentStatus: OfficeAgentStatusDataSourceState,
+): OfficeSourceIndicator {
+  if (officeAgentStatus.kind === 'ready' && !officeAgentStatus.isFallback) {
+    return {
+      label: 'json',
+      title: `Office status source: loaded JSON from ${officeAgentStatus.sourceUrl ?? 'agent-status.json'}`,
+    }
+  }
+
+  if (officeAgentStatus.kind === 'fallback') {
+    return {
+      label: 'fixture',
+      title: 'Office status source: deterministic fixture fallback',
+    }
+  }
+
+  if (officeAgentStatus.kind === 'stale') {
+    return {
+      label: 'stale',
+      title: `Office status source: stale or missing JSON, using fixture fallback${
+        officeAgentStatus.error ? ` (${officeAgentStatus.error})` : ''
+      }`,
+    }
+  }
+
+  if (officeAgentStatus.kind === 'error') {
+    return {
+      label: 'error',
+      title: `Office status source: JSON error, using fixture fallback${
+        officeAgentStatus.error ? ` (${officeAgentStatus.error})` : ''
+      }`,
+    }
+  }
+
+  return {
+    label: 'loading',
+    title: `Office status source: loading ${officeAgentStatus.sourceUrl ?? 'agent-status.json'}`,
+  }
 }
 
 function getInspectorEvents(events: ActivityEvent[], agentId: string) {
@@ -310,6 +359,7 @@ export function CommandRoomPage() {
     [officeAgentStatus.snapshots, snapshot.agents],
   )
   const formattedLastUpdated = formatKyivTime(snapshot.lastUpdated, { includeDate: true })
+  const officeSourceIndicator = getOfficeSourceIndicator(officeAgentStatus)
   const hasSnapshotWarning = snapshot.stateKind !== 'ready'
   let globalStatus = hasSnapshotWarning ? snapshot.stateTitle : 'Стабільно'
   let globalStatusDetail = hasSnapshotWarning
@@ -486,6 +536,17 @@ export function CommandRoomPage() {
                   Graph
                 </button>
               </div>
+              {stageView === 'office' ? (
+                <span
+                  aria-label={`Office status source: ${officeSourceIndicator.label}`}
+                  className={`office-source-chip office-source-chip--${officeSourceIndicator.label}`}
+                  data-office-status-source={officeSourceIndicator.label}
+                  role="status"
+                  title={officeSourceIndicator.title}
+                >
+                  {officeSourceIndicator.label}
+                </span>
+              ) : null}
               <div className="stage-stats" aria-label="Метрики активних задач">
                 <span>{activeTasks.length} активних</span>
                 <span>{blockedTasks.length} ризики</span>
