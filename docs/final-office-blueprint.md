@@ -91,3 +91,9 @@ The Office scene is final enough for this planned milestone when:
   fixture states into simulation posture/activity/current-task/status-badge cues and optional
   target-role movement overrides while preserving the deterministic fallback when no live snapshots
   are present.
+- Step 55: the office background is now treated as the map. Agent and PC anchors match the visible
+  furniture: dev/spec/research/QA use the left desk rows, coordination uses the central meeting
+  table, ops/trading use the lower server/admin and monitor areas, and director/layout/Вітрина use
+  the right presentation/studio wall. Walking routes are corridor polylines through the open floor,
+  and sprites are about one third larger with stronger lane offsets so people read clearly without
+  covering the furniture.

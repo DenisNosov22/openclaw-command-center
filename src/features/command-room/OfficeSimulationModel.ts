@@ -137,38 +137,38 @@ export interface OfficeSimulation {
 export const OFFICE_ZONES: OfficeZone[] = [
   {
     id: 'command',
-    label: 'Command side desk',
-    bounds: { x: 6, y: 35, width: 17, height: 28 },
+    label: 'Central meeting command table',
+    bounds: { x: 41, y: 28, width: 19, height: 23 },
   },
   {
     id: 'delivery',
-    label: 'Delivery desks',
-    bounds: { x: 27, y: 35, width: 24, height: 48 },
+    label: 'Left workstation rows',
+    bounds: { x: 8, y: 20, width: 28, height: 35 },
   },
   {
     id: 'ops',
-    label: 'Ops server corner',
-    bounds: { x: 70, y: 14, width: 20, height: 22 },
+    label: 'Server and admin console',
+    bounds: { x: 6, y: 64, width: 28, height: 32 },
   },
   {
     id: 'research',
-    label: 'Research wall',
-    bounds: { x: 20, y: 13, width: 42, height: 18 },
+    label: 'Top-left research row',
+    bounds: { x: 8, y: 20, width: 28, height: 16 },
   },
   {
     id: 'design',
-    label: 'Design and media wall',
-    bounds: { x: 39, y: 62, width: 25, height: 24 },
+    label: 'Right presentation studio',
+    bounds: { x: 72, y: 33, width: 22, height: 62 },
   },
   {
     id: 'marketing',
-    label: 'Marketing visuals wall',
-    bounds: { x: 62, y: 58, width: 17, height: 21 },
+    label: 'Visual wall and showcase',
+    bounds: { x: 72, y: 33, width: 22, height: 27 },
   },
   {
     id: 'market',
-    label: 'Trading watch',
-    bounds: { x: 74, y: 39, width: 17, height: 18 },
+    label: 'Bottom-center ops monitors',
+    bounds: { x: 53, y: 62, width: 22, height: 28 },
   },
 ]
 
@@ -179,8 +179,8 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'Coordinator',
     label: 'Command',
     defaultAction: 'coordinating',
-    point: { x: 10, y: 52 },
-    lane: 'west',
+    point: { x: 51, y: 38 },
+    lane: 'south',
   },
   {
     id: 'desk-coding',
@@ -188,8 +188,8 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'Developer',
     label: 'Coding',
     defaultAction: 'working',
-    point: { x: 31, y: 43 },
-    lane: 'north',
+    point: { x: 14, y: 47 },
+    lane: 'west',
   },
   {
     id: 'desk-ops',
@@ -197,8 +197,8 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'Operator',
     label: 'Ops',
     defaultAction: 'monitoring',
-    point: { x: 84, y: 18 },
-    lane: 'east',
+    point: { x: 25, y: 82 },
+    lane: 'south',
   },
   {
     id: 'desk-research',
@@ -206,7 +206,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'Researcher',
     label: 'Research',
     defaultAction: 'walking',
-    point: { x: 24, y: 16 },
+    point: { x: 16, y: 25 },
     lane: 'north',
   },
   {
@@ -215,7 +215,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'Spec writer',
     label: 'Spec',
     defaultAction: 'reviewing',
-    point: { x: 54, y: 16 },
+    point: { x: 31, y: 25 },
     lane: 'north',
   },
   {
@@ -224,8 +224,8 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'QA analyst',
     label: 'QA/Sec',
     defaultAction: 'reviewing',
-    point: { x: 14, y: 83 },
-    lane: 'south',
+    point: { x: 32, y: 47 },
+    lane: 'east',
   },
   {
     id: 'desk-video',
@@ -233,7 +233,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'Video director',
     label: 'Director',
     defaultAction: 'idle',
-    point: { x: 89, y: 83 },
+    point: { x: 90, y: 80 },
     lane: 'east',
   },
   {
@@ -242,8 +242,8 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'Layout designer',
     label: 'Layout',
     defaultAction: 'reviewing',
-    point: { x: 44, y: 83 },
-    lane: 'south',
+    point: { x: 80, y: 55 },
+    lane: 'east',
   },
   {
     id: 'desk-marketing',
@@ -251,8 +251,8 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'Marketing visuals',
     label: 'Вітрина',
     defaultAction: 'working',
-    point: { x: 66, y: 72 },
-    lane: 'south',
+    point: { x: 91, y: 45 },
+    lane: 'east',
   },
   {
     id: 'desk-trading',
@@ -260,8 +260,8 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'Market watcher',
     label: 'Trading',
     defaultAction: 'monitoring',
-    point: { x: 86, y: 51 },
-    lane: 'east',
+    point: { x: 65, y: 78 },
+    lane: 'south',
   },
 ]
 
@@ -270,31 +270,31 @@ export const OFFICE_PATHS: OfficePath[] = [
     id: 'path-command-delivery',
     fromZoneId: 'command',
     toZoneId: 'delivery',
-    points: [{ x: 10, y: 52 }, { x: 24, y: 58 }, { x: 39, y: 61 }],
+    points: [{ x: 51, y: 38 }, { x: 39, y: 42 }, { x: 24, y: 42 }, { x: 14, y: 47 }],
   },
   {
     id: 'path-delivery-ops',
     fromZoneId: 'delivery',
     toZoneId: 'ops',
-    points: [{ x: 39, y: 61 }, { x: 61, y: 43 }, { x: 84, y: 18 }],
+    points: [{ x: 32, y: 47 }, { x: 25, y: 58 }, { x: 25, y: 64 }, { x: 25, y: 82 }],
   },
   {
     id: 'path-research-design',
     fromZoneId: 'research',
     toZoneId: 'design',
-    points: [{ x: 24, y: 16 }, { x: 38, y: 48 }, { x: 44, y: 83 }],
+    points: [{ x: 16, y: 25 }, { x: 37, y: 38 }, { x: 55, y: 52 }, { x: 72, y: 55 }, { x: 80, y: 55 }],
   },
   {
     id: 'path-design-marketing',
     fromZoneId: 'design',
     toZoneId: 'marketing',
-    points: [{ x: 44, y: 83 }, { x: 56, y: 75 }, { x: 66, y: 72 }],
+    points: [{ x: 80, y: 55 }, { x: 86, y: 58 }, { x: 91, y: 45 }],
   },
   {
     id: 'path-market-handoff',
     fromZoneId: 'market',
     toZoneId: 'delivery',
-    points: [{ x: 86, y: 51 }, { x: 63, y: 59 }, { x: 43, y: 66 }],
+    points: [{ x: 65, y: 78 }, { x: 64, y: 68 }, { x: 53, y: 66 }, { x: 45, y: 72 }, { x: 32, y: 62 }],
   },
 ]
 

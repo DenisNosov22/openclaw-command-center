@@ -169,6 +169,14 @@ for `/openclaw-command-center/agent-status.json` when available, sanitizes unkno
 snapshots, and falls back to the deterministic fixture during loading, missing-file, or error states
 so GitHub Pages deployments keep rendering without a backend.
 
+Office Scene phase 17 re-anchors the agents and PC/workstation overlays to the generated office
+background. Left-side dev/spec/research/QA stations now sit on the visible workstation rows,
+coordination uses the central meeting table, ops/trading align to the lower server/admin and
+multi-monitor zones, and visual/director/Вітрина roles use the right presentation/studio areas.
+Simulation paths now follow the visible open corridors instead of cutting across desks, tables, or
+room walls, and the physical agent sprites are scaled up by roughly one third while workstation
+overlays are quieter so the background furniture stays primary.
+
 Manual viewport widths:
 
 - Desktop: `1366` and `1440`
