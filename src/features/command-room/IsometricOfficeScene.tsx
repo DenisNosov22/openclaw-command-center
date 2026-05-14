@@ -14,6 +14,7 @@ import {
 } from './IsometricOfficeSpriteSystem'
 
 const defaultCompactFloorAgentIds = new Set([
+  'agent-dev',
   'agent-spec',
   'agent-rezhyser',
   'agent-shturman',
