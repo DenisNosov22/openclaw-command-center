@@ -3590,6 +3590,119 @@
   opacity: 0.62;
 }
 
+.office-room-props,
+.office-wall,
+.office-rug,
+.office-cabinet,
+.office-whiteboard,
+.office-social-board,
+.office-desk-cluster,
+.office-zone-label,
+.office-lane,
+.office-handoff-hub {
+  display: none;
+}
+
+.office-desk {
+  width: 88px;
+  min-height: 44px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  opacity: 1;
+  transform: translate(-50%, -50%);
+}
+
+.office-desk:hover,
+.office-desk:focus-visible,
+.office-desk--selected {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  opacity: 1;
+  transform: translate(-50%, -50%);
+}
+
+.office-desk--selected {
+  outline: none;
+}
+
+.office-desk::before,
+.office-desk::after,
+.office-workstation::before,
+.office-workstation::after,
+.office-terminal,
+.office-monitor-stand,
+.office-keyboard-tray,
+.office-chair,
+.office-desk-worklog,
+.office-activity-chip,
+.office-profession-prop {
+  display: none;
+}
+
+.office-status-lamp {
+  right: 50%;
+  top: 50%;
+  width: 7px;
+  opacity: 0.74;
+  transform: translate(32px, -18px);
+}
+
+.office-desk__label {
+  left: 50%;
+  top: calc(50% - 36px);
+  min-width: 68px;
+  max-width: 88px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  text-align: center;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
+  transform: translateX(-50%);
+}
+
+.office-desk__label strong {
+  display: block;
+  color: #f4f1ea;
+  font-size: 0.58rem;
+  line-height: 1.05;
+  overflow-wrap: anywhere;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+.office-desk__label small,
+.office-desk:hover .office-desk__label small,
+.office-desk:focus-visible .office-desk__label small {
+  display: none;
+}
+
+.office-desk[data-agent-id='agent-vitryna'] .office-desk__label {
+  min-width: 76px;
+  max-width: 92px;
+}
+
+.office-agent-route-map {
+  opacity: 0.18;
+}
+
+.office-agent-route--visible {
+  opacity: 0.2;
+}
+
+.office-transfer {
+  opacity: 0.08;
+}
+
+.office-transfer::before {
+  content: '';
+}
+
 .snapshot-state {
   position: relative;
   z-index: 5;
@@ -5269,4 +5382,95 @@
   .stage-stats {
     grid-template-columns: 1fr;
   }
+}
+
+.office-room-props,
+.office-wall,
+.office-rug,
+.office-cabinet,
+.office-whiteboard,
+.office-social-board,
+.office-desk-cluster,
+.office-zone-label,
+.office-lane,
+.office-handoff-hub,
+.office-terminal,
+.office-monitor-stand,
+.office-keyboard-tray,
+.office-chair,
+.office-desk-worklog,
+.office-activity-chip,
+.office-profession-prop {
+  display: none;
+}
+
+.office-desk,
+.office-desk:hover,
+.office-desk:focus-visible,
+.office-desk--selected,
+.office-desk[data-status-badge],
+.office-desk[data-status-badge='running'],
+.office-desk[data-status-badge='blocked'],
+.office-desk[data-status-badge='failed'],
+.office-desk[data-status-badge='waiting'],
+.office-desk[data-status-badge='done'],
+.office-desk[data-status-badge='idle'] {
+  width: 88px;
+  min-height: 44px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  opacity: 1;
+  transform: translate(-50%, -50%);
+}
+
+.office-desk::before,
+.office-desk::after,
+.office-workstation::before,
+.office-workstation::after {
+  display: none;
+}
+
+.office-desk__label {
+  left: 50%;
+  top: calc(50% - 36px);
+  grid-column: auto;
+  grid-row: auto;
+  min-width: 56px;
+  max-width: 82px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  text-align: center;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
+  transform: translateX(-50%);
+}
+
+.office-desk[data-agent-id='agent-vitryna'] .office-desk__label {
+  max-width: 88px;
+  transform: translateX(-50%);
+}
+
+.office-desk__label strong {
+  width: 100%;
+  min-width: 68px;
+  font-size: 0.58rem;
+  line-height: 1.05;
+  overflow-wrap: anywhere;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+.office-desk[data-agent-id='agent-vitryna'] .office-desk__label strong {
+  min-width: 76px;
+}
+
+.office-desk__label small,
+.office-desk:hover .office-desk__label small,
+.office-desk:focus-visible .office-desk__label small {
+  display: none;
 }

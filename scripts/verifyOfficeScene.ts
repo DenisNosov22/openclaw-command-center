@@ -5,10 +5,8 @@ import {
   getOfficeAgentMarkerClassName,
   getOfficeStationClassName,
   getOfficeStatusLampClassName,
-  getOfficeTerminalClassName,
   OFFICE_SPRITE_ACTIONS,
   OFFICE_SPRITE_TOKENS,
-  OFFICE_ROUTE_TOKENS,
 } from '../src/features/command-room/IsometricOfficeSpriteSystem.ts'
 import type { ActivityEvent, Agent, Task, WorkflowEdge, WorkflowNode } from '../src/shared/types/index.ts'
 
@@ -82,23 +80,26 @@ assertIncludes(componentSource, 'getOfficeAgentMarkerClassName', 'sprite action 
 assertIncludes(componentSource, 'OFFICE_SPRITE_TOKENS', 'sprite part token map usage')
 assertNotIncludes(componentSource, 'className="office-zones"', 'removed office zone DOM wrapper')
 assertNotIncludes(componentSource, 'office-area', 'removed old office-zone span areas')
-assertIncludes(componentSource, 'OFFICE_ROUTE_TOKENS', 'office route token map usage')
 assertIncludes(componentSource, 'export function IsometricOfficeScene', 'office scene component')
 assertIncludes(componentSource, 'role="img"', 'accessible scene role')
 assertIncludes(componentSource, 'aria-label="2D game-like real office floor plan with agents working at profession stations"', 'scene aria label')
-assertIncludes(componentSource, 'OFFICE_ROUTE_TOKENS.path', 'structured floor lane route token')
-assertIncludes(componentSource, 'OFFICE_ROUTE_TOKENS.handoff', 'structured handoff/signal route token')
-assertIncludes(componentSource, 'office-room-props', 'physical room props layer')
-assertIncludes(componentSource, 'office-wall office-wall--back', 'back wall room composition prop')
-assertIncludes(componentSource, 'office-rug office-rug--center', 'central rug/path room composition prop')
-assertIncludes(componentSource, 'office-cabinet office-cabinet--ops', 'ops cabinet/server room prop')
-assertIncludes(componentSource, 'office-whiteboard office-whiteboard--research', 'research whiteboard room prop')
-assertIncludes(componentSource, 'office-social-board office-social-board--marketing', 'marketing visuals wall prop')
-assertIncludes(componentSource, 'office-desk-cluster office-desk-cluster--north', 'desk cluster grounding prop')
-assertIncludes(componentSource, 'office-zone-label office-zone-label--ops', 'tiny ops/server anchor label')
-assertIncludes(componentSource, 'office-zone-label office-zone-label--design', 'tiny design/studio anchor label')
-assertIncludes(componentSource, 'office-zone-label office-zone-label--marketing', 'tiny marketing/visual anchor label')
-assertIncludes(componentSource, 'office-zone-label office-zone-label--trade', 'tiny trading anchor label')
+for (const removedOverlayClass of [
+  'OFFICE_ROUTE_TOKENS.path',
+  'OFFICE_ROUTE_TOKENS.handoff',
+  'office-room-props',
+  'office-wall office-wall--back',
+  'office-rug office-rug--center',
+  'office-cabinet office-cabinet--ops',
+  'office-whiteboard office-whiteboard--research',
+  'office-social-board office-social-board--marketing',
+  'office-desk-cluster office-desk-cluster--north',
+  'office-zone-label office-zone-label--ops',
+  'office-zone-label office-zone-label--design',
+  'office-zone-label office-zone-label--marketing',
+  'office-zone-label office-zone-label--trade',
+]) {
+  assertNotIncludes(componentSource, removedOverlayClass, 'removed visual overlay source')
+}
 assertNotIncludes(componentSource, 'office-core', 'office component source')
 assertNotIncludes(componentSource, 'command-core', 'office component source')
 assertNotIncludes(componentSource.toLowerCase(), 'orbital', 'office component source')
@@ -121,21 +122,21 @@ assertIncludes(componentSource, 'data-agent-activity={station.simulation.activit
 assertIncludes(componentSource, 'getOfficeStationClassName(', 'activity-aware desks')
 assertIncludes(componentSource, 'station.activityState', 'profession activity state reaches visual classes')
 assertIncludes(componentSource, 'data-activity-state={station.activityState}', 'activity state metadata exposed in DOM')
-assertIncludes(componentSource, 'getOfficeTerminalClassName(station.terminalMode)', 'task-aware terminal mode classes')
-assertIncludes(componentSource, 'data-profession-prop={station.professionProp}', 'profession prop metadata')
-assertIncludes(componentSource, 'office-profession-prop--${station.professionProp}', 'profession prop visual classes')
+assertNotIncludes(componentSource, 'getOfficeTerminalClassName(station.terminalMode)', 'duplicate terminal overlay classes')
+assertNotIncludes(componentSource, 'data-profession-prop={station.professionProp}', 'duplicate profession prop metadata')
+assertNotIncludes(componentSource, 'office-profession-prop--${station.professionProp}', 'duplicate profession prop visual classes')
 assertIncludes(componentSource, 'OFFICE_SPRITE_TOKENS.taskBubble', 'small task bubble token')
-assertIncludes(componentSource, 'OFFICE_SPRITE_TOKENS.activityChip', 'attached activity state chip token')
+assertNotIncludes(componentSource, 'OFFICE_SPRITE_TOKENS.activityChip', 'duplicate activity state chip token')
 assertIncludes(componentSource, 'station.choreography.className', 'behavior choreography classes applied to sprites')
 assertIncludes(componentSource, 'data-action-phase={station.choreography.phaseLabel}', 'action phase metadata exposed in DOM')
 assertIncludes(componentSource, 'data-office-slot={station.slot}', 'stable office station layout slot metadata')
 assertIncludes(componentSource, "'--office-agent-delay': station.choreography.animationDelay", 'stable agent delay CSS variable')
 assertIncludes(componentSource, "'--office-agent-duration': station.choreography.animationDuration", 'stable agent duration CSS variable')
 assertIncludes(componentSource, "'--office-agent-tempo': station.choreography.tempo", 'stable agent tempo CSS variable')
-assertIncludes(componentSource, 'OFFICE_SPRITE_TOKENS.terminalTicks', 'terminal activity ticks')
-assertIncludes(componentSource, 'OFFICE_SPRITE_TOKENS.monitorStand', 'clear PC monitor stand token')
-assertIncludes(componentSource, 'OFFICE_SPRITE_TOKENS.keyboardTray', 'keyboard/tool tray token')
-assertIncludes(componentSource, 'OFFICE_SPRITE_TOKENS.worklog', 'desk worklog prop token')
+assertNotIncludes(componentSource, 'OFFICE_SPRITE_TOKENS.terminalTicks', 'duplicate terminal activity ticks')
+assertNotIncludes(componentSource, 'OFFICE_SPRITE_TOKENS.monitorStand', 'duplicate PC monitor stand token')
+assertNotIncludes(componentSource, 'OFFICE_SPRITE_TOKENS.keyboardTray', 'duplicate keyboard/tool tray token')
+assertNotIncludes(componentSource, 'OFFICE_SPRITE_TOKENS.worklog', 'duplicate desk worklog prop token')
 assertIncludes(componentSource, 'getOfficeAgentMarkerClassName(station.action)', 'abstract agent markers')
 assertIncludes(componentSource, 'OFFICE_SPRITE_TOKENS.sprite', 'original 2D character sprite token')
 assertIncludes(componentSource, 'OFFICE_SPRITE_TOKENS.head', '2D avatar head shape')
@@ -180,15 +181,9 @@ assertIncludes(getBlock('.office-floor'), 'perspective(900px) rotateX(50deg)', '
 assertIncludes(getBlock('.office-floor'), 'inset: -44px 0 -54px', 'office floor crops generated-image edge banding')
 assertIncludes(getBlock('.office-floor'), "url('./assets/office-background.png')", 'room background lives on the office floor layer')
 assertIncludes(getBlock('.office-floor'), 'box-shadow: none', 'office floor has no inset frame or black banding')
-assertIncludes(getBlock('.office-room-props'), 'pointer-events: none', 'physical room props layer does not block station selection')
-assertIncludes(getBlock('.office-wall--back'), 'rgba(244, 241, 234, 0.035)', 'muted back wall plane')
-assertIncludes(getBlock('.office-rug--center'), 'rgba(244, 241, 234, 0.035)', 'quiet central walkway material')
-assertIncludes(getBlock('.office-cabinet--ops'), 'repeating-linear-gradient', 'ops cabinet/server prop')
 assertIncludes(getBlock('.office-plant::after'), 'radial-gradient', 'office plant leaf prop')
-assertIncludes(getBlock('.office-whiteboard--research'), 'rgba(120, 212, 192, 0.08)', 'muted research/search whiteboard prop')
-assertIncludes(getBlock('.office-social-board--marketing'), 'linear-gradient(135deg', 'marketing/social board wall prop')
-assertIncludes(stylesheetSource, 'radial-gradient(ellipse, rgba(0, 0, 0, 0.24), transparent 70%)', 'muted desk cluster floor shadows')
-assertIncludes(getBlock('.office-zone-label'), 'text-transform: uppercase', 'office zone labels')
+assertIncludes(stylesheetSource, '.office-room-props,', 'removed room-prop overlay guard selector')
+assertIncludes(stylesheetSource, 'display: none', 'removed overlay guards hide duplicate blocks')
 assertNotIncludes(stylesheetSource, '.office-zones', 'removed office zone wrapper CSS')
 assertNotIncludes(stylesheetSource, '.office-area', 'removed old office-zone span CSS')
 assertNotIncludes(stylesheetSource, '.office-lounge-sofa', 'removed duplicate lounge furniture overlay')
@@ -196,24 +191,10 @@ assertNotIncludes(stylesheetSource, '.office-status-board', 'removed duplicate s
 assertNotIncludes(stylesheetSource, '.office-core', 'office CSS')
 assertNotIncludes(stylesheetSource, '.command-core', 'office CSS')
 assertNotIncludes(stylesheetSource, 'office-core-scan', 'office CSS')
-assertIncludes(getBlock('.office-desk'), 'border: 1px solid rgba(215, 180, 92', 'desk graphite/gold frame')
+assertIncludes(stylesheetSource, 'background: transparent', 'desk hit target is visually transparent over generated office background')
 assertIncludes(getBlock('.office-desk'), '--office-desk-angle', 'furniture desks have stable orientation angles')
-assertIncludes(getBlock('.office-desk'), 'rotate(var(--office-desk-angle)) skewY(-4deg)', 'desks are angled furniture objects')
-assertIncludes(getBlock('.office-desk'), 'inset 0 -13px 18px', 'desks have physical apron/depth shadow')
-assertIncludes(getBlock('.office-workstation::before'), 'rgba(215, 180, 92', 'workstation desktop accent')
-assertIncludes(getBlock('.office-workstation::before'), 'border-top:', 'workstation desktop lip detail')
-assertIncludes(getBlock('.office-profession-prop'), 'position: absolute', 'profession props are physical workstation objects')
-assertIncludes(getBlock('.office-profession-prop--servers'), 'repeating-linear-gradient', 'ops server rack prop')
-assertIncludes(getBlock('.office-profession-prop--research::before'), 'border: 2px solid rgba(120, 212, 192', 'research magnifier prop')
-assertIncludes(getBlock('.office-profession-prop--blueprint'), 'background-size: 7px 7px', 'spec blueprint table prop')
-assertIncludes(getBlock('.office-profession-prop--blueprint::after'), 'border-left: 0', 'spec review folded blueprint marker')
-assertIncludes(getBlock('.office-profession-prop--qa::before'), 'border: 1px solid rgba(244, 241, 234', 'QA/security shield prop')
-assertIncludes(getBlock('.office-profession-prop--qa::after'), 'box-shadow:', 'QA checklist marker')
-assertIncludes(getBlock('.office-profession-prop--canvas'), 'linear-gradient(90deg', 'layout/marketing visual canvas prop')
-assertIncludes(getBlock('.office-profession-prop--canvas::before'), 'linear-gradient(90deg', 'layout/design grid marker')
-assertIncludes(getBlock('.office-profession-prop--trading'), 'rgba(212, 84, 77', 'trading chart prop')
-assertIncludes(getBlock('.office-profession-prop--trading::after'), 'box-shadow:', 'trading chart axis marker')
-assertIncludes(getBlock('.office-profession-prop--camera::after'), 'border-left', 'director camera prop')
+assertIncludes(stylesheetSource, 'box-shadow: none', 'desk hit target does not duplicate furniture')
+assertIncludes(stylesheetSource, '.office-terminal,', 'duplicate terminal overlay guard selector')
 assertIncludes(getBlock('.office-task-bubble'), 'border-radius: 999px', 'small overhead task bubbles')
 assertIncludes(getBlock('.office-task-bubble'), 'max-width: 58px', 'task bubbles remain compact metadata')
 assertIncludes(
@@ -228,15 +209,8 @@ assertIncludes(
 )
 assertIncludes(getBlock('.office-activity-chip'), 'border-radius: 999px', 'activity chips stay compact and attached')
 assertIncludes(getBlock('.office-activity-chip'), 'max-width: 42px', 'activity chips are not dashboard cards')
-assertIncludes(getBlock('.office-monitor-stand'), 'rgba(215, 180, 92', 'PC monitor stand detail')
-assertIncludes(getBlock('.office-keyboard-tray'), 'repeating-linear-gradient', 'keyboard/tool tray key detail')
-assertIncludes(getBlock('.office-desk-worklog'), 'box-shadow:', 'desk task stack/worklog prop')
-assertIncludes(getBlock('.office-chair'), 'translateY(3px)', 'chairs sit as separate physical furniture')
-assertIncludes(stylesheetSource, 'background: radial-gradient(ellipse, rgba(0, 0, 0, 0.46), transparent 72%)', 'workstation grounded shadow')
-assertIncludes(getBlock('.office-desk--selected'), 'outline:', 'selected desk outline')
-assertIncludes(getBlock('.office-desk--selected'), 'rgba(120, 212, 192', 'selected desk cyan/gold accent')
+assertIncludes(stylesheetSource, '.office-desk::before,', 'desk pseudo furniture is suppressed')
 assertIncludes(getBlock('.office-desk--selected'), 'outline: none', 'selected desk does not consume focus outline')
-assertIncludes(getBlock('.office-desk--selected'), 'inset 0 0 0 1px rgba(120, 212, 192', 'selected desk readable inner ring')
 assertIncludes(getBlock('.office-desk:focus-visible'), 'outline:', 'keyboard focus ring remains separate from selection')
 assertIncludes(getBlock('.office-desk:focus-visible'), 'outline-offset:', 'keyboard focus ring clears selected desk state')
 assertIncludes(stylesheetSource, ".office-desk[data-office-slot='2']", 'stable office slot layout selectors')
@@ -250,14 +224,9 @@ assertIncludes(getBlock('.office-terminal--monitoring .office-terminal__ticks'),
 assertIncludes(getBlock('.office-terminal__ticks'), 'office-terminal-ticks', 'typing activity ticks')
 assertIncludes(getBlock('.office-desk'), 'left: var(--office-station-x)', 'desks use view-model office floor x position')
 assertIncludes(getBlock('.office-desk'), 'top: var(--office-station-y)', 'desks use view-model office floor y position')
-assertIncludes(getBlock('.office-lane'), 'linear-gradient(90deg', 'office walking lane floor treatment')
-assertIncludes(getBlock('.office-lane'), 'linear-gradient(90deg', 'office walking lane floor treatment')
-assertIncludes(getBlock('.office-lane--inner'), 'height: 248px', 'vertical walking lane path geometry')
-assertIncludes(getBlock('.office-lane'), 'opacity: 0.24', 'walking lanes are quiet enough not to dominate the room')
+assertIncludes(stylesheetSource, '.office-lane,', 'walking lane block overlay is suppressed')
 assertIncludes(getBlock('.office-desk--coordinating'), 'width: clamp(96px, 12%, 112px)', 'coordinator desk remains a small side overview desk')
-assertIncludes(getBlock('.office-handoff-hub::before'), 'data-link', 'handoff hub communicates data transfer')
-assertIncludes(getBlock('.office-handoff-hub::after'), 'office-handoff-bus', 'handoff hub packet animation')
-assertIncludes(getBlock('.office-handoff-hub'), 'width: 62px', 'handoff hub stays compact instead of becoming a card')
+assertIncludes(stylesheetSource, '.office-handoff-hub,', 'handoff hub block overlay is suppressed')
 assertIncludes(getBlock('.office-transfer--danger::after'), '#d4544d', 'critical route packet tone')
 assertIncludes(getBlock('.office-transfer--selected'), 'opacity:', 'selected route emphasis')
 assertIncludes(getBlock('.office-transfer--selected::after'), 'office-packet-selected', 'selected route packet cadence')
@@ -359,21 +328,13 @@ assert.equal(OFFICE_SPRITE_TOKENS.sprite, 'office-agent-sprite', 'sprite root to
 assert.equal(OFFICE_SPRITE_TOKENS.head, 'office-agent-sprite__head', 'sprite head token is stable')
 assert.equal(OFFICE_SPRITE_TOKENS.body, 'office-agent-sprite__body', 'sprite body token is stable')
 assert.equal(OFFICE_SPRITE_TOKENS.legs, 'office-agent-sprite__legs', 'sprite legs token is stable')
-assert.equal(OFFICE_SPRITE_TOKENS.monitorStand, 'office-monitor-stand', 'PC monitor stand token is stable')
-assert.equal(OFFICE_SPRITE_TOKENS.professionProp, 'office-profession-prop', 'profession prop token is stable')
 assert.equal(OFFICE_SPRITE_TOKENS.taskBubble, 'office-task-bubble', 'task bubble token is stable')
-assert.equal(OFFICE_SPRITE_TOKENS.activityChip, 'office-activity-chip', 'activity chip token is stable')
-assert.equal(OFFICE_SPRITE_TOKENS.keyboardTray, 'office-keyboard-tray', 'keyboard/tool tray token is stable')
-assert.equal(OFFICE_SPRITE_TOKENS.worklog, 'office-desk-worklog', 'desk worklog token is stable')
 assert.equal(OFFICE_SPRITE_TOKENS.hands, 'office-agent-sprite__hands', 'worker hands token is stable')
-assert.equal(OFFICE_ROUTE_TOKENS.path, 'office-lane', 'walking path route token is stable')
-assert.equal(OFFICE_ROUTE_TOKENS.handoff, 'office-handoff-hub', 'handoff signal route token is stable')
 assert.equal(
   getOfficeStationClassName('north', 'working', 'active', 'coding', true),
   'office-desk office-workstation office-desk--north office-desk--working office-desk--state-coding office-desk--pulse-active office-desk--selected',
   'station class mapper separates view-model state from CSS tokens',
 )
-assert.equal(getOfficeTerminalClassName('typing'), 'office-terminal office-terminal--typing', 'terminal class mapper')
 assert.equal(
   getOfficeAgentMarkerClassName('blocked'),
   'office-agent-marker office-agent-avatar office-agent-marker--alert',

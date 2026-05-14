@@ -9,9 +9,7 @@ import {
   getOfficeAgentMarkerClassName,
   getOfficeStationClassName,
   getOfficeStatusLampClassName,
-  getOfficeTerminalClassName,
   OFFICE_SPRITE_TOKENS,
-  OFFICE_ROUTE_TOKENS,
 } from './IsometricOfficeSpriteSystem'
 
 function getOfficeFloorAgentClassName(station: ReturnType<typeof createOfficeSceneViewModel>['stations'][number]) {
@@ -153,22 +151,6 @@ export function IsometricOfficeScene({
         className="office-floor"
         role="img"
       />
-      <div className="office-room-props" aria-hidden="true">
-        <span className="office-wall office-wall--back" />
-        <span className="office-wall office-wall--left" />
-        <span className="office-rug office-rug--center" />
-        <span className="office-cabinet office-cabinet--ops" />
-        <span className="office-plant office-plant--left" />
-        <span className="office-plant office-plant--right" />
-        <span className="office-whiteboard office-whiteboard--research" />
-        <span className="office-social-board office-social-board--marketing" />
-        <span className="office-desk-cluster office-desk-cluster--north" />
-        <span className="office-desk-cluster office-desk-cluster--south" />
-        <span className="office-zone-label office-zone-label--ops">Ops</span>
-        <span className="office-zone-label office-zone-label--design">Studio</span>
-        <span className="office-zone-label office-zone-label--marketing">Visual</span>
-        <span className="office-zone-label office-zone-label--trade">Trading</span>
-      </div>
       <div className="office-routes" aria-hidden="true">
         <svg
           className="office-agent-route-map"
@@ -223,9 +205,6 @@ export function IsometricOfficeScene({
             )
           })}
         </svg>
-        <span className={`${OFFICE_ROUTE_TOKENS.path} office-lane--inner`} />
-        <span className={`${OFFICE_ROUTE_TOKENS.path} office-lane--outer`} />
-        <span className={OFFICE_ROUTE_TOKENS.handoff} data-link="handoff" />
         {focusedSignalRoutes.map((route) => (
           <span
             className={`office-transfer office-transfer--${route.lane} office-transfer--${route.activity} office-transfer--${route.tone}${
@@ -275,26 +254,6 @@ export function IsometricOfficeScene({
             } as CSSProperties}
             type="button"
           >
-            <span
-              className={`${OFFICE_SPRITE_TOKENS.professionProp} office-profession-prop--${station.professionProp}`}
-              data-profession-prop={station.professionProp}
-              aria-hidden="true"
-            />
-            <span className={getOfficeTerminalClassName(station.terminalMode)}>
-              <i />
-              <span className={OFFICE_SPRITE_TOKENS.monitorStand} aria-hidden="true" />
-              <span className={OFFICE_SPRITE_TOKENS.terminalTicks} aria-hidden="true" />
-            </span>
-            <span className={OFFICE_SPRITE_TOKENS.keyboardTray} aria-hidden="true" />
-            <span className={OFFICE_SPRITE_TOKENS.worklog} aria-hidden="true" />
-            <span
-              aria-hidden="true"
-              className={OFFICE_SPRITE_TOKENS.activityChip}
-              data-activity-state={station.activityState}
-            >
-              {station.activityLabel}
-            </span>
-            <span className={OFFICE_SPRITE_TOKENS.chair} aria-hidden="true" />
             <span className={getOfficeStatusLampClassName(station.tone)} />
             <span className={OFFICE_SPRITE_TOKENS.label}>
               <strong>{station.name}</strong>
