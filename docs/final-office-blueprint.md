@@ -87,3 +87,7 @@ The Office scene is final enough for this planned milestone when:
   place the coordinator desk to the side, desk-row roles in central rows, ops in the server corner,
   trading on the right work wall, and the director camera station in the bottom-right corner, with
   straight walkways replacing the previous radial composition.
+- Step 54: live agent status input now has a lightweight adapter layer. Typed snapshots map real or
+  fixture states into simulation posture/activity/current-task/status-badge cues and optional
+  target-role movement overrides while preserving the deterministic fallback when no live snapshots
+  are present.

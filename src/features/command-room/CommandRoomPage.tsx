@@ -8,6 +8,10 @@ import {
 import type { ActivityEvent, Agent, Task, WorkflowNode } from '../../shared/types'
 import { formatKyivTime } from '../../shared/time/kyivTime'
 import { IsometricOfficeScene } from './IsometricOfficeScene'
+import {
+  createOfficeAgentStatusFixture,
+  createOfficeAgentStatusSimulationOverrides,
+} from './OfficeAgentStatusAdapter'
 
 type StageView = 'office' | 'graph'
 type ActivityFilter = 'all' | 'selected' | 'critical' | 'system'
@@ -296,6 +300,14 @@ export function CommandRoomPage() {
     activityFilter,
     selectedAgent.id,
   )
+  const liveSimulation = useMemo(
+    () =>
+      createOfficeAgentStatusSimulationOverrides(
+        snapshot.agents,
+        createOfficeAgentStatusFixture(snapshot.agents, snapshot.generatedAt),
+      ),
+    [snapshot.agents, snapshot.generatedAt],
+  )
   const formattedLastUpdated = formatKyivTime(snapshot.lastUpdated, { includeDate: true })
   const hasSnapshotWarning = snapshot.stateKind !== 'ready'
   let globalStatus = hasSnapshotWarning ? snapshot.stateTitle : 'Стабільно'
@@ -486,6 +498,7 @@ export function CommandRoomPage() {
             <IsometricOfficeScene
               activity={snapshot.activity}
               agents={snapshot.agents}
+              liveSimulation={liveSimulation}
               onSelectAgent={setSelectedAgentId}
               selectedAgentId={selectedAgent.id}
               tasks={snapshot.tasks}

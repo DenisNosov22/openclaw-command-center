@@ -27,6 +27,10 @@ function getOfficeFloorAgentClassName(station: ReturnType<typeof createOfficeSce
 }
 
 function getAgentStateBadgeLabel(station: ReturnType<typeof createOfficeSceneViewModel>['stations'][number]) {
+  if (station.simulation.statusBadge) {
+    return station.simulation.statusBadge
+  }
+
   if (station.simulation.posture === 'walking') {
     return 'moving'
   }

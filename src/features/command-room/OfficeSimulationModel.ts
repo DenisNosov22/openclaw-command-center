@@ -90,6 +90,7 @@ export interface OfficeAgentSimulationState {
   activity: OfficeAgentActivity
   currentTask: string
   posture: OfficeAgentPosture
+  statusBadge?: string
 }
 
 export type OfficeSimulationMode = 'animated' | 'static'
@@ -98,6 +99,7 @@ export interface OfficeAgentLiveStatusInput {
   activity?: OfficeAgentActivity
   currentTask?: string
   posture?: OfficeAgentPosture
+  statusBadge?: string
   position?: OfficePoint
   target?: OfficePoint
   zoneId?: OfficeZoneId

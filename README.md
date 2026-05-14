@@ -160,6 +160,10 @@ plan. The coordinator desk sits on the side instead of a central hub, coding/spe
 stations form desk rows, ops lives in the server corner, trading and director stations sit on the
 right-side work wall, and clear straight walkways replace the old orbit-like paths.
 
+Office Scene phase 15 adds the live status adapter foundation. Typed agent status snapshots
+(`running`, `idle`, `failed`, `blocked`, `waiting`, `done`) now map into the existing deterministic
+office simulation overrides, with mock fixtures for UI/tests and no backend dependency.
+
 Manual viewport widths:
 
 - Desktop: `1366` and `1440`
