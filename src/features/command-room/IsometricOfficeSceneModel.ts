@@ -97,26 +97,26 @@ export type OfficeTerminalMode = 'idle' | 'monitoring' | 'typing'
 
 const officeStationLayout: Array<Pick<OfficeAgentStation, 'x' | 'y' | 'lane'>> = [
   { x: 51, y: 40, lane: 'south' },
-  { x: 16, y: 47, lane: 'west' },
+  { x: 9, y: 43, lane: 'north' },
   { x: 16, y: 82, lane: 'south' },
   { x: 14, y: 25, lane: 'north' },
-  { x: 38, y: 27, lane: 'north' },
-  { x: 37, y: 49, lane: 'east' },
+  { x: 8, y: 25, lane: 'north' },
+  { x: 19, y: 43, lane: 'north' },
   { x: 81, y: 81, lane: 'east' },
-  { x: 83, y: 55, lane: 'east' },
+  { x: 8, y: 35, lane: 'north' },
   { x: 76, y: 38, lane: 'east' },
   { x: 63, y: 76, lane: 'south' },
 ]
 
 const roleOfficeLayout: Record<string, Pick<OfficeAgentStation, 'x' | 'y' | 'lane'>> = {
   'main/orchestrator': { x: 51, y: 40, lane: 'south' },
-  coding: { x: 16, y: 47, lane: 'west' },
+  coding: { x: 9, y: 43, lane: 'north' },
   ops: { x: 16, y: 82, lane: 'south' },
   research: { x: 14, y: 25, lane: 'north' },
-  requirements: { x: 38, y: 27, lane: 'north' },
-  QA: { x: 37, y: 49, lane: 'east' },
+  requirements: { x: 8, y: 25, lane: 'north' },
+  QA: { x: 19, y: 43, lane: 'north' },
   video: { x: 81, y: 81, lane: 'east' },
-  'UI/layout': { x: 83, y: 55, lane: 'east' },
+  'UI/layout': { x: 8, y: 35, lane: 'north' },
   marketing: { x: 76, y: 38, lane: 'east' },
   trading: { x: 63, y: 76, lane: 'south' },
 }

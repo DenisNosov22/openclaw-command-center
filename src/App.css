@@ -3522,13 +3522,13 @@
 }
 
 .office-floor-agent[data-agent-id='agent-dev']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) {
-  --office-agent-shift-x: 44px;
-  --office-agent-shift-y: 22px;
+  --office-agent-shift-x: 8px;
+  --office-agent-shift-y: 34px;
 }
 
 .office-floor-agent[data-agent-id='agent-varta']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) {
-  --office-agent-shift-x: -18px;
-  --office-agent-shift-y: -8px;
+  --office-agent-shift-x: 8px;
+  --office-agent-shift-y: 34px;
 }
 
 .office-floor-agent[data-agent-id='agent-shturman']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) {
@@ -3537,8 +3537,8 @@
 }
 
 .office-floor-agent[data-agent-id='agent-spec']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) {
-  --office-agent-shift-x: -12px;
-  --office-agent-shift-y: 22px;
+  --office-agent-shift-x: 10px;
+  --office-agent-shift-y: 32px;
 }
 
 .office-floor-agent[data-agent-id='agent-bastion']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) {
@@ -3552,8 +3552,8 @@
 }
 
 .office-floor-agent[data-agent-id='agent-verstalnyk']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) {
-  --office-agent-shift-x: -24px;
-  --office-agent-shift-y: -30px;
+  --office-agent-shift-x: -12px;
+  --office-agent-shift-y: 38px;
 }
 
 .office-floor-agent[data-agent-id='agent-vitryna']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) {
@@ -5756,6 +5756,17 @@
   transform: translateX(-50%);
 }
 
+.office-desk[data-agent-id='agent-verstalnyk'] {
+  z-index: 6;
+}
+
+.office-desk[data-agent-id='agent-verstalnyk'] .office-desk__label {
+  width: 96px;
+  max-width: 96px;
+  z-index: 7;
+  transform: translateX(-22%);
+}
+
 .office-desk__label strong {
   width: 100%;
   min-width: 68px;
@@ -5768,6 +5779,13 @@
 
 .office-desk[data-agent-id='agent-vitryna'] .office-desk__label strong {
   min-width: 76px;
+}
+
+.office-desk[data-agent-id='agent-verstalnyk'] .office-desk__label strong {
+  font-size: 0.52rem;
+  min-width: 92px;
+  overflow: visible;
+  white-space: nowrap;
 }
 
 .office-desk__label small,

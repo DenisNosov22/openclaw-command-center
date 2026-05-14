@@ -220,8 +220,8 @@ const waitingOps = getOfficeAgentSimulationTick(
   snapshot.tasks,
 )
 
-assert.deepEqual(completedSpec.position, { x: 38, y: 27 }, 'Completed spec stays at the whiteboard/planning home station')
-assert.equal(completedSpec.posture, 'standing', 'Completed spec stands by the board instead of resting on a generic seat')
+assert.deepEqual(completedSpec.position, { x: 8, y: 25 }, 'Completed spec stays seated at the top-left PC home station')
+assert.equal(completedSpec.posture, 'sitting', 'Completed spec sits at the workstation instead of floating in the aisle')
 assert.deepEqual(idleDirector.position, { x: 81, y: 81 }, 'Idle director stays by the camera/studio home station')
 assert.equal(idleDirector.posture, 'standing', 'Idle director stands near the camera/studio setup')
 assert.deepEqual(waitingOps.position, { x: 16, y: 82 }, 'Waiting ops stays at the bottom-left server/admin console')

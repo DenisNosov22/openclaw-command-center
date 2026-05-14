@@ -267,10 +267,10 @@ async function verifyOfficeDom(page: Page) {
       ['agent-dev', getCenter(".office-floor-agent[data-agent-id='agent-dev']"), 7, 34, 34, 58],
       ['agent-varta', getCenter(".office-floor-agent[data-agent-id='agent-varta']"), 20, 45, 32, 62],
       ['agent-shturman', getCenter(".office-floor-agent[data-agent-id='agent-shturman']"), 6, 36, 18, 44],
-      ['agent-spec', getCenter(".office-floor-agent[data-agent-id='agent-spec']"), 24, 52, 20, 50],
+      ['agent-spec', getCenter(".office-floor-agent[data-agent-id='agent-spec']"), 4, 22, 22, 42],
       ['agent-bastion', getCenter(".office-floor-agent[data-agent-id='agent-bastion']"), 4, 34, 62, 90],
       ['agent-desk', getCenter(".office-floor-agent[data-agent-id='agent-desk']"), 48, 76, 58, 84],
-      ['agent-verstalnyk', getCenter(".office-floor-agent[data-agent-id='agent-verstalnyk']"), 66, 94, 42, 72],
+      ['agent-verstalnyk', getCenter(".office-floor-agent[data-agent-id='agent-verstalnyk']"), 2, 20, 30, 56],
       ['agent-vitryna', getCenter(".office-floor-agent[data-agent-id='agent-vitryna']"), 62, 88, 24, 54],
       ['agent-rezhyser', getCenter(".office-floor-agent[data-agent-id='agent-rezhyser']"), 70, 98, 60, 88],
     ] as const
@@ -292,7 +292,53 @@ async function verifyOfficeDom(page: Page) {
     `Office agents should sit/stand at role-specific background furniture: ${rolePlacementIssues.join('; ')}`,
   )
 
+  const topLeftPcClusterIssues = await page.evaluate(() => {
+    if (window.innerWidth <= 430) {
+      return []
+    }
+
+    const office = document.querySelector<HTMLElement>('.isometric-office')
+    const officeBox = office?.getBoundingClientRect()
+
+    if (!officeBox) {
+      return ['missing office bounds']
+    }
+
+    const topLeftPcAgentIds = [
+      'agent-dev',
+      'agent-shturman',
+      'agent-spec',
+      'agent-varta',
+      'agent-verstalnyk',
+    ]
+
+    return topLeftPcAgentIds
+      .map((agentId) => {
+        const element = document.querySelector<HTMLElement>(`.office-floor-agent[data-agent-id='${agentId}']`)
+        const box = element?.getBoundingClientRect()
+
+        if (!box) {
+          return `${agentId}: missing`
+        }
+
+        const x = ((box.left + box.width / 2 - officeBox.left) / officeBox.width) * 100
+        const y = ((box.top + box.height / 2 - officeBox.top) / officeBox.height) * 100
+
+        return x >= 2 && x <= 34 && y >= 18 && y <= 58
+          ? ''
+          : `${agentId}: ${Math.round(x)},${Math.round(y)} outside top-left PC cluster`
+      })
+      .filter(Boolean)
+  })
+
+  assert.deepEqual(
+    topLeftPcClusterIssues,
+    [],
+    `Unplaced agents should resolve into the top-left PC cluster near Штурман: ${topLeftPcClusterIssues.join('; ')}`,
+  )
+
   assert.equal(await page.locator('.office-core, .command-core').count(), 0, 'Large central core/card block should not render in the office scene')
+  assert.equal(await page.locator('.office-zones, .office-zone, .office-zone-label, .debug-rect, [data-debug-rect]').count(), 0, 'Office zone/debug overlays should not render')
   assert((await page.locator('.office-desk').count()) >= 4, 'Expected multiple office stations')
   assert((await page.locator('.office-agent-sprite').count()) >= 4, 'Expected office agent sprites')
   assert((await page.locator('.office-agent-floor').count()) === 1, 'Expected physical agent floor layer')
@@ -453,6 +499,13 @@ async function verifyOfficeDom(page: Page) {
       return [`only ${desks.length} desks visible`]
     }
 
+    const topLeftPcAgentIds = new Set([
+      'agent-dev',
+      'agent-shturman',
+      'agent-spec',
+      'agent-varta',
+      'agent-verstalnyk',
+    ])
     const xs = desks.map((desk) => desk.x)
     const ys = desks.map((desk) => desk.y)
     const spreadX = Math.max(...xs) - Math.min(...xs)
@@ -460,8 +513,11 @@ async function verifyOfficeDom(page: Page) {
     const closePairs = desks.flatMap((firstDesk, firstIndex) =>
       desks.slice(firstIndex + 1).map((secondDesk) => {
         const distance = Math.hypot(firstDesk.x - secondDesk.x, firstDesk.y - secondDesk.y)
+        const expectedPcClusterPair =
+          topLeftPcAgentIds.has(firstDesk.id) && topLeftPcAgentIds.has(secondDesk.id)
+        const minimumDistance = expectedPcClusterPair ? 36 : 92
 
-        return distance < 92
+        return distance < minimumDistance
           ? `${firstDesk.id}-${secondDesk.id}: ${Math.round(distance)}px`
           : ''
       }),
@@ -542,7 +598,7 @@ async function verifyOfficeDom(page: Page) {
     `Coordinator/handoff route notes should stay staged and compact: ${noisyHandoffElements.join('; ')}`,
   )
 
-  const crampedCentralStations = await page.evaluate(() => {
+  const crampedTopLeftPcStations = await page.evaluate(() => {
     if (window.innerWidth <= 430) {
       return []
     }
@@ -564,7 +620,7 @@ async function verifyOfficeDom(page: Page) {
       desks.slice(firstIndex + 1).map((secondDesk) => {
         const distance = Math.hypot(firstDesk.x - secondDesk.x, firstDesk.y - secondDesk.y)
 
-        return distance < 118
+        return distance < 36
           ? `${firstDesk.state}-${secondDesk.state}: ${Math.round(distance)}px`
           : ''
       }),
@@ -572,9 +628,9 @@ async function verifyOfficeDom(page: Page) {
   })
 
   assert.deepEqual(
-    crampedCentralStations,
+    crampedTopLeftPcStations,
     [],
-    `Central coding/QA/layout stations should preserve readable walkways: ${crampedCentralStations.join('; ')}`,
+    `Top-left coding/QA/layout PC stations should stay separated inside the cluster: ${crampedTopLeftPcStations.join('; ')}`,
   )
 }
 

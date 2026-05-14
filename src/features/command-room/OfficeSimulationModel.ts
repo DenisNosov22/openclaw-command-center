@@ -190,8 +190,8 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'Developer',
     label: 'Coding',
     defaultAction: 'working',
-    point: { x: 16, y: 47 },
-    lane: 'west',
+    point: { x: 9, y: 43 },
+    lane: 'north',
   },
   {
     id: 'desk-ops',
@@ -217,7 +217,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'Spec writer',
     label: 'Spec',
     defaultAction: 'reviewing',
-    point: { x: 38, y: 27 },
+    point: { x: 8, y: 25 },
     lane: 'north',
   },
   {
@@ -226,8 +226,8 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'QA analyst',
     label: 'QA/Sec',
     defaultAction: 'reviewing',
-    point: { x: 37, y: 49 },
-    lane: 'east',
+    point: { x: 19, y: 43 },
+    lane: 'north',
   },
   {
     id: 'desk-video',
@@ -240,12 +240,12 @@ export const OFFICE_DESKS: OfficeDesk[] = [
   },
   {
     id: 'desk-layout',
-    zoneId: 'design',
+    zoneId: 'delivery',
     profession: 'Layout designer',
     label: 'Layout',
     defaultAction: 'reviewing',
-    point: { x: 83, y: 55 },
-    lane: 'east',
+    point: { x: 8, y: 35 },
+    lane: 'north',
   },
   {
     id: 'desk-marketing',
@@ -304,7 +304,6 @@ const standingHomeRoles = new Set([
   'main/orchestrator',
   'marketing',
   'research',
-  'requirements',
   'video',
 ])
 
@@ -376,10 +375,10 @@ export const OFFICE_AGENT_PROFILES: Record<string, OfficeAgentProfile> = {
   'UI/layout': {
     role: 'UI/layout',
     profession: 'Layout designer',
-    zoneId: 'design',
+    zoneId: 'delivery',
     deskId: 'desk-layout',
     defaultAction: 'reviewing',
-    pathId: 'path-research-design',
+    pathId: 'path-command-delivery',
   },
   marketing: {
     role: 'marketing',
