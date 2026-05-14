@@ -685,16 +685,14 @@
 .isometric-office {
   position: relative;
   z-index: 1;
-  min-height: 390px;
+  min-height: clamp(540px, 54vw, 640px);
   overflow: hidden;
   overflow-clip-margin: 8px;
   isolation: isolate;
-  background:
-    linear-gradient(180deg, rgba(7, 8, 7, 0.1), rgba(7, 8, 7, 0.28)),
-    url('./assets/office-background.png') center / cover no-repeat,
-    linear-gradient(180deg, rgba(24, 25, 23, 0.94), rgba(10, 11, 10, 0.72));
-  border: 1px solid rgba(215, 180, 92, 0.12);
-  border-radius: 8px;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .isometric-office::before,
@@ -718,13 +716,15 @@
   z-index: 0;
   transform: none;
   background:
-    linear-gradient(180deg, rgba(4, 5, 4, 0.06), rgba(4, 5, 4, 0.22)),
-    radial-gradient(ellipse at 50% 58%, rgba(244, 241, 234, 0.05), transparent 46%);
+    linear-gradient(180deg, rgba(7, 8, 7, 0.08), rgba(7, 8, 7, 0.24)),
+    radial-gradient(ellipse at 50% 58%, rgba(244, 241, 234, 0.055), transparent 48%),
+    url('./assets/office-background.png') center / cover no-repeat,
+    linear-gradient(180deg, rgba(24, 25, 23, 0.94), rgba(10, 11, 10, 0.72));
   border: 0;
-  border-radius: 8px;
+  border-radius: 0;
   box-shadow:
     inset 0 0 0 1px rgba(244, 241, 234, 0.035),
-    inset 0 0 44px rgba(0, 0, 0, 0.36);
+    inset 0 0 54px rgba(0, 0, 0, 0.36);
 }
 
 .office-floor::before,
@@ -3590,6 +3590,64 @@
   --office-agent-suit: #d7c58f;
 }
 
+.office-floor-agent[data-activity-state='coordinating'] .office-agent-sprite__head {
+  background:
+    linear-gradient(90deg, rgba(20, 18, 14, 0.92) 0 4px, transparent 4px calc(100% - 4px), rgba(20, 18, 14, 0.92) calc(100% - 4px)),
+    linear-gradient(180deg, rgba(45, 31, 25, 0.96) 0 5px, transparent 5px),
+    linear-gradient(180deg, #f2c98f, #c98f58);
+}
+
+.office-floor-agent[data-activity-state='coding'] .office-agent-sprite__head::before,
+.office-floor-agent[data-activity-state='monitoring'] .office-agent-sprite__head::before {
+  top: 6px;
+  height: 3px;
+  background:
+    linear-gradient(90deg, rgba(120, 212, 192, 0.78) 0 5px, transparent 5px 8px, rgba(120, 212, 192, 0.78) 8px),
+    rgba(8, 14, 14, 0.86);
+  border: 1px solid rgba(6, 9, 9, 0.52);
+}
+
+.office-floor-agent[data-activity-state='checking'] .office-agent-sprite__body::before,
+.office-floor-agent[data-activity-state='reviewing'] .office-agent-sprite__body::before {
+  width: 9px;
+  height: 10px;
+  background:
+    linear-gradient(135deg, transparent 0 40%, rgba(244, 241, 234, 0.9) 40% 58%, transparent 58%),
+    linear-gradient(45deg, transparent 0 46%, rgba(244, 241, 234, 0.72) 46% 58%, transparent 58%),
+    rgba(12, 16, 15, 0.18);
+}
+
+.office-floor-agent[data-activity-state='designing'] .office-agent-sprite__body::after,
+.office-floor-agent[data-activity-state='presenting'] .office-agent-sprite__body::after {
+  height: 3px;
+  background:
+    linear-gradient(90deg, #d96a5e 0 30%, #d7b45c 30% 64%, #78d4c0 64%),
+    rgba(7, 9, 9, 0.58);
+  box-shadow:
+    0 -6px 0 -1px rgba(244, 241, 234, 0.28),
+    0 6px 0 -1px rgba(244, 241, 234, 0.16);
+}
+
+.office-floor-agent[data-activity-state='filming'] .office-agent-sprite__head::before {
+  left: 1px;
+  right: 1px;
+  top: 1px;
+  height: 6px;
+  background:
+    radial-gradient(circle at 74% 48%, rgba(120, 212, 192, 0.72) 0 2px, transparent 2px),
+    rgba(24, 20, 17, 0.9);
+  border-radius: 5px 5px 2px 2px;
+}
+
+.office-floor-agent[data-activity-state='trading'] .office-agent-sprite__body::after {
+  height: 8px;
+  background:
+    linear-gradient(135deg, transparent 0 46%, rgba(120, 212, 192, 0.72) 46% 56%, transparent 56%),
+    linear-gradient(45deg, transparent 0 36%, rgba(212, 84, 77, 0.58) 36% 46%, transparent 46%),
+    rgba(7, 9, 9, 0.2);
+  box-shadow: none;
+}
+
 .office-floor-agent[data-activity-state='coding'] .office-agent-tool {
   color: #78d4c0;
   border-radius: 2px 2px 4px 4px;
@@ -4966,7 +5024,7 @@
   }
 
   .isometric-office {
-    min-height: 360px;
+    min-height: 500px;
   }
 
   .workflow-graph {
@@ -5133,7 +5191,7 @@
   }
 
   .isometric-office {
-    min-height: 460px;
+    min-height: 500px;
   }
 
   .workflow-node {
@@ -5207,7 +5265,7 @@
   }
 
   .isometric-office {
-    min-height: 430px;
+    min-height: 470px;
   }
 
   .workflow-graph {

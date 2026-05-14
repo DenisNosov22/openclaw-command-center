@@ -109,6 +109,37 @@ async function verifyOfficeDom(page: Page) {
 
   await expectVisible(page.locator('.isometric-office'), 'Office scene')
   await expectVisible(page.locator('.office-floor'), 'Office floor')
+  const officeWrapperIssues = await page.evaluate(() => {
+    const office = document.querySelector<HTMLElement>('.isometric-office')
+    const officeBox = office?.getBoundingClientRect()
+    const style = office ? getComputedStyle(office) : undefined
+
+    if (!office || !officeBox || !style) {
+      return ['missing office wrapper']
+    }
+
+    return [
+      style.backgroundImage !== 'none' || style.backgroundColor !== 'rgba(0, 0, 0, 0)'
+        ? `wrapper background ${style.backgroundImage} / ${style.backgroundColor}`
+        : '',
+      Number.parseFloat(style.borderTopWidth) > 0
+        ? `wrapper border ${style.borderTopWidth}`
+        : '',
+      style.boxShadow !== 'none' ? `wrapper shadow ${style.boxShadow}` : '',
+      Number.parseFloat(style.borderTopLeftRadius) > 0
+        ? `wrapper radius ${style.borderTopLeftRadius}`
+        : '',
+      window.innerWidth >= 821 && officeBox.height < 520
+        ? `desktop room height ${Math.round(officeBox.height)}px`
+        : '',
+    ].filter(Boolean)
+  })
+
+  assert.deepEqual(
+    officeWrapperIssues,
+    [],
+    `Office scene wrapper should be visually flattened while room stays tall: ${officeWrapperIssues.join('; ')}`,
+  )
   await expectVisible(page.locator('.office-area--desk'), 'Desk/PC zone')
   await expectVisible(page.locator('.office-area--sofa'), 'Sofa/rest zone')
   await expectVisible(page.locator('.office-area--hologram'), 'Hologram/status zone')
