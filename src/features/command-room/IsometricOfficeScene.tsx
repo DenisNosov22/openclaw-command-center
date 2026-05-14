@@ -71,7 +71,7 @@ export function IsometricOfficeScene({
         <span className="office-route office-route--south" />
         <span className="office-route office-route--west" />
         <span className="office-transfer office-transfer--handoff" />
-        <span className={OFFICE_ZONE_TOKENS.handoff} data-link="agent handoff route" />
+        <span className={OFFICE_ZONE_TOKENS.handoff} data-link="handoff" />
         {signalRoutes.map((route) => (
           <span
             className={`office-transfer office-transfer--${route.lane} office-transfer--${route.activity} office-transfer--${route.tone}${

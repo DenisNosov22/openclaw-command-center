@@ -183,6 +183,26 @@ async function verifyOfficeDom(page: Page) {
     `Office labels and chips should stay compact attached metadata, not dashboard cards: ${oversizedLabels.join('; ')}`,
   )
 
+  const noisyHandoffElements = await page.evaluate(() =>
+    window.innerWidth <= 430
+      ? []
+      : [...document.querySelectorAll<HTMLElement>('.office-handoff-hub, .office-transfer--handoff, .office-floor-agent[data-activity-state="coordinating"] .office-task-bubble, .office-floor-agent[data-action-phase="signal-transfer"] .office-task-bubble')]
+          .map((element, index) => {
+            const box = element.getBoundingClientRect()
+
+            return box.width > 136 || box.height > 32
+              ? `${element.className} ${index + 1}: ${Math.round(box.width)}x${Math.round(box.height)}`
+              : ''
+          })
+          .filter(Boolean),
+  )
+
+  assert.deepEqual(
+    noisyHandoffElements,
+    [],
+    `Coordinator/handoff route notes should stay staged and compact: ${noisyHandoffElements.join('; ')}`,
+  )
+
   const crampedCentralStations = await page.evaluate(() => {
     if (window.innerWidth <= 430) {
       return []

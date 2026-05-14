@@ -190,6 +190,16 @@ assertIncludes(getBlock('.office-profession-prop--trading::after'), 'box-shadow:
 assertIncludes(getBlock('.office-profession-prop--camera::after'), 'border-left', 'director camera prop')
 assertIncludes(getBlock('.office-task-bubble'), 'border-radius: 999px', 'small overhead task bubbles')
 assertIncludes(getBlock('.office-task-bubble'), 'max-width: 58px', 'task bubbles remain compact metadata')
+assertIncludes(
+  getBlock(".office-floor-agent[data-activity-state='coordinating'] .office-task-bubble"),
+  'max-width: 18px',
+  'coordinator bubble collapses to a compact document tab',
+)
+assertIncludes(
+  getBlock(".office-floor-agent[data-action-phase='signal-transfer'] .office-task-bubble"),
+  'border-radius: 4px',
+  'handoff bubble is a staged document chip',
+)
 assertIncludes(getBlock('.office-activity-chip'), 'border-radius: 999px', 'activity chips stay compact and attached')
 assertIncludes(getBlock('.office-activity-chip'), 'max-width: 42px', 'activity chips are not dashboard cards')
 assertIncludes(getBlock('.office-monitor-stand'), 'rgba(215, 180, 92', 'PC monitor stand detail')
@@ -217,8 +227,10 @@ assertIncludes(getBlock('.office-desk'), 'top: var(--office-station-y)', 'desks 
 assertIncludes(getBlock('.office-walker--inner'), 'office-walker-inner', 'straight office walking path')
 assertIncludes(getBlock('.office-lane'), 'linear-gradient(90deg', 'office walking lane floor treatment')
 assertIncludes(getBlock('.office-lane--inner'), 'height: 248px', 'vertical walking lane path geometry')
+assertIncludes(getBlock('.office-desk--coordinating'), 'width: clamp(96px, 12%, 112px)', 'coordinator desk remains a small side overview desk')
 assertIncludes(getBlock('.office-handoff-hub::before'), 'data-link', 'handoff hub communicates data transfer')
 assertIncludes(getBlock('.office-handoff-hub::after'), 'office-handoff-bus', 'handoff hub packet animation')
+assertIncludes(getBlock('.office-handoff-hub'), 'width: 62px', 'handoff hub stays compact instead of becoming a card')
 assertIncludes(getBlock('.office-transfer--danger::after'), '#d4544d', 'critical route packet tone')
 assertIncludes(getBlock('.office-transfer--selected'), 'opacity:', 'selected route emphasis')
 assertIncludes(getBlock('.office-transfer--selected::after'), 'office-packet-selected', 'selected route packet cadence')
