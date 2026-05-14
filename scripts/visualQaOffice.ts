@@ -165,6 +165,26 @@ async function verifyResponsiveOfficeComposition(page: Page, viewportCase: Viewp
     0,
     `Responsive Office stations should not overlap the command core: ${overlaps.join(', ')}`,
   )
+
+  const crampedLabels = await page.evaluate(() =>
+    [...document.querySelectorAll('.office-desk__label')]
+      .map((label, index) => {
+        const name = label.querySelector('strong')?.getBoundingClientRect()
+        const role = label.querySelector('small')
+        const roleDisplay = role ? getComputedStyle(role).display : 'none'
+
+        return !name || name.width < 62 || roleDisplay !== 'none'
+          ? `station ${index + 1}: name ${Math.round(name?.width ?? 0)}px, role ${roleDisplay}`
+          : ''
+      })
+      .filter(Boolean),
+  )
+
+  assert.deepEqual(
+    crampedLabels,
+    [],
+    `Responsive Office station labels should prioritize readable names over role abbreviations: ${crampedLabels.join('; ')}`,
+  )
 }
 
 async function verifyReducedMotionOffice(page: Page) {

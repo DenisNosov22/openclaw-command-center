@@ -3437,9 +3437,37 @@
   }
 
   .office-desk {
-    width: 88px;
-    min-height: 76px;
-    padding: 7px;
+    grid-template-columns: 30px minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    gap: 6px;
+    width: 96px;
+    min-height: 82px;
+    padding: 7px 8px;
+  }
+
+  .office-terminal {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .office-keyboard-tray {
+    display: none;
+  }
+
+  .office-agent-marker {
+    grid-column: 2;
+    grid-row: 2;
+    justify-self: end;
+  }
+
+  .office-agent-sprite__body {
+    color: transparent;
+  }
+
+  .office-desk__label {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    text-align: center;
   }
 
   .office-desk[data-office-slot='2'],
@@ -3476,7 +3504,7 @@
   }
 
   .office-desk__label small {
-    font-size: 0.56rem;
+    display: none;
   }
 
   .workflow-node {
