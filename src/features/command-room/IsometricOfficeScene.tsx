@@ -13,6 +13,15 @@ import {
   OFFICE_SPRITE_TOKENS,
 } from './IsometricOfficeSpriteSystem'
 
+const defaultCompactFloorAgentIds = new Set([
+  'agent-spec',
+  'agent-rezhyser',
+  'agent-shturman',
+  'agent-varta',
+  'agent-verstalnyk',
+  'agent-vitryna',
+])
+
 function getOfficeFloorAgentClassName(station: ReturnType<typeof createOfficeSceneViewModel>['stations'][number]) {
   return [
     'office-floor-agent',
@@ -47,6 +56,22 @@ function getAgentStateBadgeLabel(station: ReturnType<typeof createOfficeSceneVie
 
 function getAgentStatusBadge(station: ReturnType<typeof createOfficeSceneViewModel>['stations'][number]) {
   return station.simulation.statusBadge ?? station.simulation.activity
+}
+
+function getDefaultFloorAgentRender(
+  station: ReturnType<typeof createOfficeSceneViewModel>['stations'][number],
+  simulationMode: OfficeSimulationMode,
+) {
+  if (
+    simulationMode === 'static' &&
+    station.simulation.posture !== 'walking' &&
+    station.simulation.posture !== 'handoff' &&
+    defaultCompactFloorAgentIds.has(station.agentId)
+  ) {
+    return 'badge'
+  }
+
+  return 'full'
 }
 
 interface IsometricOfficeSceneProps {
@@ -269,6 +294,7 @@ export function IsometricOfficeScene({
       <div className="office-agent-floor" aria-hidden="true">
         {stations.map((station) => {
           const statusBadge = getAgentStatusBadge(station)
+          const floorRender = getDefaultFloorAgentRender(station, effectiveSimulationMode)
 
           return (
             <span
@@ -282,6 +308,7 @@ export function IsometricOfficeScene({
               data-agent-progress={station.simulation.progress}
               data-agent-target={`${station.simulation.target.x},${station.simulation.target.y}`}
               data-current-task={station.currentTask}
+              data-floor-render={floorRender}
               data-office-zone={station.simulation.zoneId}
               data-physical-agent="true"
               data-profession-prop={station.professionProp}

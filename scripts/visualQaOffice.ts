@@ -187,11 +187,9 @@ async function verifyOfficeDom(page: Page) {
     'Removed office zone/room-prop/lane overlay DOM should not render',
   )
   await expectVisible(page.locator(".office-desk[data-agent-id='agent-vitryna']"), 'Вітрина marketing visuals desk')
-  await expectVisible(page.locator(".office-floor-agent[data-agent-id='agent-vitryna'][data-physical-agent='true']"), 'Вітрина physical office agent')
-  await expectVisible(page.locator(".office-floor-agent[data-agent-id='agent-vitryna'] .office-agent-status-cue"), 'Вітрина status cue')
-  await expectVisible(page.locator(".office-floor-agent[data-agent-id='agent-vitryna'] .office-task-bubble"), 'Вітрина task bubble')
+  await expectVisible(page.locator(".office-floor-agent[data-agent-id='agent-vitryna'][data-physical-agent='true'][data-floor-render='badge']"), 'Вітрина compact workstation badge')
   await expectVisible(page.locator(".office-desk[data-agent-id='agent-rezhyser']"), 'Режисер camera/director station')
-  await expectVisible(page.locator(".office-floor-agent[data-agent-id='agent-rezhyser'][data-physical-agent='true']"), 'Режисер physical office agent')
+  await expectVisible(page.locator(".office-floor-agent[data-agent-id='agent-rezhyser'][data-physical-agent='true'][data-floor-render='badge']"), 'Режисер compact camera badge')
 
   const edgeRoleClippingIssues = await page.evaluate(() => {
     const office = document.querySelector<HTMLElement>('.isometric-office')
@@ -453,6 +451,7 @@ async function verifyOfficeDom(page: Page) {
         ? {
             x: ((box.left + box.width / 2 - officeBox.left) / officeBox.width) * 100,
             y: ((box.top + box.height / 2 - officeBox.top) / officeBox.height) * 100,
+            render: element.dataset.floorRender,
             posture: element.dataset.agentPosture,
           }
         : undefined
@@ -483,12 +482,12 @@ async function verifyOfficeDom(page: Page) {
       const inCentralLane = varta.x >= 36 && varta.x <= 64 && varta.y >= 45 && varta.y <= 70
       const atPcChair = varta.x >= 6 && varta.x <= 12 && varta.y >= 48 && varta.y <= 54
 
-      if (varta.posture !== 'sitting' && varta.posture !== 'working') {
+      if (varta.render !== 'badge' && varta.posture !== 'sitting' && varta.posture !== 'working') {
         issues.push(`agent-varta: ${varta.posture ?? 'unknown'} posture`)
       }
 
       if (inCentralLane || !atPcChair) {
-        issues.push(`agent-varta: ${Math.round(varta.x)},${Math.round(varta.y)} not anchored to lower-left PC chair`)
+        issues.push(`agent-varta: ${Math.round(varta.x)},${Math.round(varta.y)} not anchored to lower-left PC chair/badge`)
       }
     }
 
@@ -498,7 +497,7 @@ async function verifyOfficeDom(page: Page) {
   assert.deepEqual(
     strictSeatAnchorIssues,
     [],
-    `Краб and Варта must read as seated at explicit furniture: ${strictSeatAnchorIssues.join('; ')}`,
+    `Краб must read as seated and Варта must stay anchored to explicit PC furniture/badge: ${strictSeatAnchorIssues.join('; ')}`,
   )
 
   const stationaryCentralWalkwayIssues = await page.evaluate(() => {
@@ -533,6 +532,68 @@ async function verifyOfficeDom(page: Page) {
     stationaryCentralWalkwayIssues,
     [],
     `Inactive/home agents should not occupy the central wooden movement corridor: ${stationaryCentralWalkwayIssues.join('; ')}`,
+  )
+
+  const defaultFullBodyOpenFloorIssues = await page.evaluate(() => {
+    if (window.innerWidth <= 430) {
+      return []
+    }
+
+    const office = document.querySelector<HTMLElement>('.isometric-office')
+    const officeBox = office?.getBoundingClientRect()
+
+    if (!officeBox) {
+      return ['missing office bounds']
+    }
+
+    return [...document.querySelectorAll<HTMLElement>(".office-floor-agent[data-floor-render='full'][data-physical-agent='true']")]
+      .map((agent) => {
+        if (agent.dataset.agentPosture === 'walking' || agent.dataset.agentPosture === 'handoff') {
+          return `${agent.dataset.agentId ?? 'unknown'}: route posture in default`
+        }
+
+        const box = agent.getBoundingClientRect()
+        const x = ((box.left + box.width / 2 - officeBox.left) / officeBox.width) * 100
+        const y = ((box.top + box.height / 2 - officeBox.top) / officeBox.height) * 100
+        const inOpenWoodenFloor = x >= 28 && x <= 66 && y >= 40 && y <= 76
+
+        return inOpenWoodenFloor
+          ? `${agent.dataset.agentId ?? 'unknown'}: full body at ${Math.round(x)},${Math.round(y)}`
+          : ''
+      })
+      .filter(Boolean)
+  })
+
+  assert.deepEqual(
+    defaultFullBodyOpenFloorIssues,
+    [],
+    `Default desktop must not render full-size static agents on the open wooden floor: ${defaultFullBodyOpenFloorIssues.join('; ')}`,
+  )
+
+  const compactBadgeIssues = await page.evaluate(() =>
+    [...document.querySelectorAll<HTMLElement>(".office-floor-agent[data-floor-render='badge']")]
+      .map((agent) => {
+        const box = agent.getBoundingClientRect()
+        const tooLarge = box.width > 30 || box.height > 30
+        const visibleLabels = [...agent.querySelectorAll<HTMLElement>('.office-task-bubble, .office-agent-state-badge')]
+          .some((element) => {
+            const style = getComputedStyle(element)
+            const labelBox = element.getBoundingClientRect()
+
+            return style.display !== 'none' && Number.parseFloat(style.opacity || '1') > 0.03 && labelBox.width > 0 && labelBox.height > 0
+          })
+
+        return tooLarge || visibleLabels
+          ? `${agent.dataset.agentId ?? 'unknown'}: ${Math.round(box.width)}x${Math.round(box.height)} labels=${visibleLabels}`
+          : ''
+      })
+      .filter(Boolean),
+  )
+
+  assert.deepEqual(
+    compactBadgeIssues,
+    [],
+    `Default compact workstation badges should stay tiny and label-free: ${compactBadgeIssues.join('; ')}`,
   )
 
   const rightOpenFloorIssues = await page.evaluate(() => {
