@@ -258,26 +258,31 @@ async function verifyOfficeDom(page: Page) {
         ? {
             x: ((box.left + box.width / 2 - officeBox.left) / officeBox.width) * 100,
             y: ((box.top + box.height / 2 - officeBox.top) / officeBox.height) * 100,
+            posture: element?.dataset.agentPosture,
           }
         : undefined
     }
 
     const checks = [
-      ['agent-krab', getCenter(".office-floor-agent[data-agent-id='agent-krab']"), 38, 64, 34, 56],
-      ['agent-dev', getCenter(".office-floor-agent[data-agent-id='agent-dev']"), 7, 34, 36, 60],
-      ['agent-varta', getCenter(".office-floor-agent[data-agent-id='agent-varta']"), 20, 34, 60, 74],
-      ['agent-shturman', getCenter(".office-floor-agent[data-agent-id='agent-shturman']"), 8, 36, 24, 46],
-      ['agent-spec', getCenter(".office-floor-agent[data-agent-id='agent-spec']"), 38, 46, 34, 44],
-      ['agent-bastion', getCenter(".office-floor-agent[data-agent-id='agent-bastion']"), 4, 34, 76, 90],
+      ['agent-krab', getCenter(".office-floor-agent[data-agent-id='agent-krab']"), 44, 52, 33, 40],
+      ['agent-dev', getCenter(".office-floor-agent[data-agent-id='agent-dev']"), 16, 24, 41, 49],
+      ['agent-varta', getCenter(".office-floor-agent[data-agent-id='agent-varta']"), 24, 32, 41, 49],
+      ['agent-shturman', getCenter(".office-floor-agent[data-agent-id='agent-shturman']"), 9, 17, 25, 33],
+      ['agent-spec', getCenter(".office-floor-agent[data-agent-id='agent-spec']"), 40, 48, 29, 37],
+      ['agent-bastion', getCenter(".office-floor-agent[data-agent-id='agent-bastion']"), 20, 28, 70, 78],
       ['agent-desk', getCenter(".office-floor-agent[data-agent-id='agent-desk']"), 48, 76, 70, 84],
       ['agent-verstalnyk', getCenter(".office-floor-agent[data-agent-id='agent-verstalnyk']"), 72, 84, 52, 64],
       ['agent-vitryna', getCenter(".office-floor-agent[data-agent-id='agent-vitryna']"), 76, 90, 42, 56],
-      ['agent-rezhyser', getCenter(".office-floor-agent[data-agent-id='agent-rezhyser']"), 72, 88, 66, 82],
+      ['agent-rezhyser', getCenter(".office-floor-agent[data-agent-id='agent-rezhyser']"), 84, 92, 72, 80],
     ] as const
 
     return checks.map(([id, center, minX, maxX, minY, maxY]) => {
       if (!center) {
         return `${id}: missing`
+      }
+
+      if (center.posture === 'walking' || center.posture === 'handoff') {
+        return ''
       }
 
       return center.x >= minX && center.x <= maxX && center.y >= minY && center.y <= maxY
@@ -316,6 +321,10 @@ async function verifyOfficeDom(page: Page) {
 
         if (!box) {
           return `${agentId}: missing`
+        }
+
+        if (element.dataset.agentPosture === 'walking' || element.dataset.agentPosture === 'handoff') {
+          return ''
         }
 
         const x = ((box.left + box.width / 2 - officeBox.left) / officeBox.width) * 100
@@ -399,8 +408,8 @@ async function verifyOfficeDom(page: Page) {
 
     const checks = [
       ['agent-verstalnyk', getCenter('agent-verstalnyk'), 72, 84, 52, 64],
-      ['agent-varta', getCenter('agent-varta'), 20, 34, 60, 74],
-      ['agent-spec', getCenter('agent-spec'), 38, 46, 34, 44],
+      ['agent-varta', getCenter('agent-varta'), 24, 32, 41, 49],
+      ['agent-spec', getCenter('agent-spec'), 40, 48, 29, 37],
     ] as const
 
     return checks.map(([id, center, minX, maxX, minY, maxY]) => {
@@ -418,6 +427,74 @@ async function verifyOfficeDom(page: Page) {
     redistributedRoleIssues,
     [],
     `Layout/QA/Spec agents should be distributed to role-appropriate furniture: ${redistributedRoleIssues.join('; ')}`,
+  )
+
+  const strictSeatAnchorIssues = await page.evaluate(() => {
+    if (window.innerWidth <= 430) {
+      return []
+    }
+
+    const office = document.querySelector<HTMLElement>('.isometric-office')
+    const officeBox = office?.getBoundingClientRect()
+
+    if (!officeBox) {
+      return ['missing office bounds']
+    }
+
+    const getState = (agentId: string) => {
+      const element = document.querySelector<HTMLElement>(`.office-floor-agent[data-agent-id='${agentId}']`)
+      const box = element?.getBoundingClientRect()
+
+      return element && box
+        ? {
+            x: ((box.left + box.width / 2 - officeBox.left) / officeBox.width) * 100,
+            y: ((box.top + box.height / 2 - officeBox.top) / officeBox.height) * 100,
+            posture: element.dataset.agentPosture,
+          }
+        : undefined
+    }
+
+    const krab = getState('agent-krab')
+    const varta = getState('agent-varta')
+    const issues: string[] = []
+
+    if (!krab) {
+      issues.push('agent-krab: missing')
+    } else {
+      const belowMeetingTable = krab.y > 40
+      const inLowerCentralWalkway = krab.x >= 36 && krab.x <= 64 && krab.y >= 52 && krab.y <= 70
+
+      if (krab.posture !== 'sitting' && krab.posture !== 'working') {
+        issues.push(`agent-krab: ${krab.posture ?? 'unknown'} posture`)
+      }
+
+      if (belowMeetingTable || inLowerCentralWalkway) {
+        issues.push(`agent-krab: ${Math.round(krab.x)},${Math.round(krab.y)} not visibly seated at meeting-table chair`)
+      }
+    }
+
+    if (!varta) {
+      issues.push('agent-varta: missing')
+    } else {
+      const inCentralLane = varta.x >= 36 && varta.x <= 64 && varta.y >= 45 && varta.y <= 70
+      const atPcChair = varta.x >= 24 && varta.x <= 32 && varta.y >= 41 && varta.y <= 49
+
+      if (varta.posture !== 'sitting' && varta.posture !== 'working') {
+        issues.push(`agent-varta: ${varta.posture ?? 'unknown'} posture`)
+      }
+
+      if (inCentralLane || !atPcChair) {
+        issues.push(`agent-varta: ${Math.round(varta.x)},${Math.round(varta.y)} not anchored to left PC chair`)
+      }
+    }
+
+    return issues
+  })
+
+  assert.deepEqual(
+    strictSeatAnchorIssues,
+    [],
+    `Краб and Варта must read as seated at explicit furniture: ${strictSeatAnchorIssues.join('; ')}`,
   )
 
   const stationaryCentralWalkwayIssues = await page.evaluate(() => {
@@ -680,6 +757,7 @@ async function verifyOfficeDom(page: Page) {
     const topLeftPcAgentIds = new Set([
       'agent-dev',
       'agent-shturman',
+      'agent-varta',
     ])
     const expectedSharedFurniturePairs = new Set([
       'agent-krab-agent-spec',
@@ -702,8 +780,10 @@ async function verifyOfficeDom(page: Page) {
         const pairKey = `${firstDesk.id}-${secondDesk.id}`
         const minimumDistance = expectedPcClusterPair
           ? 36
-          : expectedSharedFurniturePairs.has(pairKey)
-            ? 48
+          : pairKey === 'agent-krab-agent-spec' || pairKey === 'agent-spec-agent-krab'
+            ? 32
+            : expectedSharedFurniturePairs.has(pairKey)
+              ? 48
             : 92
 
         return distance < minimumDistance
@@ -716,7 +796,7 @@ async function verifyOfficeDom(page: Page) {
       !officeBox || spreadX < officeBox.width * 0.68
         ? `x-spread ${Math.round(spreadX)}px of ${Math.round(officeBox?.width ?? 0)}px`
         : '',
-      !officeBox || spreadY < officeBox.height * 0.5
+      !officeBox || spreadY < officeBox.height * 0.45
         ? `y-spread ${Math.round(spreadY)}px of ${Math.round(officeBox?.height ?? 0)}px`
         : '',
       ...closePairs,

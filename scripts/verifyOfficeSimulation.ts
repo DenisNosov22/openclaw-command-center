@@ -124,7 +124,6 @@ for (const agent of snapshot.agents) {
 }
 
 const centralWalkwayHomeIssues = OFFICE_DESKS
-  .filter((desk) => desk.id !== 'desk-command')
   .filter((desk) => desk.point.x >= 36 && desk.point.x <= 64 && desk.point.y >= 52 && desk.point.y <= 70)
   .map((desk) => `${desk.id}: ${desk.point.x},${desk.point.y}`)
 assert.deepEqual(
@@ -170,8 +169,9 @@ assert.deepEqual(
 )
 
 const redistributedDeskIssues = ([
-  ['desk-spec', 38, 44, 36, 44],
-  ['desk-qa', 20, 34, 62, 72],
+  ['desk-command', 44, 52, 33, 40],
+  ['desk-spec', 40, 48, 29, 37],
+  ['desk-qa', 24, 32, 41, 49],
   ['desk-layout', 74, 82, 54, 62],
 ] as const)
   .map(([deskId, minX, maxX, minY, maxY]) => {
@@ -185,7 +185,28 @@ const redistributedDeskIssues = ([
 assert.deepEqual(
   redistributedDeskIssues,
   [],
-  `Spec/QA/Layout homes should be redistributed out of the crowded left PC cluster: ${redistributedDeskIssues.join('; ')}`,
+  `Command/Spec/QA/Layout homes should be snapped to visible table, PC, and showcase furniture: ${redistributedDeskIssues.join('; ')}`,
+)
+
+const strictHomeSeatIssues = ([
+  ['desk-command', 'meeting-table-chair-edge-seat'],
+  ['desk-spec', 'meeting-table-chair-edge-seat'],
+  ['desk-qa', 'pc-chair-workstation-seat'],
+  ['desk-coding', 'pc-chair-workstation-seat'],
+  ['desk-research', 'pc-chair-workstation-seat'],
+] as const)
+  .map(([deskId, anchorKind]) => {
+    const desk = getOfficeDesk(deskId)
+
+    return desk.anchorKind === anchorKind
+      ? ''
+      : `${desk.id}: ${desk.anchorKind}`
+  })
+  .filter(Boolean)
+assert.deepEqual(
+  strictHomeSeatIssues,
+  [],
+  `Primary home agents should be anchored to explicit seat/PC/table furniture: ${strictHomeSeatIssues.join('; ')}`,
 )
 
 for (const state of simulation.agents.filter((agent) => agent.posture === 'walking')) {
@@ -353,7 +374,7 @@ assert(liveAgent, 'Expected live override target')
 assert.equal(liveAgent.currentTask, 'Live integration placeholder', 'Live seam should override task copy')
 assert.equal(liveAgent.activity, 'monitoring', 'Live seam should override activity')
 assert.equal(liveAgent.posture, 'standing', 'Live seam should override posture')
-assert.deepEqual(liveAgent.route, [{ x: 13, y: 50 }], 'Inactive live status should keep the agent at the home station')
+assert.deepEqual(liveAgent.route, [{ x: 20, y: 45 }], 'Inactive live status should keep the agent at the home station')
 
 const liveHandoffSimulation = createOfficeSimulation(snapshot.agents, snapshot.tasks, {
   elapsedMs: 8_000,
@@ -362,18 +383,18 @@ const liveHandoffSimulation = createOfficeSimulation(snapshot.agents, snapshot.t
       activity: 'handoff',
       posture: 'handoff',
       statusBadge: 'transferring',
-      target: { x: 25, y: 66 },
+      target: { x: 28, y: 45 },
     },
   },
 })
 const liveHandoffAgent = liveHandoffSimulation.agents.find((agent) => agent.agentId === 'agent-dev')
 assert(liveHandoffAgent, 'Expected live handoff override target')
-assert.deepEqual(liveHandoffAgent.route[0], { x: 13, y: 50 }, 'Live handoff route should start at the home station')
+assert.deepEqual(liveHandoffAgent.route[0], { x: 20, y: 45 }, 'Live handoff route should start at the home station')
 assert(
   routeIncludesPoint(liveHandoffAgent.route, OFFICE_COORDINATION_HUB_POINT),
   'Live handoff route should pass through Краб central hub before continuing',
 )
-assert.deepEqual(liveHandoffAgent.target, { x: 25, y: 66 }, 'Live handoff route may continue from hub to target station')
+assert.deepEqual(liveHandoffAgent.target, { x: 28, y: 45 }, 'Live handoff route may continue from hub to target station')
 
 const queuedBaseline = snapshot.agents.find((agent) => agent.id === 'agent-shturman')
 assert(queuedBaseline, 'Expected queued fixture agent')
@@ -386,7 +407,7 @@ const lateTick = getOfficeAgentSimulationTick(queuedBaseline, snapshot.tasks, {
   mode: 'animated',
 })
 assert.deepEqual(earlyTick.position, lateTick.position, 'Queued agent should stay at home station over time')
-assert.deepEqual(earlyTick.position, { x: 12, y: 32 }, 'Queued research agent should stay at upper-left planning home station')
+assert.deepEqual(earlyTick.position, { x: 13, y: 29 }, 'Queued research agent should stay at upper-left planning home station')
 assert.equal(earlyTick.progress, 0, 'Queued agent should not expose route progress')
 assert.equal(lateTick.progress, 0, 'Late queued tick should not expose route progress')
 assert.equal(earlyTick.posture, 'sitting', 'Queued agent should sit at the workstation instead of walking')
@@ -404,15 +425,15 @@ const waitingOps = getOfficeAgentSimulationTick(
   snapshot.tasks,
 )
 
-assert.deepEqual(completedSpec.position, { x: 42, y: 39 }, 'Completed spec stays seated at the meeting-table home station')
+assert.deepEqual(completedSpec.position, { x: 44, y: 33 }, 'Completed spec stays seated at the meeting-table home station')
 assert.equal(completedSpec.posture, 'sitting', 'Completed spec sits at the table instead of floating in the aisle')
-assert.deepEqual(completedSpec.route, [{ x: 42, y: 39 }], 'Completed spec should not expose a walking route to the hub')
-assert.deepEqual(idleDirector.position, { x: 79, y: 72 }, 'Idle director stays by the camera/studio home station')
+assert.deepEqual(completedSpec.route, [{ x: 44, y: 33 }], 'Completed spec should not expose a walking route to the hub')
+assert.deepEqual(idleDirector.position, { x: 88, y: 76 }, 'Idle director stays by the camera/studio home station')
 assert.equal(idleDirector.posture, 'standing', 'Idle director stands near the camera/studio setup')
-assert.deepEqual(idleDirector.route, [{ x: 79, y: 72 }], 'Idle director should not expose a walking route to the hub')
-assert.deepEqual(waitingOps.position, { x: 16, y: 82 }, 'Waiting ops stays at the bottom-left server/admin console')
+assert.deepEqual(idleDirector.route, [{ x: 88, y: 76 }], 'Idle director should not expose a walking route to the hub')
+assert.deepEqual(waitingOps.position, { x: 24, y: 74 }, 'Waiting ops stays at the bottom-left server/admin console')
 assert.equal(waitingOps.posture, 'sitting', 'Waiting ops monitors from the admin console')
-assert.deepEqual(waitingOps.route, [{ x: 16, y: 82 }], 'Waiting ops should not expose a walking route to the hub')
+assert.deepEqual(waitingOps.route, [{ x: 24, y: 74 }], 'Waiting ops should not expose a walking route to the hub')
 
 const activeBaseline = snapshot.agents.find((agent) => agent.id === 'agent-dev')
 assert(activeBaseline, 'Expected active fixture agent')
@@ -426,7 +447,7 @@ assert(
   activeTick.posture === 'walking' || activeTick.posture === 'handoff',
   'Delegated active task should expose walking or handoff posture',
 )
-assert.deepEqual(activeTick.route[0], { x: 13, y: 50 }, 'Delegated active task should start its route from the coding desk')
+assert.deepEqual(activeTick.route[0], { x: 20, y: 45 }, 'Delegated active task should start its route from the coding desk')
 assert(
   routeIncludesPoint(activeTick.route, OFFICE_COORDINATION_HUB_POINT),
   'Delegated active task should route through Краб central coordination hub',

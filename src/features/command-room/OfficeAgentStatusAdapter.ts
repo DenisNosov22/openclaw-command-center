@@ -135,6 +135,10 @@ function createTargetRouteOverride(
   agent: Agent,
   snapshot: OfficeAgentStatusSnapshot,
 ): Pick<OfficeAgentStatusSimulationOverride, 'activity' | 'pathId' | 'position' | 'posture' | 'target'> {
+  if (agent.role === 'main/orchestrator' || agent.role === 'main') {
+    return {}
+  }
+
   if (!snapshot.targetRole) {
     return {}
   }
@@ -157,6 +161,28 @@ function createTargetRouteOverride(
   }
 }
 
+function getLiveHomePosture(
+  cue: { activity: OfficeAgentActivity; posture: OfficeAgentPosture },
+  agent?: Agent,
+) {
+  if (!agent) {
+    return cue.posture
+  }
+
+  const profile = getAgentProfile(agent)
+  const desk = profile ? getOfficeDesk(profile.deskId) : undefined
+  const seatedAnchorKinds = new Set([
+    'meeting-table-chair-edge-seat',
+    'pc-chair-workstation-seat',
+    'server-admin-console-seat',
+    'trading-monitor-chair',
+  ])
+
+  return desk && seatedAnchorKinds.has(desk.anchorKind) && cue.posture !== 'walking' && cue.posture !== 'handoff'
+    ? 'sitting'
+    : cue.posture
+}
+
 export function mapOfficeAgentStatusSnapshot(
   snapshot: OfficeAgentStatusSnapshot,
   agent?: Agent,
@@ -168,7 +194,7 @@ export function mapOfficeAgentStatusSnapshot(
   return {
     activity: cue.activity,
     currentTask: snapshot.currentTask,
-    posture: cue.posture,
+    posture: getLiveHomePosture(cue, agent),
     statusBadge: snapshot.state,
     updatedAt: snapshot.updatedAt,
     ...targetRouteOverride,
@@ -205,15 +231,11 @@ export function createOfficeAgentStatusFixture(
       const state = fixtureStates[index % fixtureStates.length]
       const targetRoleByRole: Partial<Record<Agent['role'], string>> = {
         coding: 'QA',
-        main: 'coding',
-        'main/orchestrator': 'coding',
         marketing: 'QA',
       }
       const targetRole = targetRoleByRole[agent.role]
       const progressByRole: Partial<Record<Agent['role'], number>> = {
         coding: 0.86,
-        main: 0.36,
-        'main/orchestrator': 0.36,
         marketing: 0.74,
       }
 

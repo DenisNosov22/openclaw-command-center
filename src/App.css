@@ -1828,11 +1828,25 @@
 }
 
 .office-floor-agent[data-agent-posture='working'] .office-agent-marker {
-  transform: translateY(4px) scaleY(0.94);
+  transform: translateY(9px) scaleY(0.86) skewX(-3deg);
 }
 
 .office-floor-agent[data-agent-posture='sitting'] .office-agent-marker {
-  transform: translateY(4px) scaleY(0.94);
+  transform: translateY(9px) scaleY(0.86) skewX(-3deg);
+}
+
+.office-floor-agent[data-agent-posture='working'] .office-agent-marker::after,
+.office-floor-agent[data-agent-posture='sitting'] .office-agent-marker::after {
+  position: absolute;
+  left: 50%;
+  bottom: 4px;
+  z-index: -1;
+  width: 24px;
+  height: 10px;
+  content: '';
+  background: radial-gradient(ellipse, rgba(11, 10, 9, 0.56), transparent 70%);
+  border-radius: 50%;
+  transform: translateX(-50%) skewX(10deg);
 }
 
 .office-floor-agent[data-agent-posture='handoff'] .office-agent-marker {
@@ -2955,13 +2969,13 @@
 
 .office-floor-agent[data-agent-posture='sitting'] .office-agent-sprite,
 .office-floor-agent[data-agent-posture='working'] .office-agent-sprite {
-  transform: translateY(5px);
+  transform: translate(1px, 8px) rotate(-4deg);
 }
 
 .office-floor-agent[data-agent-posture='sitting'] .office-agent-sprite__legs,
 .office-floor-agent[data-agent-posture='working'] .office-agent-sprite__legs {
-  height: 10px;
-  transform: translateY(-2px);
+  height: 9px;
+  transform: translateY(-5px);
 }
 
 .office-floor-agent[data-agent-posture='sitting'] .office-agent-sprite__legs::before,
@@ -2969,15 +2983,15 @@
 .office-floor-agent[data-agent-posture='working'] .office-agent-sprite__legs::before,
 .office-floor-agent[data-agent-posture='working'] .office-agent-sprite__legs::after {
   top: 0;
-  height: 9px;
+  height: 8px;
   box-shadow: none;
-  transform: rotate(72deg);
+  transform: rotate(86deg);
   transform-origin: 50% 0;
 }
 
 .office-floor-agent[data-agent-posture='sitting'] .office-agent-sprite__legs::after,
 .office-floor-agent[data-agent-posture='working'] .office-agent-sprite__legs::after {
-  transform: rotate(-72deg);
+  transform: rotate(-86deg);
 }
 
 .office-agent-marker {
