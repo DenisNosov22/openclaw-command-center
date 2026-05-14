@@ -83,6 +83,7 @@ for (const agent of snapshot.agents) {
   assert(state.activity, `Expected activity for ${agent.id}`)
   assert(state.posture, `Expected posture for ${agent.id}`)
   assert(state.currentTask, `Expected current task summary for ${agent.id}`)
+  assert(state.route.length >= 1, `Expected visible route points for ${agent.id}`)
 
   const desk = getOfficeDeskForProfession(agent.role)
   assert.equal(desk.id, state.deskId, `Expected ${agent.role} to map to its desk`)
@@ -97,6 +98,7 @@ for (const state of simulation.agents.filter((agent) => agent.posture === 'walki
   assert(Number.isFinite(state.target.x), `Expected moving agent ${state.agentId} target x`)
   assert(Number.isFinite(state.target.y), `Expected moving agent ${state.agentId} target y`)
   assert(getOfficePath(state.pathId), `Expected moving agent ${state.agentId} path`)
+  assert(state.route.length >= 2, `Expected moving agent ${state.agentId} to expose route cue points`)
 }
 
 const secondSimulation = createOfficeSimulation(snapshot.agents, snapshot.tasks)
@@ -289,6 +291,22 @@ assert(
 assert(
   stylesheetSource.includes(".office-floor-agent[data-agent-posture='blocked'] .office-agent-marker"),
   'Blocked posture should have simulation-keyed marker styling',
+)
+assert(
+  componentSource.includes('office-agent-route-map'),
+  'Office scene should render simulation route overlay',
+)
+assert(
+  componentSource.includes('office-agent-state-badge'),
+  'Office scene should render compact simulation state badges',
+)
+assert(
+  stylesheetSource.includes('.office-agent-trail'),
+  'Walking posture should expose visible movement trail styling',
+)
+assert(
+  stylesheetSource.includes('.office-agent-document-transfer'),
+  'Handoff posture should expose document transfer marker styling',
 )
 assert(
   stylesheetSource.includes('@media (prefers-reduced-motion: reduce)'),

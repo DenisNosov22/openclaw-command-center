@@ -26,6 +26,22 @@ function getOfficeFloorAgentClassName(station: ReturnType<typeof createOfficeSce
   ].join(' ')
 }
 
+function getAgentStateBadgeLabel(station: ReturnType<typeof createOfficeSceneViewModel>['stations'][number]) {
+  if (station.simulation.posture === 'walking') {
+    return 'moving'
+  }
+
+  if (station.simulation.activity === 'blocked') {
+    return 'blocked'
+  }
+
+  if (station.simulation.activity === 'monitoring') {
+    return 'monitoring'
+  }
+
+  return station.simulation.activity
+}
+
 interface IsometricOfficeSceneProps {
   agents: Agent[]
   tasks: Task[]
@@ -144,6 +160,59 @@ export function IsometricOfficeScene({
         <span className="office-zone-label office-zone-label--trade">Trading desk</span>
       </div>
       <div className="office-routes" aria-hidden="true">
+        <svg
+          className="office-agent-route-map"
+          focusable="false"
+          preserveAspectRatio="none"
+          viewBox="0 0 100 100"
+        >
+          <defs>
+            <marker
+              id="office-route-arrow"
+              markerHeight="5"
+              markerWidth="6"
+              orient="auto"
+              refX="5"
+              refY="2.5"
+            >
+              <path d="M0,0 L6,2.5 L0,5 Z" />
+            </marker>
+          </defs>
+          {stations.map((station) => {
+            const routePoints = station.simulation.route.length
+              ? station.simulation.route
+              : [station.simulation.position, station.simulation.target]
+            const points = routePoints.map((point) => `${point.x},${point.y}`).join(' ')
+            const isMoving = station.simulation.posture === 'walking'
+            const isHandoff = station.simulation.posture === 'handoff'
+
+            return (
+              <g
+                className={`office-agent-route office-agent-route--${station.simulation.posture} office-agent-route--${station.simulation.activity}${
+                  isMoving || isHandoff ? ' office-agent-route--visible' : ''
+                }`}
+                data-agent-path={station.simulation.pathId}
+                key={`agent-route-${station.id}`}
+              >
+                <polyline points={points} />
+                <line
+                  className="office-agent-route__heading"
+                  markerEnd="url(#office-route-arrow)"
+                  x1={station.simulation.position.x}
+                  x2={station.simulation.target.x}
+                  y1={station.simulation.position.y}
+                  y2={station.simulation.target.y}
+                />
+                <circle
+                  className="office-agent-route__target"
+                  cx={station.simulation.target.x}
+                  cy={station.simulation.target.y}
+                  r={isMoving || isHandoff ? 1.45 : 1.08}
+                />
+              </g>
+            )
+          })}
+        </svg>
         <span className={`${OFFICE_ZONE_TOKENS.path} office-lane--inner`} />
         <span className={`${OFFICE_ZONE_TOKENS.path} office-lane--outer`} />
         <span className="office-route office-route--north" />
@@ -255,6 +324,7 @@ export function IsometricOfficeScene({
             data-agent-activity={station.simulation.activity}
             data-agent-path={station.simulation.pathId}
             data-agent-posture={station.simulation.posture}
+            data-agent-progress={station.simulation.progress}
             data-agent-target={`${station.simulation.target.x},${station.simulation.target.y}`}
             data-current-task={station.currentTask}
             data-office-zone={station.simulation.zoneId}
@@ -271,6 +341,8 @@ export function IsometricOfficeScene({
               '--office-agent-y': `${station.simulation.position.y}%`,
             } as CSSProperties}
           >
+            <span className="office-agent-trail" />
+            <span className="office-agent-target-pin" />
             <span className={getOfficeAgentMarkerClassName(station.action)}>
               <span className={OFFICE_SPRITE_TOKENS.restProp} />
               <span className={OFFICE_SPRITE_TOKENS.sprite}>
@@ -282,6 +354,9 @@ export function IsometricOfficeScene({
               <span className={OFFICE_SPRITE_TOKENS.signalProp} />
               <span className={OFFICE_SPRITE_TOKENS.tool} />
             </span>
+            <span className="office-agent-document-transfer" />
+            <span className="office-agent-direction-arrow" />
+            <span className="office-agent-state-badge">{getAgentStateBadgeLabel(station)}</span>
             <span className={OFFICE_SPRITE_TOKENS.taskBubble}>{station.taskBubble}</span>
           </span>
         ))}

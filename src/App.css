@@ -1108,6 +1108,82 @@
   pointer-events: none;
 }
 
+.office-agent-route-map {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.office-agent-route {
+  color: rgba(120, 212, 192, 0.72);
+  opacity: 0.46;
+}
+
+.office-agent-route polyline,
+.office-agent-route__heading {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.office-agent-route polyline {
+  stroke-width: 2.2;
+  stroke-dasharray: 2 7;
+  opacity: 0.84;
+  filter: drop-shadow(0 0 6px rgba(120, 212, 192, 0.32));
+  animation: office-route-dash 7.6s linear infinite;
+}
+
+.office-agent-route__heading {
+  stroke-width: 1.4;
+  opacity: 0.36;
+}
+
+.office-agent-route marker path {
+  fill: currentColor;
+}
+
+.office-agent-route__target {
+  fill: rgba(10, 16, 15, 0.84);
+  stroke: currentColor;
+  stroke-width: 0.72;
+  vector-effect: non-scaling-stroke;
+  filter: drop-shadow(0 0 7px rgba(120, 212, 192, 0.44));
+}
+
+.office-agent-route--visible {
+  opacity: 0.94;
+}
+
+.office-agent-route--walking {
+  color: rgba(120, 212, 192, 0.9);
+}
+
+.office-agent-route--handoff {
+  color: rgba(215, 180, 92, 0.9);
+}
+
+.office-agent-route--blocked {
+  color: rgba(212, 84, 77, 0.82);
+  opacity: 0.74;
+}
+
+.office-agent-route--monitoring {
+  color: rgba(120, 212, 192, 0.58);
+}
+
+.office-agent-route--working,
+.office-agent-route--reviewing,
+.office-agent-route--idle {
+  opacity: 0.24;
+}
+
 .office-route {
   position: absolute;
   left: 34%;
@@ -1434,6 +1510,7 @@
 .office-floor-agent {
   --office-agent-shift-x: 0px;
   --office-agent-shift-y: 0px;
+  --office-agent-state-color: #78d4c0;
   position: absolute;
   left: var(--office-agent-x);
   top: var(--office-agent-y);
@@ -1498,10 +1575,12 @@
 .office-floor-agent[data-agent-posture='walking'] {
   --office-agent-shift-x: 0px;
   --office-agent-shift-y: 0px;
+  --office-agent-state-color: #78d4c0;
 }
 
 .office-floor-agent[data-agent-posture='working'],
 .office-floor-agent[data-agent-posture='sitting'] {
+  --office-agent-state-color: #bdb5aa;
   opacity: 0.92;
 }
 
@@ -1528,11 +1607,143 @@
 .office-floor-agent[data-agent-posture='handoff'] {
   --office-agent-shift-x: 28px;
   --office-agent-shift-y: 14px;
+  --office-agent-state-color: #d7b45c;
 }
 
 .office-floor-agent[data-agent-posture='blocked'],
 .office-floor-agent[data-agent-activity='monitoring'] {
   opacity: 1;
+}
+
+.office-floor-agent[data-agent-posture='blocked'] {
+  --office-agent-state-color: #d4544d;
+}
+
+.office-floor-agent[data-agent-activity='monitoring'] {
+  --office-agent-state-color: #78d4c0;
+}
+
+.office-agent-trail,
+.office-agent-target-pin,
+.office-agent-document-transfer,
+.office-agent-direction-arrow,
+.office-agent-state-badge {
+  position: absolute;
+  pointer-events: none;
+}
+
+.office-agent-trail {
+  left: 50%;
+  top: 69%;
+  z-index: -1;
+  width: 52px;
+  height: 15px;
+  background:
+    radial-gradient(ellipse at 18% 50%, color-mix(in srgb, var(--office-agent-state-color) 42%, transparent), transparent 56%),
+    repeating-linear-gradient(90deg, color-mix(in srgb, var(--office-agent-state-color) 38%, transparent) 0 5px, transparent 5px 12px);
+  border-radius: 999px;
+  opacity: 0;
+  filter: blur(0.2px) drop-shadow(0 0 6px color-mix(in srgb, var(--office-agent-state-color) 32%, transparent));
+  transform: translate(-92%, -50%) rotate(-10deg);
+}
+
+.office-agent-target-pin {
+  right: -10px;
+  top: 5px;
+  z-index: 4;
+  width: 12px;
+  aspect-ratio: 1;
+  background:
+    radial-gradient(circle, rgba(244, 241, 234, 0.92) 0 2px, transparent 2px),
+    color-mix(in srgb, var(--office-agent-state-color) 76%, rgba(10, 11, 10, 0.82));
+  border: 1px solid rgba(244, 241, 234, 0.48);
+  border-radius: 50% 50% 50% 2px;
+  opacity: 0;
+  box-shadow: 0 0 12px color-mix(in srgb, var(--office-agent-state-color) 48%, transparent);
+  transform: rotate(-45deg);
+}
+
+.office-agent-direction-arrow {
+  right: -18px;
+  top: 25px;
+  z-index: 4;
+  width: 22px;
+  height: 12px;
+  opacity: 0;
+  background:
+    linear-gradient(90deg, transparent 0 4px, var(--office-agent-state-color) 4px 14px, transparent 14px),
+    linear-gradient(135deg, transparent 0 47%, var(--office-agent-state-color) 47% 56%, transparent 56%);
+  clip-path: polygon(0 35%, 58% 35%, 58% 8%, 100% 50%, 58% 92%, 58% 65%, 0 65%);
+  filter: drop-shadow(0 0 7px color-mix(in srgb, var(--office-agent-state-color) 44%, transparent));
+}
+
+.office-agent-document-transfer {
+  left: 50%;
+  top: 45%;
+  z-index: 6;
+  width: 15px;
+  height: 11px;
+  background:
+    linear-gradient(135deg, transparent 0 19%, rgba(215, 180, 92, 0.76) 19% 29%, transparent 29%),
+    rgba(244, 241, 234, 0.9);
+  border: 1px solid rgba(215, 180, 92, 0.72);
+  border-radius: 2px;
+  opacity: 0;
+  box-shadow:
+    8px 0 0 -2px rgba(120, 212, 192, 0.72),
+    0 0 10px rgba(215, 180, 92, 0.36);
+  transform: translate(-50%, -50%) rotate(-7deg);
+}
+
+.office-agent-state-badge {
+  left: 50%;
+  top: -23px;
+  z-index: 7;
+  max-width: 72px;
+  overflow: hidden;
+  padding: 2px 6px 3px;
+  color: rgba(9, 12, 11, 0.94);
+  background: var(--office-agent-state-color);
+  border: 1px solid rgba(244, 241, 234, 0.5);
+  border-radius: 5px;
+  box-shadow:
+    0 5px 10px rgba(0, 0, 0, 0.28),
+    0 0 12px color-mix(in srgb, var(--office-agent-state-color) 36%, transparent);
+  font-size: 0.46rem;
+  font-weight: 950;
+  letter-spacing: 0;
+  line-height: 1;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  transform: translateX(-50%) skewY(-4deg);
+  white-space: nowrap;
+}
+
+.office-floor-agent[data-agent-posture='walking'] .office-agent-trail,
+.office-floor-agent[data-agent-posture='walking'] .office-agent-target-pin,
+.office-floor-agent[data-agent-posture='walking'] .office-agent-direction-arrow {
+  opacity: 1;
+}
+
+.office-floor-agent[data-agent-posture='handoff'] .office-agent-target-pin,
+.office-floor-agent[data-agent-posture='handoff'] .office-agent-document-transfer,
+.office-floor-agent[data-agent-posture='handoff'] .office-agent-direction-arrow {
+  opacity: 1;
+}
+
+.office-floor-agent[data-agent-posture='working'] .office-agent-state-badge,
+.office-floor-agent[data-agent-posture='sitting'] .office-agent-state-badge {
+  opacity: 0.78;
+  background: rgba(189, 181, 170, 0.86);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.office-floor-agent[data-agent-posture='blocked'] .office-agent-state-badge {
+  color: rgba(244, 241, 234, 0.94);
+}
+
+.office-floor-agent[data-agent-activity='monitoring'] .office-agent-state-badge {
+  color: rgba(7, 24, 22, 0.95);
 }
 
 .office-floor-agent .office-agent-marker {
@@ -3455,6 +3666,16 @@
   }
 }
 
+@keyframes office-route-dash {
+  from {
+    stroke-dashoffset: 0;
+  }
+
+  to {
+    stroke-dashoffset: -54;
+  }
+}
+
 @keyframes office-reduced-low-pulse {
   0%,
   100% {
@@ -3493,6 +3714,7 @@
   .office-behavior--scan-check .office-agent-signal-prop,
   .office-floor-agent,
   .office-floor-agent.office-behavior--path-step,
+  .office-agent-route polyline,
   .office-walker,
   .office-status-board::after,
   .office-handoff-hub::after,

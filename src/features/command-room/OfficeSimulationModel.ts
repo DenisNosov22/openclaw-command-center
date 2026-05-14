@@ -83,6 +83,7 @@ export interface OfficeAgentSimulationState {
   deskId: OfficeDeskId
   zoneId: OfficeZoneId
   pathId: OfficePathId
+  route: OfficePoint[]
   position: OfficePoint
   progress: number
   target: OfficePoint
@@ -584,6 +585,9 @@ function applyLiveStatus(
     ...liveStatus,
     position: liveStatus.position ? roundPoint(liveStatus.position) : state.position,
     target: liveStatus.target ? roundPoint(liveStatus.target) : state.target,
+    route: liveStatus.position
+      ? [roundPoint(liveStatus.position), liveStatus.target ? roundPoint(liveStatus.target) : state.target]
+      : state.route,
   }
 }
 
@@ -613,6 +617,7 @@ export function getOfficeAgentSimulationTick(
       deskId: profile.deskId,
       zoneId: profile.zoneId,
       pathId: profile.pathId,
+      route: path?.points.map(roundPoint) ?? [desk.point],
       position,
       progress,
       target: desk.point,
