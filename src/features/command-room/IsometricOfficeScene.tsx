@@ -34,27 +34,20 @@ export function IsometricOfficeScene({
     workflow,
     selectedAgentId,
   )
-  const selectedStation = stations.find((station) => station.agentId === selectedAgentId)
 
   return (
-    <div className="isometric-office" aria-label="Orbit Office read-only view">
+    <div className="isometric-office" aria-label="2D agent office read-only view">
       <div
-        aria-label="Isometric orbital office scene"
+        aria-label="2D game-like office scene with agents working at profession stations"
         className="office-floor"
         role="img"
       />
       <div className="office-zones" aria-hidden="true">
         <span className={`office-area ${OFFICE_ZONE_TOKENS.desk}`} data-label="Desks + PCs" />
         <span className={`office-area ${OFFICE_ZONE_TOKENS.sofa}`} data-label="Rest bay" />
-        <span className={`office-area ${OFFICE_ZONE_TOKENS.hologram}`} data-label="Hologram UI" />
+        <span className={`office-area ${OFFICE_ZONE_TOKENS.hologram}`} data-label="Screens + boards" />
         <span className={OFFICE_ZONE_TOKENS.loungeSofa} />
         <span className={OFFICE_ZONE_TOKENS.statusBoard} data-label="Live board" />
-      </div>
-      <div className={`office-core ${OFFICE_ZONE_TOKENS.core}`} aria-label="Central orbital command core">
-        <span className={OFFICE_ZONE_TOKENS.coreSurface} aria-hidden="true" />
-        <span>Orbit Core</span>
-        <strong>{selectedStation?.name ?? 'Command'}</strong>
-        <p>{selectedStation?.taskTitle ?? 'Mock-first coordination table'}</p>
       </div>
       <div className="office-routes" aria-hidden="true">
         <span className={`${OFFICE_ZONE_TOKENS.path} office-lane--inner`} />
@@ -63,9 +56,8 @@ export function IsometricOfficeScene({
         <span className="office-route office-route--east" />
         <span className="office-route office-route--south" />
         <span className="office-route office-route--west" />
-        <span className="office-transfer office-transfer--core" />
         <span className="office-transfer office-transfer--handoff" />
-        <span className={OFFICE_ZONE_TOKENS.handoff} data-link="agent data transfer to core" />
+        <span className={OFFICE_ZONE_TOKENS.handoff} data-link="agent handoff route" />
         {signalRoutes.map((route) => (
           <span
             className={`office-transfer office-transfer--${route.lane} office-transfer--${route.activity} office-transfer--${route.tone}${
@@ -121,6 +113,11 @@ export function IsometricOfficeScene({
             } as CSSProperties}
             type="button"
           >
+            <span
+              className={`${OFFICE_SPRITE_TOKENS.professionProp} office-profession-prop--${station.professionProp}`}
+              data-profession-prop={station.professionProp}
+              aria-hidden="true"
+            />
             <span className={getOfficeTerminalClassName(station.terminalMode)}>
               <i />
               <span className={OFFICE_SPRITE_TOKENS.monitorStand} aria-hidden="true" />
@@ -165,6 +162,7 @@ export function IsometricOfficeScene({
               <span className={OFFICE_SPRITE_TOKENS.signalProp} />
               <span className={OFFICE_SPRITE_TOKENS.tool} />
             </span>
+            <span className={OFFICE_SPRITE_TOKENS.taskBubble}>{station.taskBubble}</span>
           </span>
         ))}
       </div>

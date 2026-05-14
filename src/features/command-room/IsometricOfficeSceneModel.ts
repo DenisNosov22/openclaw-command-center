@@ -22,6 +22,16 @@ export type OfficeActionPhase =
   | 'type-monitor'
 export type OfficeBehaviorIntensity = 'calm' | 'focused' | 'high' | 'low' | 'medium'
 export type OfficeBehaviorTempo = 'brisk' | 'measured' | 'settled' | 'slow' | 'steady'
+export type OfficeProfessionProp =
+  | 'blueprint'
+  | 'camera'
+  | 'canvas'
+  | 'code'
+  | 'command'
+  | 'qa'
+  | 'research'
+  | 'servers'
+  | 'trading'
 
 export interface OfficeBehaviorChoreography {
   phaseLabel: OfficeActionPhase
@@ -45,6 +55,8 @@ export interface OfficeAgentStation {
   tone: OfficeStationTone
   pulse: OfficeStationPulse
   terminalMode: OfficeTerminalMode
+  professionProp: OfficeProfessionProp
+  taskBubble: string
   choreography: OfficeBehaviorChoreography
   slot: number
   x: number
@@ -86,15 +98,39 @@ const officeStationLayout: Array<Pick<OfficeAgentStation, 'x' | 'y' | 'lane'>> =
 ]
 
 const roleLabel: Record<string, string> = {
-  'main/orchestrator': 'Orchestration',
-  coding: 'Code',
+  'main/orchestrator': 'Command',
+  coding: 'Coding',
   ops: 'Ops',
   research: 'Research',
   requirements: 'Spec',
-  QA: 'QA',
-  video: 'Media',
-  'UI/layout': 'UI',
+  QA: 'QA/Sec',
+  video: 'Director',
+  'UI/layout': 'Layout',
   trading: 'Trading',
+}
+
+const roleProfessionProp: Record<string, OfficeProfessionProp> = {
+  'main/orchestrator': 'command',
+  coding: 'code',
+  ops: 'servers',
+  research: 'research',
+  requirements: 'blueprint',
+  QA: 'qa',
+  video: 'camera',
+  'UI/layout': 'canvas',
+  trading: 'trading',
+}
+
+const roleTaskBubble: Record<string, string> = {
+  'main/orchestrator': 'sync',
+  coding: 'code',
+  ops: 'deploy',
+  research: 'research',
+  requirements: 'spec',
+  QA: 'visual QA',
+  video: 'shot list',
+  'UI/layout': 'layout',
+  trading: 'market',
 }
 
 const actionPhaseMap: Record<OfficeStationAction, Pick<OfficeBehaviorChoreography, 'intensity' | 'phaseLabel' | 'tempo'>> = {
@@ -305,6 +341,8 @@ export function createOfficeAgentStations(agents: Agent[], tasks: Task[]): Offic
       tone: getStationTone(agent.status, task?.status),
       pulse: getStationPulse(agent, task),
       terminalMode: getTerminalMode(agent, task),
+      professionProp: roleProfessionProp[agent.role] ?? 'command',
+      taskBubble: roleTaskBubble[agent.role] ?? task?.nextStep ?? task?.title ?? 'watch',
       choreography: getStationChoreography(index, getStationAction(agent, task), agent.status),
       slot: index % officeStationLayout.length,
       taskTitle: task?.title ?? 'Read-only station',

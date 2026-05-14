@@ -100,13 +100,13 @@ async function verifyOfficeDom(page: Page) {
 
   await expectVisible(page.locator('.isometric-office'), 'Office scene')
   await expectVisible(page.locator('.office-floor'), 'Office floor')
-  await expectVisible(page.locator('.office-core'), 'Office command core')
   await expectVisible(page.locator('.office-area--desk'), 'Desk/PC zone')
   await expectVisible(page.locator('.office-area--sofa'), 'Sofa/rest zone')
   await expectVisible(page.locator('.office-area--hologram'), 'Hologram/status zone')
   await expectVisible(page.locator('.office-lounge-sofa'), 'Lounge sofa prop')
   await expectVisible(page.locator('.office-handoff-hub'), 'Handoff hub prop')
 
+  assert.equal(await page.locator('.office-core, .command-core').count(), 0, 'Large Orbit Core/card block should not render in the office scene')
   assert((await page.locator('.office-desk').count()) >= 4, 'Expected multiple office stations')
   assert((await page.locator('.office-agent-sprite').count()) >= 4, 'Expected office agent sprites')
   assert((await page.locator('.office-agent-floor').count()) === 1, 'Expected physical agent floor layer')
@@ -115,6 +115,8 @@ async function verifyOfficeDom(page: Page) {
   assert((await page.locator('.office-walker .office-agent-sprite').count()) >= 2, 'Expected sprite-like walking agents on route layer')
   assert((await page.locator('.office-monitor-stand').count()) >= 4, 'Expected monitor stands')
   assert((await page.locator('.office-keyboard-tray').count()) >= 4, 'Expected keyboard/tool trays')
+  assert((await page.locator('[data-profession-prop]').count()) >= 9, 'Expected profession props at agent workstations')
+  assert((await page.locator('.office-task-bubble').count()) >= 9, 'Expected small action bubbles on physical agents')
   assert(
     (await page.locator('[data-action-phase]').count()) >= 4,
     'Expected agent action phase metadata',
@@ -143,31 +145,10 @@ async function verifyResponsiveOfficeComposition(page: Page, viewportCase: Viewp
     return
   }
 
-  const overlaps = await page.evaluate(() => {
-    const core = document.querySelector('.office-core')?.getBoundingClientRect()
-
-    if (!core) {
-      return ['Office core is missing']
-    }
-
-    return [...document.querySelectorAll('.office-desk')]
-      .map((station, index) => {
-        const box = station.getBoundingClientRect()
-        const overlapsCore =
-          box.left < core.right &&
-          box.right > core.left &&
-          box.top < core.bottom &&
-          box.bottom > core.top
-
-        return overlapsCore ? `station ${index + 1}` : ''
-      })
-      .filter(Boolean)
-  })
-
   assert.equal(
-    overlaps.length,
+    await page.locator('.office-core, .command-core').count(),
     0,
-    `Responsive Office stations should not overlap the command core: ${overlaps.join(', ')}`,
+    'Responsive Office should not reintroduce the large Orbit Core/card block',
   )
 
   const crampedLabels = await page.evaluate(() =>
@@ -206,7 +187,6 @@ async function verifyReducedMotionOffice(page: Page) {
       '.office-agent-sprite__legs',
       '.office-floor-agent',
       '.office-walker',
-      '.office-core__surface',
       '.office-handoff-hub',
       '.office-transfer',
     ]

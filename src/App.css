@@ -628,7 +628,7 @@
   background:
     linear-gradient(rgba(120, 212, 192, 0.045) 1px, transparent 1px),
     linear-gradient(90deg, rgba(215, 180, 92, 0.042) 1px, transparent 1px),
-    radial-gradient(ellipse at 50% 42%, rgba(215, 180, 92, 0.18), transparent 22%),
+    radial-gradient(ellipse at 50% 42%, rgba(215, 180, 92, 0.08), transparent 28%),
     radial-gradient(ellipse at 50% 72%, rgba(120, 212, 192, 0.1), transparent 34%),
     linear-gradient(180deg, rgba(16, 18, 17, 0.82), rgba(8, 9, 9, 0.2));
   background-size:
@@ -884,116 +884,6 @@
   animation: office-board-pulse 7.4s ease-in-out infinite;
 }
 
-.office-core {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  z-index: 3;
-  display: grid;
-  width: min(39%, 252px);
-  min-height: 112px;
-  place-items: center;
-  padding: 16px;
-  text-align: center;
-  background:
-    radial-gradient(ellipse at 50% 0%, rgba(240, 205, 116, 0.24), transparent 58%),
-    linear-gradient(180deg, rgba(43, 42, 37, 0.96), rgba(15, 17, 16, 0.92)),
-    rgba(17, 17, 15, 0.9);
-  border: 1px solid rgba(215, 180, 92, 0.46);
-  border-radius: 8px;
-  box-shadow:
-    inset 0 1px 0 rgba(244, 241, 234, 0.08),
-    inset 0 -20px 40px rgba(120, 212, 192, 0.035),
-    0 0 46px rgba(215, 180, 92, 0.18),
-    0 24px 46px rgba(0, 0, 0, 0.34);
-  transform: translate(-50%, -50%);
-}
-
-.office-core__surface {
-  position: absolute;
-  left: 50%;
-  top: 48%;
-  z-index: 0;
-  width: 76%;
-  height: 42px;
-  pointer-events: none;
-  background:
-    repeating-linear-gradient(90deg, rgba(120, 212, 192, 0.18) 0 2px, transparent 2px 8px),
-    linear-gradient(90deg, transparent, rgba(120, 212, 192, 0.18), transparent);
-  border: 1px solid rgba(120, 212, 192, 0.2);
-  border-radius: 50%;
-  opacity: 0.68;
-  transform: translate(-50%, -50%) rotateX(62deg);
-}
-
-.office-core__surface::after {
-  position: absolute;
-  inset: 8px 16px;
-  content: '';
-  background: linear-gradient(90deg, transparent, rgba(244, 241, 234, 0.36), transparent);
-  border-radius: 50%;
-  opacity: 0.54;
-  animation: office-core-scan 6.8s ease-in-out infinite;
-}
-
-.office-core > span:not(.office-core__surface),
-.office-core strong,
-.office-core p {
-  position: relative;
-  z-index: 1;
-}
-
-.command-core::before,
-.command-core::after {
-  position: absolute;
-  pointer-events: none;
-  content: '';
-  border-radius: 999px;
-}
-
-.command-core::before {
-  inset: -12px 18px auto;
-  height: 28px;
-  background: linear-gradient(90deg, transparent, rgba(120, 212, 192, 0.18), transparent);
-  border: 1px solid rgba(120, 212, 192, 0.13);
-  opacity: 0.72;
-}
-
-.command-core::after {
-  inset: auto 20px -10px;
-  height: 18px;
-  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.44), transparent 72%);
-}
-
-.office-core span {
-  color: #d7b45c;
-  font-size: 0.68rem;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.office-core strong {
-  overflow: hidden;
-  max-width: 100%;
-  color: #f4f1ea;
-  font-size: 1rem;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.office-core p {
-  display: -webkit-box;
-  overflow: hidden;
-  max-width: 24ch;
-  color: #bdb5aa;
-  font-size: 0.76rem;
-  line-height: 1.28;
-  line-clamp: 2;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-}
-
 .office-routes {
   position: absolute;
   inset: 0;
@@ -1097,14 +987,6 @@
   text-overflow: ellipsis;
   text-transform: uppercase;
   white-space: nowrap;
-}
-
-.office-transfer--core {
-  transform: rotate(-16deg);
-}
-
-.office-transfer--core::after {
-  animation: office-packet-core 4.8s ease-in-out infinite;
 }
 
 .office-transfer--handoff {
@@ -1350,6 +1232,27 @@
   transform: translateX(-50%);
 }
 
+.office-task-bubble {
+  position: absolute;
+  left: 50%;
+  top: -17px;
+  max-width: 70px;
+  overflow: hidden;
+  padding: 3px 6px;
+  color: rgba(244, 241, 234, 0.86);
+  background: rgba(13, 14, 13, 0.78);
+  border: 1px solid rgba(120, 212, 192, 0.22);
+  border-radius: 999px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  font-size: 0.5rem;
+  font-weight: 800;
+  line-height: 1;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
 .office-floor-agent.office-behavior--path-step {
   animation: office-floor-agent-route var(--office-agent-duration, 7200ms) ease-in-out infinite;
   animation-delay: var(--office-agent-delay, 0ms);
@@ -1589,6 +1492,167 @@
   box-shadow:
     4px -3px 0 -1px rgba(120, 212, 192, 0.22),
     8px -6px 0 -2px rgba(244, 241, 234, 0.12);
+}
+
+.office-profession-prop {
+  position: absolute;
+  right: 28px;
+  top: 14px;
+  z-index: 1;
+  width: 28px;
+  height: 22px;
+  pointer-events: none;
+  border: 1px solid rgba(244, 241, 234, 0.12);
+  border-radius: 4px;
+  box-shadow:
+    inset 0 1px 0 rgba(244, 241, 234, 0.08),
+    0 7px 12px rgba(0, 0, 0, 0.16);
+}
+
+.office-profession-prop::before,
+.office-profession-prop::after {
+  position: absolute;
+  content: '';
+}
+
+.office-profession-prop--command {
+  background:
+    linear-gradient(90deg, rgba(215, 180, 92, 0.34) 0 5px, transparent 5px),
+    repeating-linear-gradient(0deg, rgba(120, 212, 192, 0.28) 0 2px, transparent 2px 6px),
+    rgba(30, 27, 22, 0.82);
+}
+
+.office-profession-prop--command::after {
+  right: 4px;
+  bottom: -4px;
+  width: 10px;
+  height: 8px;
+  background: rgba(215, 180, 92, 0.44);
+  border-radius: 2px;
+  transform: rotate(-10deg);
+}
+
+.office-profession-prop--code {
+  background:
+    repeating-linear-gradient(0deg, rgba(120, 212, 192, 0.5) 0 2px, transparent 2px 6px),
+    rgba(9, 24, 24, 0.88);
+}
+
+.office-profession-prop--code::before {
+  left: 5px;
+  top: 6px;
+  color: #78d4c0;
+  content: '</>';
+  font-size: 0.56rem;
+  font-weight: 900;
+}
+
+.office-profession-prop--servers {
+  background:
+    repeating-linear-gradient(0deg, rgba(120, 212, 192, 0.26) 0 4px, rgba(14, 18, 18, 0.78) 4px 7px),
+    rgba(12, 15, 15, 0.88);
+}
+
+.office-profession-prop--servers::after {
+  right: 5px;
+  top: 5px;
+  width: 4px;
+  aspect-ratio: 1;
+  background: #78d4c0;
+  border-radius: 50%;
+  box-shadow:
+    0 6px 0 #d7b45c,
+    0 12px 0 #78d4c0;
+}
+
+.office-profession-prop--research {
+  background:
+    linear-gradient(135deg, transparent 42%, rgba(120, 212, 192, 0.34) 42% 48%, transparent 48%),
+    rgba(19, 24, 25, 0.84);
+}
+
+.office-profession-prop--research::before {
+  left: 5px;
+  top: 4px;
+  width: 10px;
+  aspect-ratio: 1;
+  border: 2px solid rgba(120, 212, 192, 0.72);
+  border-radius: 50%;
+}
+
+.office-profession-prop--research::after {
+  left: 15px;
+  top: 15px;
+  width: 9px;
+  height: 2px;
+  background: rgba(120, 212, 192, 0.72);
+  transform: rotate(42deg);
+}
+
+.office-profession-prop--blueprint {
+  background:
+    linear-gradient(rgba(120, 212, 192, 0.24) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(120, 212, 192, 0.22) 1px, transparent 1px),
+    rgba(12, 26, 28, 0.88);
+  background-size: 7px 7px;
+}
+
+.office-profession-prop--qa {
+  background:
+    linear-gradient(135deg, rgba(120, 212, 192, 0.22), rgba(212, 84, 77, 0.16)),
+    rgba(18, 19, 18, 0.88);
+}
+
+.office-profession-prop--qa::before {
+  left: 8px;
+  top: 4px;
+  width: 10px;
+  height: 13px;
+  border: 1px solid rgba(244, 241, 234, 0.54);
+  border-radius: 50% 50% 46% 46%;
+}
+
+.office-profession-prop--canvas {
+  background:
+    linear-gradient(90deg, rgba(212, 84, 77, 0.34), rgba(215, 180, 92, 0.28), rgba(120, 212, 192, 0.28)),
+    rgba(24, 22, 20, 0.88);
+}
+
+.office-profession-prop--canvas::after {
+  right: 4px;
+  bottom: 3px;
+  width: 12px;
+  height: 2px;
+  background: rgba(244, 241, 234, 0.62);
+  transform: rotate(-28deg);
+}
+
+.office-profession-prop--trading {
+  background:
+    linear-gradient(135deg, transparent 54%, rgba(212, 84, 77, 0.5) 54% 60%, transparent 60%),
+    linear-gradient(45deg, transparent 36%, rgba(120, 212, 192, 0.6) 36% 42%, transparent 42%),
+    rgba(10, 18, 18, 0.88);
+}
+
+.office-profession-prop--camera {
+  background: rgba(22, 20, 18, 0.88);
+}
+
+.office-profession-prop--camera::before {
+  left: 4px;
+  top: 5px;
+  width: 12px;
+  height: 9px;
+  background: rgba(215, 180, 92, 0.42);
+  border-radius: 3px;
+}
+
+.office-profession-prop--camera::after {
+  right: 3px;
+  top: 6px;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 8px solid rgba(120, 212, 192, 0.5);
 }
 
 .office-terminal::before {
@@ -2634,17 +2698,6 @@
   }
 }
 
-@keyframes office-core-scan {
-  0%,
-  100% {
-    transform: translateX(-18%);
-  }
-
-  50% {
-    transform: translateX(18%);
-  }
-}
-
 @keyframes office-handoff-bus {
   0%,
   100% {
@@ -2855,7 +2908,6 @@
   .office-floor-agent.office-behavior--path-step,
   .office-walker,
   .office-status-board::after,
-  .office-core__surface::after,
   .office-handoff-hub::after,
   .office-transfer::after {
     animation: none;
@@ -3665,25 +3717,6 @@
 
   .agent-node {
     width: 44px;
-  }
-
-  .office-core {
-    width: min(38%, 148px);
-    min-height: 74px;
-    padding: 10px;
-  }
-
-  .office-core span {
-    font-size: 0.58rem;
-  }
-
-  .office-core strong {
-    font-size: 0.82rem;
-  }
-
-  .office-core p {
-    max-width: 15ch;
-    font-size: 0.64rem;
   }
 
   .office-desk {

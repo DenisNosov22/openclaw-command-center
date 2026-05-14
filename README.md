@@ -92,13 +92,13 @@ this pass dependency-light: no WebGL, no canvas requirement, and no heavy render
 
 Office Scene phase 1 adds a static CSS/SVG-free isometric orbital office skeleton inside the
 central stage. It maps the existing mock agents into read-only desks with terminals, abstract agent
-markers, status lamps, and a central command core. Future phases should add walking, typing, and
+markers, status lamps, and a shared office floor. Future phases should add walking, typing, and
 signal-transfer animations plus richer state mapping, while keeping the surface mock-first and
 dependency-light.
 
 Office Scene phase 2 adds the first lightweight CSS-only animation layer: deterministic station
-activity classes, subtle typing/monitor pulses, two calm orbital walker markers, signal packets
-between the core and stations, and reduced-motion fallbacks. The scene remains mock-first,
+activity classes, subtle typing/monitor pulses, two calm walking markers, signal packets
+between agent workstations, and reduced-motion fallbacks. The scene remains mock-first,
 read-only, SVG-free, and dependency-light.
 
 Office Scene phase 3 binds those animations to the existing mock dashboard snapshot more directly:
@@ -109,11 +109,11 @@ no deploy hooks, and no real data source.
 
 Office Scene phase 4 makes the office a dashboard interaction surface: clicking an office station updates the shared selected agent inspector exactly like roster cards, room nodes, and workflow nodes. The selected desk gets a quiet visual/accessibility state, and related mock workflow packets can receive a subtle selected-route emphasis while remaining read-only.
 
-Office Scene phase 5 is a professional polish/maturity pass: the room now reads more like a premium command office, with grounded workstations, clearer tiny office agent avatars, a stronger command-core table, quieter route support, glass/depth surfaces, and calmer status/activity motion. It remains CSS-only, mock-first, read-only, dependency-light, and aligned with the graphite/gold/cyan/green/calm-red dashboard language.
+Office Scene phase 5 is a professional polish/maturity pass: the room now reads more like a 2D office scene, with grounded workstations, clearer tiny office agent avatars, profession props, quieter route support, glass/depth surfaces, and calmer status/activity motion. It remains CSS-only, mock-first, read-only, dependency-light, and aligned with the graphite/gold/cyan/green/calm-red dashboard language.
 
 Office Scene phase 6 is the Step 42 foundation: Office is now the main/default scene and the old
 Room view is no longer exposed as a separate center-stage mode. The office adds richer desk/PC,
-rest/sofa, command-core, path, status-lamp, and subtle hologram zones, plus original lightweight
+rest/sofa, profession props, path, status-lamp, and subtle screen/board zones, plus original lightweight
 2D mini-game-style agent sprites for working, monitoring, walking, handoff, and signaling states.
 Graph remains available as a read-only alternate workflow view. The slice stays CSS-only,
 mock-first, read-only, dependency-light, and avoids Mario/Nintendo-specific IP or exact sprite
@@ -132,14 +132,14 @@ copying. See `docs/final-office-blueprint.md` for final-enough criteria, zones, 
 visual constraints, and source-level guardrails.
 
 Office Scene phase 9 makes the planned zones and props more visible on the live surface: desks now
-carry clearer PC monitor stands and keyboard/tool trays, the lounge reads as a sofa bay, the command
-core has a subtle status surface, walking routes are rendered as floor lanes, and the handoff area
-has a small data-transfer hub. The slice remains CSS-only, read-only, mock-first, and dependency-light.
+carry clearer PC monitor stands and keyboard/tool trays, the lounge reads as a sofa bay, walking
+routes are rendered as floor lanes, and the handoff area has a small route hub. The slice remains
+CSS-only, read-only, mock-first, and dependency-light.
 
 Office Scene phase 10 is a screenshot-driven responsive polish pass. Desktop stations have a little
-more label room, narrow Office viewports use stable station layout slots to keep side desks off the
-command core, and browser visual QA now fails if responsive stations overlap the core panel. The
-slice stays dependency-light and uses the existing Playwright Chromium QA tool from phase 9.
+more label room, narrow Office viewports use stable station layout slots to keep side desks readable,
+and browser visual QA now fails if the removed large Orbit Core/card block returns. The slice stays
+dependency-light and uses the existing Playwright Chromium QA tool from phase 9.
 
 Office Scene phase 11 continues the lightweight 2D office pass: the room now includes a live status
 board, each workstation has a small desk worklog stack, and 2D agent sprites include animated hands
@@ -149,6 +149,11 @@ Office Scene phase 12 separates the people from the furniture. Workstations rema
 desk/monitor zones, but agent sprites now render on a dedicated physical office-floor layer with
 lane offsets, route walking, idle/typing/monitoring poses, and reduced-motion fallbacks. The main
 scene now reads more like a compact 2D game office instead of agents placed inside dashboard blocks.
+
+Office Scene phase 13 removes the large Orbit Core/command-core card from the floor and makes the
+profession layer explicit: command clipboard, code terminal, server rack, research magnifier,
+blueprint grid, QA/security shield, visual canvas, trading chart, and director camera props now sit
+at workstations, while small overhead bubbles show current work without becoming cards.
 
 Manual viewport widths:
 
@@ -171,7 +176,7 @@ Acceptance criteria:
   diagnostics, and read-only status expose accessible labels/states and visible keyboard focus.
 - Office/Graph: Office is the default center-stage view; the Office and Graph toggles remain
   reachable; office stations/workflow nodes stay inside the stage and do not cover labels or
-  controls. On narrow mobile, Office stations must not overlap the command core panel.
+  controls. The Office scene must not reintroduce a large Orbit Core/card block.
 - Inspector: selected agent, risk/next-action block, task chips, and recent activity stay readable
   and scroll/stack cleanly on tablet and mobile.
 - Timeline: filters remain usable; newest events are readable; warning/critical styles remain
