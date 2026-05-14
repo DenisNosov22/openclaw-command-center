@@ -8,10 +8,8 @@ import {
 import type { ActivityEvent, Agent, Task, WorkflowNode } from '../../shared/types'
 import { formatKyivTime } from '../../shared/time/kyivTime'
 import { IsometricOfficeScene } from './IsometricOfficeScene'
-import {
-  createOfficeAgentStatusFixture,
-  createOfficeAgentStatusSimulationOverrides,
-} from './OfficeAgentStatusAdapter'
+import { createOfficeAgentStatusSimulationOverrides } from './OfficeAgentStatusAdapter'
+import { useOfficeAgentStatus } from './OfficeAgentStatusDataSource'
 
 type StageView = 'office' | 'graph'
 type ActivityFilter = 'all' | 'selected' | 'critical' | 'system'
@@ -266,6 +264,9 @@ export function CommandRoomPage() {
     () => (liveTick < 0 ? getInitialLiveSnapshot() : getLiveSnapshot(liveTick)),
     [liveTick],
   )
+  const officeAgentStatus = useOfficeAgentStatus(snapshot.agents, {
+    fallbackUpdatedAt: snapshot.generatedAt,
+  })
   const snapshotAnchor = snapshot.generatedAt
   const [selectedAgentId, setSelectedAgentId] = useState(snapshot.agents[0]?.id)
   const [stageView, setStageView] = useState<StageView>('office')
@@ -304,16 +305,16 @@ export function CommandRoomPage() {
     () =>
       createOfficeAgentStatusSimulationOverrides(
         snapshot.agents,
-        createOfficeAgentStatusFixture(snapshot.agents, snapshot.generatedAt),
+        officeAgentStatus.snapshots,
       ),
-    [snapshot.agents, snapshot.generatedAt],
+    [officeAgentStatus.snapshots, snapshot.agents],
   )
   const formattedLastUpdated = formatKyivTime(snapshot.lastUpdated, { includeDate: true })
   const hasSnapshotWarning = snapshot.stateKind !== 'ready'
   let globalStatus = hasSnapshotWarning ? snapshot.stateTitle : 'Стабільно'
   let globalStatusDetail = hasSnapshotWarning
     ? snapshot.stateDetail
-    : `${adapterSelection.label}, read-only. Оновлено: ${formattedLastUpdated}`
+    : `${adapterSelection.label}, ${officeAgentStatus.isFallback ? officeAgentStatus.kind : 'status JSON'}, read-only. Оновлено: ${formattedLastUpdated}`
 
   useEffect(() => {
     const firstSnapshotId = window.setTimeout(() => {

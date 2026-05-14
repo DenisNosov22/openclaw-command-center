@@ -164,6 +164,11 @@ Office Scene phase 15 adds the live status adapter foundation. Typed agent statu
 (`running`, `idle`, `failed`, `blocked`, `waiting`, `done`) now map into the existing deterministic
 office simulation overrides, with mock fixtures for UI/tests and no backend dependency.
 
+Office Scene phase 16 adds the static-safe status data source foundation. The office view now asks
+for `/openclaw-command-center/agent-status.json` when available, sanitizes unknown or malformed
+snapshots, and falls back to the deterministic fixture during loading, missing-file, or error states
+so GitHub Pages deployments keep rendering without a backend.
+
 Manual viewport widths:
 
 - Desktop: `1366` and `1440`
