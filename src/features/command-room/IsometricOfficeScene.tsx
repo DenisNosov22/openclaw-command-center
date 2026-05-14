@@ -48,6 +48,7 @@ export function IsometricOfficeScene({
         <span className={`office-area ${OFFICE_ZONE_TOKENS.sofa}`} data-label="Rest bay" />
         <span className={`office-area ${OFFICE_ZONE_TOKENS.hologram}`} data-label="Hologram UI" />
         <span className={OFFICE_ZONE_TOKENS.loungeSofa} />
+        <span className={OFFICE_ZONE_TOKENS.statusBoard} data-label="Live board" />
       </div>
       <div className={`office-core ${OFFICE_ZONE_TOKENS.core}`} aria-label="Central orbital command core">
         <span className={OFFICE_ZONE_TOKENS.coreSurface} aria-hidden="true" />
@@ -110,12 +111,14 @@ export function IsometricOfficeScene({
               <span className={OFFICE_SPRITE_TOKENS.terminalTicks} aria-hidden="true" />
             </span>
             <span className={OFFICE_SPRITE_TOKENS.keyboardTray} aria-hidden="true" />
+            <span className={OFFICE_SPRITE_TOKENS.worklog} aria-hidden="true" />
             <span className={OFFICE_SPRITE_TOKENS.chair} aria-hidden="true" />
             <span className={`${getOfficeAgentMarkerClassName(station.action)} ${station.choreography.className}`}>
               <span className={OFFICE_SPRITE_TOKENS.restProp} aria-hidden="true" />
               <span className={OFFICE_SPRITE_TOKENS.sprite} aria-hidden="true">
                 <span className={OFFICE_SPRITE_TOKENS.head} />
                 <span className={OFFICE_SPRITE_TOKENS.body}>{station.marker}</span>
+                <span className={OFFICE_SPRITE_TOKENS.hands} />
                 <span className={OFFICE_SPRITE_TOKENS.legs} />
               </span>
               <span className={OFFICE_SPRITE_TOKENS.signalProp} aria-hidden="true" />

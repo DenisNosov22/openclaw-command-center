@@ -837,6 +837,53 @@
   transform: translateX(-50%) skewY(-4deg);
 }
 
+.office-status-board {
+  position: absolute;
+  left: 13%;
+  top: 12%;
+  z-index: 2;
+  width: min(23%, 148px);
+  height: 48px;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(244, 241, 234, 0.06), transparent 38%),
+    repeating-linear-gradient(90deg, rgba(120, 212, 192, 0.24) 0 2px, transparent 2px 18px),
+    linear-gradient(135deg, rgba(120, 212, 192, 0.13), rgba(215, 180, 92, 0.1)),
+    rgba(11, 15, 15, 0.78);
+  border: 1px solid rgba(120, 212, 192, 0.22);
+  border-radius: 6px;
+  box-shadow:
+    inset 0 1px 0 rgba(244, 241, 234, 0.08),
+    0 10px 22px rgba(0, 0, 0, 0.22);
+  transform: skewY(-4deg);
+}
+
+.office-status-board::before {
+  position: absolute;
+  left: 9px;
+  top: 7px;
+  color: rgba(244, 241, 234, 0.6);
+  content: attr(data-label);
+  font-size: 0.5rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.office-status-board::after {
+  position: absolute;
+  left: 10px;
+  right: 12px;
+  bottom: 10px;
+  height: 9px;
+  content: '';
+  background:
+    linear-gradient(90deg, #78d4c0 0 24%, transparent 24% 34%, #d7b45c 34% 56%, transparent 56% 68%, #78d4c0 68% 100%);
+  border-radius: 999px;
+  opacity: 0.62;
+  animation: office-board-pulse 7.4s ease-in-out infinite;
+}
+
 .office-core {
   position: absolute;
   left: 50%;
@@ -1442,6 +1489,23 @@
   box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.16);
 }
 
+.office-desk-worklog {
+  position: absolute;
+  left: 54px;
+  bottom: 13px;
+  width: 19px;
+  height: 13px;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(244, 241, 234, 0.16), transparent 42%),
+    rgba(215, 180, 92, 0.2);
+  border: 1px solid rgba(215, 180, 92, 0.28);
+  border-radius: 2px;
+  box-shadow:
+    4px -3px 0 -1px rgba(120, 212, 192, 0.22),
+    8px -6px 0 -2px rgba(244, 241, 234, 0.12);
+}
+
 .office-terminal::before {
   position: absolute;
   inset: 3px 4px auto;
@@ -1583,6 +1647,37 @@
   border-radius: 4px 4px 5px 5px;
   font-size: 0.62rem;
   line-height: 1;
+}
+
+.office-agent-sprite__hands {
+  position: absolute;
+  left: 50%;
+  top: 20px;
+  width: 24px;
+  height: 5px;
+  pointer-events: none;
+  transform: translateX(-50%);
+  animation: office-agent-hands-type var(--office-agent-duration, 6200ms) ease-in-out infinite;
+  animation-delay: var(--office-agent-delay, 0ms);
+}
+
+.office-agent-sprite__hands::before,
+.office-agent-sprite__hands::after {
+  position: absolute;
+  top: 0;
+  width: 6px;
+  height: 4px;
+  content: '';
+  background: #f4f1ea;
+  border-radius: 999px;
+}
+
+.office-agent-sprite__hands::before {
+  left: 1px;
+}
+
+.office-agent-sprite__hands::after {
+  right: 1px;
 }
 
 .office-agent-sprite__legs {
@@ -1770,6 +1865,12 @@
 
 .office-agent-marker--walking .office-agent-tool {
   opacity: 0;
+}
+
+.office-agent-marker--walking .office-agent-sprite__hands,
+.office-agent-marker--resting .office-agent-sprite__hands {
+  animation: none;
+  opacity: 0.4;
 }
 
 .office-agent-marker--resting {
@@ -2393,6 +2494,22 @@
   }
 }
 
+@keyframes office-agent-hands-type {
+  0%,
+  28%,
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  44% {
+    transform: translateX(-50%) translateY(2px);
+  }
+
+  62% {
+    transform: translateX(-50%) translateY(1px);
+  }
+}
+
 @keyframes office-agent-alert {
   0%,
   100% {
@@ -2453,6 +2570,19 @@
   50% {
     opacity: 0.86;
     transform: translateY(-50%) translateX(12px);
+  }
+}
+
+@keyframes office-board-pulse {
+  0%,
+  100% {
+    opacity: 0.42;
+    transform: scaleX(0.72);
+  }
+
+  50% {
+    opacity: 0.82;
+    transform: scaleX(1);
   }
 }
 
@@ -2600,6 +2730,7 @@
   .office-terminal--monitoring .office-terminal__ticks,
   .office-agent-avatar,
   .office-agent-tool,
+  .office-agent-sprite__hands,
   .office-agent-signal-prop,
   .office-agent-sprite__legs::before,
   .office-agent-sprite__legs::after,
@@ -2609,6 +2740,7 @@
   .office-behavior--signal-transfer .office-agent-signal-prop,
   .office-behavior--scan-check .office-agent-signal-prop,
   .office-walker,
+  .office-status-board::after,
   .office-core__surface::after,
   .office-handoff-hub::after,
   .office-transfer::after {
@@ -3187,6 +3319,10 @@
     width: 30px;
   }
 
+  .office-desk-worklog {
+    left: 45px;
+  }
+
   .office-chair {
     display: none;
   }
@@ -3452,6 +3588,28 @@
 
   .office-keyboard-tray {
     display: none;
+  }
+
+  .office-desk-worklog {
+    display: none;
+  }
+
+  .office-status-board {
+    left: 8%;
+    top: 17%;
+    width: 74px;
+    height: 34px;
+    opacity: 0.72;
+  }
+
+  .office-status-board::before {
+    display: none;
+  }
+
+  .office-status-board::after {
+    left: 8px;
+    right: 8px;
+    bottom: 11px;
   }
 
   .office-agent-marker {

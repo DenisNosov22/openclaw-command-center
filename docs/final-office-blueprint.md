@@ -69,3 +69,6 @@ The Office scene is final enough for this planned milestone when:
 - Step 48: screenshot-driven Office polish gives desktop desks more label width and uses stable
   responsive layout slots so narrow side stations no longer overlap the command core. Browser visual
   QA now includes a mobile composition assertion for station/core overlap.
+- Step 51: the Office scene adds a lightweight live status board, per-station desk worklog props,
+  and animated worker hands on the 2D sprites. This keeps the same CSS-only/read-only direction while
+  making agents read more clearly as active office workers at their stations.

@@ -100,12 +100,14 @@ export const OFFICE_SPRITE_TOKENS = {
   terminalTicks: 'office-terminal__ticks',
   monitorStand: 'office-monitor-stand',
   keyboardTray: 'office-keyboard-tray',
+  worklog: 'office-desk-worklog',
   chair: 'office-chair',
   avatar: 'office-agent-avatar',
   marker: 'office-agent-marker',
   sprite: 'office-agent-sprite',
   head: 'office-agent-sprite__head',
   body: 'office-agent-sprite__body',
+  hands: 'office-agent-sprite__hands',
   legs: 'office-agent-sprite__legs',
   restProp: 'office-agent-rest-prop',
   signalProp: 'office-agent-signal-prop',
@@ -124,6 +126,7 @@ export const OFFICE_ZONE_TOKENS = {
   route: 'office-transfer',
   handoff: 'office-handoff-hub',
   loungeSofa: 'office-lounge-sofa',
+  statusBoard: 'office-status-board',
 } as const
 
 export function getOfficeSpriteActionDefinition(

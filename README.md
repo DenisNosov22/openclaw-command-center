@@ -141,6 +141,10 @@ more label room, narrow Office viewports use stable station layout slots to keep
 command core, and browser visual QA now fails if responsive stations overlap the core panel. The
 slice stays dependency-light and uses the existing Playwright Chromium QA tool from phase 9.
 
+Office Scene phase 11 continues the lightweight 2D office pass: the room now includes a live status
+board, each workstation has a small desk worklog stack, and 2D agent sprites include animated hands
+so active workers read as seated at real stations rather than static labels.
+
 Manual viewport widths:
 
 - Desktop: `1366` and `1440`
