@@ -51,7 +51,7 @@ assertIncludes(
   '<div className="stage-toggle" aria-label="Режим центральної панелі" role="group">',
   'Office/Graph toggle group',
 )
-assertToggleButton('Показати orbital office', "setStageView('office')")
+assertToggleButton('Показати office floor', "setStageView('office')")
 assertToggleButton('Показати workflow graph', "setStageView('graph')")
 assert(!componentSource.includes('Показати кімнату агентів'), 'Room is not exposed as a central-stage toggle')
 

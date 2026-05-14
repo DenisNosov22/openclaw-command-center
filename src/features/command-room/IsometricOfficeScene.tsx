@@ -38,14 +38,14 @@ export function IsometricOfficeScene({
   return (
     <div className="isometric-office" aria-label="2D agent office read-only view">
       <div
-        aria-label="2D game-like office scene with agents working at profession stations"
+        aria-label="2D game-like real office floor plan with agents working at profession stations"
         className="office-floor"
         role="img"
       />
       <div className="office-zones" aria-hidden="true">
-        <span className={`office-area ${OFFICE_ZONE_TOKENS.desk}`} data-label="Desks + PCs" />
-        <span className={`office-area ${OFFICE_ZONE_TOKENS.sofa}`} data-label="Rest bay" />
-        <span className={`office-area ${OFFICE_ZONE_TOKENS.hologram}`} data-label="Screens + boards" />
+        <span className={`office-area ${OFFICE_ZONE_TOKENS.desk}`} data-label="Desk rows" />
+        <span className={`office-area ${OFFICE_ZONE_TOKENS.sofa}`} data-label="Director corner" />
+        <span className={`office-area ${OFFICE_ZONE_TOKENS.hologram}`} data-label="Board wall" />
         <span className={OFFICE_ZONE_TOKENS.loungeSofa} />
         <span className={OFFICE_ZONE_TOKENS.statusBoard} data-label="Live board" />
       </div>
@@ -59,6 +59,9 @@ export function IsometricOfficeScene({
         <span className="office-whiteboard office-whiteboard--research" />
         <span className="office-desk-cluster office-desk-cluster--north" />
         <span className="office-desk-cluster office-desk-cluster--south" />
+        <span className="office-zone-label office-zone-label--ops">Ops corner</span>
+        <span className="office-zone-label office-zone-label--design">Design wall</span>
+        <span className="office-zone-label office-zone-label--trade">Trading desk</span>
       </div>
       <div className="office-routes" aria-hidden="true">
         <span className={`${OFFICE_ZONE_TOKENS.path} office-lane--inner`} />

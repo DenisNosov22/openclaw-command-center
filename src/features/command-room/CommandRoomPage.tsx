@@ -448,7 +448,7 @@ export function CommandRoomPage() {
           <div className="stage-header">
             <div>
               <p className="eyebrow">
-                {stageView === 'office' ? 'Orbit Office' : 'Workflow Graph'}
+                {stageView === 'office' ? 'Office Floor' : 'Workflow Graph'}
               </p>
               <h2>
                 {stageView === 'office' ? 'Офіс агентів' : 'Маршрут задач'}
@@ -457,7 +457,7 @@ export function CommandRoomPage() {
             <div className="stage-actions">
               <div className="stage-toggle" aria-label="Режим центральної панелі" role="group">
                 <button
-                  aria-label="Показати orbital office"
+                  aria-label="Показати office floor"
                   aria-pressed={stageView === 'office'}
                   onClick={() => setStageView('office')}
                   type="button"

@@ -91,7 +91,7 @@ function getAvailablePort() {
 async function verifyOfficeDom(page: Page) {
   await page.getByRole('heading', { name: 'Офіс агентів' }).waitFor()
 
-  const officeToggle = page.getByRole('button', { name: 'Показати orbital office' })
+  const officeToggle = page.getByRole('button', { name: 'Показати office floor' })
   const graphToggle = page.getByRole('button', { name: 'Показати workflow graph' })
 
   await expectVisible(officeToggle, 'Office toggle')
@@ -111,7 +111,7 @@ async function verifyOfficeDom(page: Page) {
   await expectVisible(page.locator('.office-cabinet--ops'), 'Ops cabinet/server furniture')
   await expectVisible(page.locator('.office-whiteboard--research'), 'Research whiteboard/search wall')
 
-  assert.equal(await page.locator('.office-core, .command-core').count(), 0, 'Large Orbit Core/card block should not render in the office scene')
+  assert.equal(await page.locator('.office-core, .command-core').count(), 0, 'Large central core/card block should not render in the office scene')
   assert((await page.locator('.office-desk').count()) >= 4, 'Expected multiple office stations')
   assert((await page.locator('.office-desk-cluster').count()) >= 2, 'Expected desk clusters grounding work zones')
   assert((await page.locator('.office-plant').count()) >= 2, 'Expected small office props around the room')
@@ -155,7 +155,7 @@ async function verifyResponsiveOfficeComposition(page: Page, viewportCase: Viewp
   assert.equal(
     await page.locator('.office-core, .command-core').count(),
     0,
-    'Responsive Office should not reintroduce the large Orbit Core/card block',
+    'Responsive Office should not reintroduce the large central core/card block',
   )
 
   const crampedLabels = await page.evaluate(() =>

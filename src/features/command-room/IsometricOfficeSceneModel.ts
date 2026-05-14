@@ -86,16 +86,28 @@ export type OfficeStationPulse = 'active' | 'calm' | 'danger' | 'idle'
 export type OfficeTerminalMode = 'idle' | 'monitoring' | 'typing'
 
 const officeStationLayout: Array<Pick<OfficeAgentStation, 'x' | 'y' | 'lane'>> = [
-  { x: 50, y: 16, lane: 'north' },
-  { x: 68, y: 24, lane: 'north' },
-  { x: 80, y: 42, lane: 'east' },
-  { x: 76, y: 64, lane: 'east' },
-  { x: 60, y: 78, lane: 'south' },
-  { x: 40, y: 78, lane: 'south' },
-  { x: 24, y: 64, lane: 'west' },
-  { x: 20, y: 42, lane: 'west' },
-  { x: 32, y: 24, lane: 'north' },
+  { x: 18, y: 51, lane: 'west' },
+  { x: 36, y: 44, lane: 'north' },
+  { x: 77, y: 28, lane: 'east' },
+  { x: 35, y: 24, lane: 'north' },
+  { x: 55, y: 24, lane: 'north' },
+  { x: 36, y: 66, lane: 'south' },
+  { x: 79, y: 68, lane: 'east' },
+  { x: 56, y: 66, lane: 'south' },
+  { x: 78, y: 48, lane: 'east' },
 ]
+
+const roleOfficeLayout: Record<string, Pick<OfficeAgentStation, 'x' | 'y' | 'lane'>> = {
+  'main/orchestrator': { x: 18, y: 51, lane: 'west' },
+  coding: { x: 36, y: 44, lane: 'north' },
+  ops: { x: 77, y: 28, lane: 'east' },
+  research: { x: 35, y: 24, lane: 'north' },
+  requirements: { x: 55, y: 24, lane: 'north' },
+  QA: { x: 36, y: 66, lane: 'south' },
+  video: { x: 79, y: 68, lane: 'east' },
+  'UI/layout': { x: 56, y: 66, lane: 'south' },
+  trading: { x: 78, y: 48, lane: 'east' },
+}
 
 const roleLabel: Record<string, string> = {
   'main/orchestrator': 'Command',
@@ -324,7 +336,7 @@ function getTerminalMode(agent: Agent, task?: Task): OfficeTerminalMode {
 
 export function createOfficeAgentStations(agents: Agent[], tasks: Task[]): OfficeAgentStation[] {
   return agents.map((agent, index) => {
-    const layout = officeStationLayout[index % officeStationLayout.length]
+    const layout = roleOfficeLayout[agent.role] ?? officeStationLayout[index % officeStationLayout.length]
     const task =
       tasks.find((item) => item.id === agent.currentTaskId) ??
       tasks.find((item) => item.ownerAgentId === agent.id)

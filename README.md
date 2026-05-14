@@ -86,11 +86,11 @@ Local browser visual QA uses Playwright Chromium as a dev-only tool. It is not p
 Pages deploy flow and should be run when changing the Office scene, stage layout, or responsive
 composition.
 
-The command room visual direction is CSS-only 2.5D: layered graphite panels, projected hologram
-floor/rings, ambient scanlines, and gold/red/cyan/green glows around read-only command nodes. Keep
+The command room visual direction is CSS-only 2.5D: layered graphite panels, projected office
+floor planes, ambient scanlines, and gold/red/cyan/green glows around read-only command nodes. Keep
 this pass dependency-light: no WebGL, no canvas requirement, and no heavy rendering packages.
 
-Office Scene phase 1 adds a static CSS/SVG-free isometric orbital office skeleton inside the
+Office Scene phase 1 adds a static CSS/SVG-free isometric office skeleton inside the
 central stage. It maps the existing mock agents into read-only desks with terminals, abstract agent
 markers, status lamps, and a shared office floor. Future phases should add walking, typing, and
 signal-transfer animations plus richer state mapping, while keeping the surface mock-first and
@@ -154,6 +154,11 @@ Office Scene phase 13 removes the large Orbit Core/command-core card from the fl
 profession layer explicit: command clipboard, code terminal, server rack, research magnifier,
 blueprint grid, QA/security shield, visual canvas, trading chart, and director camera props now sit
 at workstations, while small overhead bubbles show current work without becoming cards.
+
+Office Scene phase 14 replaces the remaining radial desk placement with a believable office floor
+plan. The coordinator desk sits on the side instead of a central hub, coding/spec/research/QA/design
+stations form desk rows, ops lives in the server corner, trading and director stations sit on the
+right-side work wall, and clear straight walkways replace the old orbit-like paths.
 
 Manual viewport widths:
 

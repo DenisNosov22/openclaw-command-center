@@ -2,16 +2,21 @@
 
 ## Target
 
-Orbit Office is the default center-stage scene. It should read as a compact living office where
+Office Floor is the default center-stage scene. It should read as a compact living office where
 each agent is an original 2D office character working inside a shared command workspace, not as an
 abstract graph node and not as a copied game sprite.
 
 ## Zones
 
 - Desk/PC zone: active workstations, monitors, chairs, status lamps, and typing/monitoring ticks.
+- Desk rows: coding, spec, research, QA, and layout stations arranged like office rows/clusters,
+  not evenly around a center.
+- Ops/server corner: server rack and deployment station grouped in a room corner.
+- Director/trading wall: camera and market stations placed as right-side profession areas.
 - Rest zone: sofa/rest bay for completed or idle recovery states.
-- Command desk: small coordinator workstation for the main agent; no large central Orbit Core card.
-- Paths/routes: calm walking paths and workflow packets that connect agent workstations.
+- Command desk: small side coordinator workstation for the main agent; no large central Orbit Core
+  card.
+- Paths/routes: calm straight walkways and workflow packets that connect agent workstations.
 - Screens/status zone: subtle read-only system context without becoming a control surface.
 - Profession props: server rack, code terminal, research board, blueprint table, QA/security
   monitor, visual canvas, trading chart, and camera/shot-list station.
@@ -78,3 +83,7 @@ The Office scene is final enough for this planned milestone when:
   monitors, chairs, and labels as the selectable station layer, then renders agent sprites on a
   separate physical office-floor layer with lane offsets and a walking route animation. Reduced
   motion disables the new route motion while preserving the readable office layout.
+- Step 53: the layout now uses a real-office floor plan. Profession-specific station coordinates
+  place the coordinator desk to the side, desk-row roles in central rows, ops in the server corner,
+  trading on the right work wall, and the director camera station in the bottom-right corner, with
+  straight walkways replacing the previous radial composition.
