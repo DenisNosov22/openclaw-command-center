@@ -1,6 +1,10 @@
 import type { ActivityEvent, Agent, CommandCenterSnapshot, Task } from '../../shared/types'
-import type { CSSProperties } from 'react'
+import { useEffect, useMemo, useState, type CSSProperties } from 'react'
 import { createOfficeSceneViewModel } from './IsometricOfficeSceneModel'
+import type {
+  OfficeAgentLiveStatusInput,
+  OfficeSimulationMode,
+} from './OfficeSimulationModel'
 import {
   getOfficeAgentMarkerClassName,
   getOfficeStationClassName,
@@ -29,6 +33,51 @@ interface IsometricOfficeSceneProps {
   workflow: CommandCenterSnapshot['workflow']
   selectedAgentId: string
   onSelectAgent: (agentId: string) => void
+  liveSimulation?: Record<string, OfficeAgentLiveStatusInput>
+  simulationElapsedMs?: number
+  simulationMode?: OfficeSimulationMode
+}
+
+function usePrefersReducedMotion() {
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(
+    () =>
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+  )
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const handleChange = () => setPrefersReducedMotion(mediaQuery.matches)
+
+    mediaQuery.addEventListener('change', handleChange)
+
+    return () => mediaQuery.removeEventListener('change', handleChange)
+  }, [])
+
+  return prefersReducedMotion
+}
+
+function useOfficeSimulationElapsedMs(mode: OfficeSimulationMode, controlledElapsedMs?: number) {
+  const [elapsedMs, setElapsedMs] = useState(0)
+
+  useEffect(() => {
+    if (controlledElapsedMs !== undefined || mode === 'static') {
+      return undefined
+    }
+
+    const startedAt = performance.now()
+    const intervalId = window.setInterval(() => {
+      setElapsedMs(Math.round(performance.now() - startedAt))
+    }, 1_200)
+
+    return () => window.clearInterval(intervalId)
+  }, [controlledElapsedMs, mode])
+
+  if (mode === 'static') {
+    return 0
+  }
+
+  return controlledElapsedMs ?? elapsedMs
 }
 
 export function IsometricOfficeScene({
@@ -38,17 +87,36 @@ export function IsometricOfficeScene({
   workflow,
   selectedAgentId,
   onSelectAgent,
+  liveSimulation,
+  simulationElapsedMs,
+  simulationMode = 'animated',
 }: IsometricOfficeSceneProps) {
-  const { stations, signalRoutes } = createOfficeSceneViewModel(
-    agents,
-    tasks,
-    activity,
-    workflow,
-    selectedAgentId,
+  const prefersReducedMotion = usePrefersReducedMotion()
+  const effectiveSimulationMode = prefersReducedMotion ? 'static' : simulationMode
+  const elapsedMs = useOfficeSimulationElapsedMs(effectiveSimulationMode, simulationElapsedMs)
+  const { stations, signalRoutes } = useMemo(
+    () =>
+      createOfficeSceneViewModel(
+        agents,
+        tasks,
+        activity,
+        workflow,
+        selectedAgentId,
+        {
+          elapsedMs,
+          liveAgents: liveSimulation,
+          mode: effectiveSimulationMode,
+        },
+      ),
+    [activity, agents, effectiveSimulationMode, elapsedMs, liveSimulation, selectedAgentId, tasks, workflow],
   )
 
   return (
-    <div className="isometric-office" aria-label="2D agent office read-only view">
+    <div
+      className="isometric-office"
+      aria-label="2D agent office read-only view"
+      data-simulation-mode={effectiveSimulationMode}
+    >
       <div
         aria-label="2D game-like real office floor plan with agents working at profession stations"
         className="office-floor"

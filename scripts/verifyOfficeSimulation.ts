@@ -3,12 +3,15 @@ import { readFileSync } from 'node:fs'
 import { createOfficeSceneViewModel } from '../src/features/command-room/IsometricOfficeSceneModel.ts'
 import {
   createOfficeSimulation,
+  getOfficeAgentSimulationTick,
+  getOfficeAgentRouteProgress,
   getOfficeDeskForProfession,
   getOfficePath,
   OFFICE_AGENT_PROFILES,
   OFFICE_DESKS,
   OFFICE_PATHS,
   OFFICE_ZONES,
+  tickOfficeSimulation,
 } from '../src/features/command-room/OfficeSimulationModel.ts'
 import type { ActivityEvent, Agent, CommandCenterSnapshot, Task } from '../src/shared/types/index.ts'
 
@@ -99,11 +102,145 @@ for (const state of simulation.agents.filter((agent) => agent.posture === 'walki
 const secondSimulation = createOfficeSimulation(snapshot.agents, snapshot.tasks)
 assert.deepEqual(simulation, secondSimulation, 'Office simulation should be deterministic')
 
+const timedSimulation = createOfficeSimulation(snapshot.agents, snapshot.tasks, {
+  elapsedMs: 8_000,
+  mode: 'animated',
+})
+const secondTimedSimulation = createOfficeSimulation(snapshot.agents, snapshot.tasks, {
+  elapsedMs: 8_000,
+  mode: 'animated',
+})
+
+assert.deepEqual(timedSimulation, secondTimedSimulation, 'Timed office simulation should be deterministic')
+assert.notDeepEqual(
+  timedSimulation,
+  simulation,
+  'Animated office simulation should advance scenario state over time',
+)
+
+const staticSimulation = createOfficeSimulation(snapshot.agents, snapshot.tasks, {
+  elapsedMs: 8_000,
+  mode: 'static',
+})
+assert.deepEqual(
+  staticSimulation,
+  simulation,
+  'Static office simulation mode should keep baseline state despite elapsed time',
+)
+
+const tickedSimulation = tickOfficeSimulation(simulation, {
+  agents: snapshot.agents,
+  tasks: snapshot.tasks,
+  elapsedMs: 8_000,
+  mode: 'animated',
+})
+assert.deepEqual(
+  tickedSimulation,
+  timedSimulation,
+  'Tick helper should match direct timed simulation construction',
+)
+
+const staticTick = tickOfficeSimulation(simulation, {
+  agents: snapshot.agents,
+  tasks: snapshot.tasks,
+  elapsedMs: 8_000,
+  mode: 'static',
+})
+assert.deepEqual(staticTick, simulation, 'Static tick helper should return unchanged simulation state')
+
+const liveOverrideSimulation = createOfficeSimulation(snapshot.agents, snapshot.tasks, {
+  elapsedMs: 8_000,
+  liveAgents: {
+    'agent-dev': {
+      currentTask: 'Live integration placeholder',
+      activity: 'monitoring',
+      posture: 'standing',
+    },
+  },
+})
+const liveAgent = liveOverrideSimulation.agents.find((agent) => agent.agentId === 'agent-dev')
+assert(liveAgent, 'Expected live override target')
+assert.equal(liveAgent.currentTask, 'Live integration placeholder', 'Live seam should override task copy')
+assert.equal(liveAgent.activity, 'monitoring', 'Live seam should override activity')
+assert.equal(liveAgent.posture, 'standing', 'Live seam should override posture')
+
+const walkingBaseline = snapshot.agents.find((agent) => agent.id === 'agent-shturman')
+assert(walkingBaseline, 'Expected walking fixture agent')
+const earlyTick = getOfficeAgentSimulationTick(walkingBaseline, snapshot.tasks, {
+  elapsedMs: 1_000,
+  mode: 'animated',
+})
+const lateTick = getOfficeAgentSimulationTick(walkingBaseline, snapshot.tasks, {
+  elapsedMs: 9_000,
+  mode: 'animated',
+})
+assert.notDeepEqual(earlyTick.position, lateTick.position, 'Walking agent position should progress over time')
+assert.equal(earlyTick.progress, getOfficeAgentRouteProgress(walkingBaseline, 1_000), 'Tick progress should use bounded route helper')
+assert.equal(lateTick.progress, getOfficeAgentRouteProgress(walkingBaseline, 9_000), 'Late tick progress should use bounded route helper')
+
+for (const state of timedSimulation.agents) {
+  assert(
+    OFFICE_DESKS.some((desk) => desk.id === state.deskId),
+    `Expected ${state.agentId} to stay tied to a valid desk`,
+  )
+  assert(
+    OFFICE_ZONES.some((zone) => zone.id === state.zoneId),
+    `Expected ${state.agentId} to stay tied to a valid zone`,
+  )
+  assert(
+    OFFICE_PATHS.some((path) => path.id === state.pathId),
+    `Expected ${state.agentId} to stay tied to a valid path`,
+  )
+  assert(state.position.x >= 0 && state.position.x <= 100, `Expected ${state.agentId} x within floor bounds`)
+  assert(state.position.y >= 0 && state.position.y <= 100, `Expected ${state.agentId} y within floor bounds`)
+  assert(state.progress >= 0 && state.progress <= 1, `Expected ${state.agentId} progress within route bounds`)
+  assert(state.target.x >= 0 && state.target.x <= 100, `Expected ${state.agentId} target x within floor bounds`)
+  assert(state.target.y >= 0 && state.target.y <= 100, `Expected ${state.agentId} target y within floor bounds`)
+}
+
+for (const elapsedMs of [-1_000, 0, 8_000, 32_000, Number.MAX_SAFE_INTEGER]) {
+  const progress = getOfficeAgentRouteProgress(walkingBaseline, elapsedMs)
+
+  assert(progress >= 0 && progress <= 1, `Expected helper progress ${progress} to stay bounded`)
+}
+
 const viewModel = createOfficeSceneViewModel(
   snapshot.agents,
   snapshot.tasks,
   snapshot.activity,
   snapshot.workflow,
+)
+const animatedViewModel = createOfficeSceneViewModel(
+  snapshot.agents,
+  snapshot.tasks,
+  snapshot.activity,
+  snapshot.workflow,
+  undefined,
+  {
+    elapsedMs: 8_000,
+    mode: 'animated',
+  },
+)
+const staticViewModel = createOfficeSceneViewModel(
+  snapshot.agents,
+  snapshot.tasks,
+  snapshot.activity,
+  snapshot.workflow,
+  undefined,
+  {
+    elapsedMs: 8_000,
+    mode: 'static',
+  },
+)
+assert.deepEqual(
+  staticViewModel.stations.map((station) => station.simulation),
+  viewModel.stations.map((station) => station.simulation),
+  'Static scene view model should keep baseline simulation state',
+)
+assert.notDeepEqual(
+  animatedViewModel.stations.map((station) => station.simulation),
+  viewModel.stations.map((station) => station.simulation),
+  'Animated scene view model should consume timed simulation state',
 )
 
 for (const station of viewModel.stations) {
@@ -111,6 +248,7 @@ for (const station of viewModel.stations) {
 
   assert(state, `Expected station ${station.agentId} in simulation`)
   assert.equal(station.simulation.posture, state.posture, `Expected posture on ${station.agentId}`)
+  assert.equal(station.simulation.progress, state.progress, `Expected progress on ${station.agentId}`)
   assert.equal(station.simulation.position.x, state.position.x, `Expected x position on ${station.agentId}`)
   assert.equal(station.simulation.position.y, state.position.y, `Expected y position on ${station.agentId}`)
   assert.equal(station.currentTask, state.currentTask, `Expected current task on ${station.agentId}`)

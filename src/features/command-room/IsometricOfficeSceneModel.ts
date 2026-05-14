@@ -3,6 +3,7 @@ import type { OfficeActivityState } from './IsometricOfficeSpriteSystem'
 import {
   createOfficeSimulation,
   type OfficeAgentSimulationState,
+  type OfficeSimulationTickOptions,
 } from './OfficeSimulationModel.ts'
 
 export type OfficeStationAction =
@@ -248,54 +249,16 @@ function getAgentDisplayName(agent: Agent) {
   return agent.name.replace(/\s*\p{Extended_Pictographic}/gu, '')
 }
 
-function getStationActivity(agent: Agent, task?: Task): OfficeStationActivity {
-  if (
-    agent.status === 'blocked' ||
-    agent.status === 'error' ||
-    task?.status === 'blocked' ||
-    task?.status === 'failed'
-  ) {
-    return 'blocked'
-  }
-
-  if (task?.status === 'delegated') {
-    return 'handoff'
-  }
-
-  if (agent.status === 'done' || task?.status === 'completed') {
-    return 'resting'
-  }
-
-  if (agent.role === 'main/orchestrator') {
-    return 'coordinating'
-  }
-
-  if (
-    agent.status === 'working' ||
-    task?.status === 'in_progress'
-  ) {
-    return 'working'
-  }
-
-  if (agent.status === 'waiting' || task?.status === 'waiting') {
-    return 'monitoring'
-  }
-
-  if (task?.status === 'queued') {
-    return 'walking'
-  }
-
-  return 'standby'
-}
-
-function getStationAction(agent: Agent, task?: Task): OfficeStationAction {
-  const activity = getStationActivity(agent, task)
-
-  if (activity === 'blocked') {
+function getStationActionFromSimulation(simulationState: OfficeAgentSimulationState): OfficeStationAction {
+  if (simulationState.activity === 'blocked') {
     return 'alert'
   }
 
-  return activity
+  if (simulationState.activity === 'idle') {
+    return 'resting'
+  }
+
+  return simulationState.activity === 'reviewing' ? 'resting' : simulationState.activity
 }
 
 export function getStationTone(status: Agent['status'], taskStatus?: Task['status']): OfficeStationTone {
@@ -368,8 +331,12 @@ function getTerminalMode(agent: Agent, task?: Task): OfficeTerminalMode {
   return 'idle'
 }
 
-export function createOfficeAgentStations(agents: Agent[], tasks: Task[]): OfficeAgentStation[] {
-  const simulation = createOfficeSimulation(agents, tasks)
+export function createOfficeAgentStations(
+  agents: Agent[],
+  tasks: Task[],
+  simulationOptions: OfficeSimulationTickOptions = {},
+): OfficeAgentStation[] {
+  const simulation = createOfficeSimulation(agents, tasks, simulationOptions)
 
   return agents.map((agent, index) => {
     const layout = roleOfficeLayout[agent.role] ?? officeStationLayout[index % officeStationLayout.length]
@@ -378,6 +345,8 @@ export function createOfficeAgentStations(agents: Agent[], tasks: Task[]): Offic
       tasks.find((item) => item.ownerAgentId === agent.id)
     const simulationState =
       simulation.agents.find((item) => item.agentId === agent.id) ?? simulation.agents[0]
+    const action = getStationActionFromSimulation(simulationState)
+    const activity = action === 'alert' ? 'blocked' : action
 
     return {
       id: `office-station-${agent.id}`,
@@ -386,8 +355,8 @@ export function createOfficeAgentStations(agents: Agent[], tasks: Task[]): Offic
       role: roleLabel[agent.role] ?? agent.role,
       marker: getAgentMarker(agent),
       status: agent.status,
-      action: getStationAction(agent, task),
-      activity: getStationActivity(agent, task),
+      action,
+      activity,
       tone: getStationTone(agent.status, task?.status),
       pulse: getStationPulse(agent, task),
       terminalMode: getTerminalMode(agent, task),
@@ -395,7 +364,7 @@ export function createOfficeAgentStations(agents: Agent[], tasks: Task[]): Offic
       activityState: roleActivityState[agent.role] ?? 'presenting',
       activityLabel: roleActivityLabel[roleActivityState[agent.role] ?? 'presenting'],
       taskBubble: roleTaskBubble[agent.role] ?? task?.nextStep ?? task?.title ?? 'watch',
-      choreography: getStationChoreography(index, getStationAction(agent, task), agent.status),
+      choreography: getStationChoreography(index, action, agent.status),
       slot: index % officeStationLayout.length,
       taskTitle: task?.title ?? 'Read-only station',
       currentTask: simulationState.currentTask,
@@ -511,8 +480,9 @@ export function createOfficeSceneViewModel(
   activity: ActivityEvent[],
   workflow: CommandCenterSnapshot['workflow'],
   selectedAgentId?: string,
+  simulationOptions: OfficeSimulationTickOptions = {},
 ): OfficeSceneViewModel {
-  const stations = createOfficeAgentStations(agents, tasks)
+  const stations = createOfficeAgentStations(agents, tasks, simulationOptions)
   const routedAgentIds = getRoutedAgentIds(workflow)
   const choreographedStations = stations.map((station, index) => ({
     ...station,

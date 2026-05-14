@@ -84,10 +84,35 @@ export interface OfficeAgentSimulationState {
   zoneId: OfficeZoneId
   pathId: OfficePathId
   position: OfficePoint
+  progress: number
   target: OfficePoint
   activity: OfficeAgentActivity
   currentTask: string
   posture: OfficeAgentPosture
+}
+
+export type OfficeSimulationMode = 'animated' | 'static'
+
+export interface OfficeAgentLiveStatusInput {
+  activity?: OfficeAgentActivity
+  currentTask?: string
+  posture?: OfficeAgentPosture
+  position?: OfficePoint
+  target?: OfficePoint
+  zoneId?: OfficeZoneId
+  deskId?: OfficeDeskId
+  pathId?: OfficePathId
+}
+
+export interface OfficeSimulationTickOptions {
+  elapsedMs?: number
+  mode?: OfficeSimulationMode
+  liveAgents?: Record<string, OfficeAgentLiveStatusInput>
+}
+
+export interface OfficeSimulationTickInput extends OfficeSimulationTickOptions {
+  agents: Agent[]
+  tasks: Task[]
 }
 
 export interface OfficeSimulation {
@@ -325,6 +350,65 @@ const fallbackProfile: OfficeAgentProfile = {
   pathId: 'path-command-delivery',
 }
 
+const scenarioCycleMs = 16_000
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value))
+}
+
+function roundPoint(point: OfficePoint): OfficePoint {
+  return {
+    x: Number(point.x.toFixed(2)),
+    y: Number(point.y.toFixed(2)),
+  }
+}
+
+function getAgentSeed(agent: Agent) {
+  return [...agent.id].reduce((total, character) => total + character.charCodeAt(0), 0)
+}
+
+function getScenarioPhase(agent: Agent, elapsedMs = 0) {
+  const shiftedElapsed = Math.max(0, elapsedMs) + getAgentSeed(agent) * 137
+
+  return (shiftedElapsed % scenarioCycleMs) / scenarioCycleMs
+}
+
+function interpolatePoint(from: OfficePoint, to: OfficePoint, progress: number): OfficePoint {
+  const boundedProgress = clamp(progress, 0, 1)
+
+  return roundPoint({
+    x: from.x + (to.x - from.x) * boundedProgress,
+    y: from.y + (to.y - from.y) * boundedProgress,
+  })
+}
+
+function getPathPoint(path: OfficePath, progress: number) {
+  const boundedProgress = clamp(progress, 0, 1)
+
+  if (path.points.length === 0) {
+    return { x: 0, y: 0 }
+  }
+
+  if (path.points.length === 1) {
+    return path.points[0]
+  }
+
+  const segmentCount = path.points.length - 1
+  const rawSegment = boundedProgress * segmentCount
+  const segmentIndex = Math.min(Math.floor(rawSegment), segmentCount - 1)
+  const segmentProgress = rawSegment - segmentIndex
+  const start = path.points[segmentIndex]
+  const end = path.points[segmentIndex + 1]
+
+  return interpolatePoint(start, end, segmentProgress)
+}
+
+export function getOfficeAgentRouteProgress(agent: Agent, elapsedMs = 0) {
+  const phase = getScenarioPhase(agent, elapsedMs)
+
+  return clamp(phase <= 0.5 ? phase * 2 : (1 - phase) * 2, 0, 1)
+}
+
 function getAssignedTask(agent: Agent, tasks: Task[]) {
   return (
     tasks.find((task) => task.id === agent.currentTaskId) ??
@@ -387,6 +471,43 @@ function getSimulationActivity(
   return profile.defaultAction
 }
 
+function getTimedSimulationActivity(
+  agent: Agent,
+  profile: OfficeAgentProfile,
+  task: Task | undefined,
+  elapsedMs: number,
+): OfficeAgentActivity {
+  const baseActivity = getSimulationActivity(agent, profile, task)
+
+  if (baseActivity === 'blocked') {
+    return 'blocked'
+  }
+
+  const phase = getScenarioPhase(agent, elapsedMs)
+
+  if (baseActivity === 'handoff' || (task?.status === 'delegated' && phase > 0.5)) {
+    return phase < 0.42 ? 'walking' : 'handoff'
+  }
+
+  if (baseActivity === 'walking') {
+    return phase < 0.7 ? 'walking' : profile.defaultAction
+  }
+
+  if (baseActivity === 'monitoring') {
+    return phase < 0.62 ? 'monitoring' : 'walking'
+  }
+
+  if (baseActivity === 'working' || baseActivity === 'coordinating') {
+    return phase < 0.18 ? 'walking' : baseActivity
+  }
+
+  if (baseActivity === 'reviewing') {
+    return phase < 0.24 ? 'handoff' : 'reviewing'
+  }
+
+  return baseActivity
+}
+
 function getSimulationPosture(activity: OfficeAgentActivity): OfficeAgentPosture {
   if (activity === 'blocked') {
     return 'blocked'
@@ -419,36 +540,97 @@ function getAgentPosition(
   desk: OfficeDesk,
   path: OfficePath | undefined,
   posture: OfficeAgentPosture,
+  progress = 0.5,
 ) {
   if (posture !== 'walking' || !path) {
     return desk.point
   }
 
-  return path.points[Math.floor(path.points.length / 2)] ?? desk.point
+  return getPathPoint(path, progress)
 }
 
-export function createOfficeSimulation(agents: Agent[], tasks: Task[]): OfficeSimulation {
-  const simulationAgents = agents.map((agent) => {
-    const profile = OFFICE_AGENT_PROFILES[agent.role] ?? { ...fallbackProfile, role: agent.role }
-    const desk = getOfficeDesk(profile.deskId)
-    const task = getAssignedTask(agent, tasks)
-    const activity = getSimulationActivity(agent, profile, task)
-    const posture = getSimulationPosture(activity)
-    const path = getOfficePath(profile.pathId)
+function getTimedTaskLabel(task: Task | undefined, activity: OfficeAgentActivity, elapsedMs: number) {
+  const label = getTaskLabel(task)
 
-    return {
+  if (!elapsedMs) {
+    return label
+  }
+
+  if (activity === 'walking') {
+    return task?.nextStep ?? `Route to ${task?.title ?? 'station'}`
+  }
+
+  if (activity === 'handoff') {
+    return task?.nextStep ?? `Handoff: ${task?.title ?? 'agent sync'}`
+  }
+
+  if (activity === 'monitoring') {
+    return task?.nextStep ?? `Monitor: ${task?.title ?? 'status'}`
+  }
+
+  return label
+}
+
+function applyLiveStatus(
+  state: OfficeAgentSimulationState,
+  liveStatus: OfficeAgentLiveStatusInput | undefined,
+): OfficeAgentSimulationState {
+  if (!liveStatus) {
+    return state
+  }
+
+  return {
+    ...state,
+    ...liveStatus,
+    position: liveStatus.position ? roundPoint(liveStatus.position) : state.position,
+    target: liveStatus.target ? roundPoint(liveStatus.target) : state.target,
+  }
+}
+
+export function getOfficeAgentSimulationTick(
+  agent: Agent,
+  tasks: Task[],
+  options: OfficeSimulationTickOptions = {},
+): OfficeAgentSimulationState {
+  const profile = OFFICE_AGENT_PROFILES[agent.role] ?? { ...fallbackProfile, role: agent.role }
+  const desk = getOfficeDesk(profile.deskId)
+  const task = getAssignedTask(agent, tasks)
+  const path = getOfficePath(profile.pathId)
+  const shouldAnimate = options.mode !== 'static' && Boolean(options.elapsedMs)
+  const elapsedMs = shouldAnimate ? options.elapsedMs ?? 0 : 0
+  const activity = shouldAnimate
+    ? getTimedSimulationActivity(agent, profile, task, elapsedMs)
+    : getSimulationActivity(agent, profile, task)
+  const posture = getSimulationPosture(activity)
+  const progress = getOfficeAgentRouteProgress(agent, elapsedMs)
+  const position = getAgentPosition(desk, path, posture, progress)
+
+  return applyLiveStatus(
+    {
       agentId: agent.id,
       role: agent.role,
       profession: profile.profession,
       deskId: profile.deskId,
       zoneId: profile.zoneId,
       pathId: profile.pathId,
-      position: getAgentPosition(desk, path, posture),
+      position,
+      progress,
       target: desk.point,
       activity,
-      currentTask: getTaskLabel(task),
+      currentTask: getTimedTaskLabel(task, activity, elapsedMs),
       posture,
-    }
+    },
+    options.liveAgents?.[agent.id],
+  )
+}
+
+export function createOfficeSimulation(
+  agents: Agent[],
+  tasks: Task[],
+  options: OfficeSimulationTickOptions = {},
+): OfficeSimulation {
+  const simulationAgents = agents.map((agent) => {
+    return getOfficeAgentSimulationTick(agent, tasks, options)
   })
 
   return {
@@ -457,4 +639,15 @@ export function createOfficeSimulation(agents: Agent[], tasks: Task[]): OfficeSi
     paths: OFFICE_PATHS,
     agents: simulationAgents,
   }
+}
+
+export function tickOfficeSimulation(
+  currentSimulation: OfficeSimulation,
+  input: OfficeSimulationTickInput,
+): OfficeSimulation {
+  if (input.mode === 'static') {
+    return currentSimulation
+  }
+
+  return createOfficeSimulation(input.agents, input.tasks, input)
 }
