@@ -182,6 +182,41 @@ async function verifyOfficeDom(page: Page) {
     [],
     `Office labels and chips should stay compact attached metadata, not dashboard cards: ${oversizedLabels.join('; ')}`,
   )
+
+  const crampedCentralStations = await page.evaluate(() => {
+    if (window.innerWidth <= 430) {
+      return []
+    }
+
+    const centralStates = new Set(['checking', 'coding', 'designing'])
+    const desks = [...document.querySelectorAll<HTMLElement>('.office-desk[data-activity-state]')]
+      .filter((desk) => centralStates.has(desk.dataset.activityState ?? ''))
+      .map((desk) => {
+        const box = desk.getBoundingClientRect()
+
+        return {
+          state: desk.dataset.activityState,
+          x: box.left + box.width / 2,
+          y: box.top + box.height / 2,
+        }
+      })
+
+    return desks.flatMap((firstDesk, firstIndex) =>
+      desks.slice(firstIndex + 1).map((secondDesk) => {
+        const distance = Math.hypot(firstDesk.x - secondDesk.x, firstDesk.y - secondDesk.y)
+
+        return distance < 118
+          ? `${firstDesk.state}-${secondDesk.state}: ${Math.round(distance)}px`
+          : ''
+      }),
+    ).filter(Boolean)
+  })
+
+  assert.deepEqual(
+    crampedCentralStations,
+    [],
+    `Central coding/QA/layout stations should preserve readable walkways: ${crampedCentralStations.join('; ')}`,
+  )
 }
 
 async function verifyResponsiveOfficeComposition(page: Page, viewportCase: ViewportCase) {

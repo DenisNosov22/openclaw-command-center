@@ -764,17 +764,17 @@
 }
 
 .office-rug--center {
-  left: 50%;
+  left: 49%;
   top: 49%;
-  width: min(16%, 116px);
-  height: 240px;
+  width: min(19%, 140px);
+  height: 262px;
   background:
     repeating-linear-gradient(90deg, rgba(120, 212, 192, 0.08) 0 8px, transparent 8px 18px),
     linear-gradient(90deg, rgba(215, 180, 92, 0.14), rgba(120, 212, 192, 0.08), rgba(215, 180, 92, 0.12)),
     rgba(31, 27, 20, 0.36);
   border: 1px solid rgba(215, 180, 92, 0.14);
   border-radius: 18px;
-  opacity: 0.54;
+  opacity: 0.46;
   transform: translate(-50%, -50%) skewY(-4deg);
 }
 
@@ -881,25 +881,25 @@
 }
 
 .office-desk-cluster {
-  width: min(27%, 206px);
+  width: min(25%, 192px);
   height: 96px;
   background:
     radial-gradient(ellipse, rgba(0, 0, 0, 0.3), transparent 70%),
     linear-gradient(90deg, rgba(215, 180, 92, 0.08), transparent);
   border: 1px solid rgba(215, 180, 92, 0.08);
   border-radius: 12px;
-  opacity: 0.54;
+  opacity: 0.46;
   transform: skewY(-4deg);
 }
 
 .office-desk-cluster--north {
-  left: 27%;
-  top: 26%;
+  left: 23%;
+  top: 24%;
 }
 
 .office-desk-cluster--south {
-  left: 31%;
-  bottom: 16%;
+  left: 24%;
+  bottom: 11%;
 }
 
 .office-zone-label {
@@ -961,10 +961,10 @@
 }
 
 .office-area--desk {
-  left: 28%;
-  top: 20%;
-  width: 38%;
-  height: 47%;
+  left: 24%;
+  top: 18%;
+  width: 45%;
+  height: 54%;
   background:
     linear-gradient(90deg, rgba(120, 212, 192, 0.12), transparent 52%, rgba(215, 180, 92, 0.08)),
     rgba(10, 14, 14, 0.28);
@@ -1140,10 +1140,10 @@
 }
 
 .office-lane--inner {
-  left: 50%;
+  left: 48%;
   top: 49%;
-  width: min(18%, 132px);
-  height: 210px;
+  width: min(20%, 148px);
+  height: 248px;
   transform: translate(-50%, -50%) skewY(-4deg);
 }
 
@@ -1156,8 +1156,8 @@
 }
 
 .office-route--north {
-  left: 36%;
-  top: 31%;
+  left: 32%;
+  top: 30%;
   transform: rotate(0deg);
 }
 
@@ -1168,8 +1168,8 @@
 }
 
 .office-route--south {
-  left: 36%;
-  top: 61%;
+  left: 30%;
+  top: 65%;
   transform: rotate(0deg);
 }
 
@@ -1451,6 +1451,36 @@
 
 .office-floor-agent--west {
   --office-agent-shift-x: 54px;
+}
+
+.office-floor-agent[data-activity-state='coding'] {
+  --office-agent-shift-x: 40px;
+  --office-agent-shift-y: 68px;
+}
+
+.office-floor-agent[data-activity-state='checking'] {
+  --office-agent-shift-x: -34px;
+  --office-agent-shift-y: -62px;
+}
+
+.office-floor-agent[data-activity-state='designing'] {
+  --office-agent-shift-x: 28px;
+  --office-agent-shift-y: -56px;
+}
+
+.office-floor-agent[data-activity-state='coordinating'] {
+  --office-agent-shift-x: 64px;
+  --office-agent-shift-y: -8px;
+}
+
+.office-floor-agent[data-activity-state='researching'] {
+  --office-agent-shift-x: -14px;
+  --office-agent-shift-y: 60px;
+}
+
+.office-floor-agent[data-activity-state='reviewing'] {
+  --office-agent-shift-x: 12px;
+  --office-agent-shift-y: 64px;
 }
 
 .office-floor-agent .office-agent-marker {
