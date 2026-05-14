@@ -188,7 +188,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'Developer',
     label: 'Coding',
     defaultAction: 'working',
-    point: { x: 14, y: 47 },
+    point: { x: 15, y: 49 },
     lane: 'west',
   },
   {
@@ -197,7 +197,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'Operator',
     label: 'Ops',
     defaultAction: 'monitoring',
-    point: { x: 25, y: 82 },
+    point: { x: 24, y: 82 },
     lane: 'south',
   },
   {
@@ -206,7 +206,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'Researcher',
     label: 'Research',
     defaultAction: 'walking',
-    point: { x: 16, y: 25 },
+    point: { x: 13, y: 24 },
     lane: 'north',
   },
   {
@@ -215,7 +215,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'Spec writer',
     label: 'Spec',
     defaultAction: 'reviewing',
-    point: { x: 31, y: 25 },
+    point: { x: 30, y: 32 },
     lane: 'north',
   },
   {
@@ -224,7 +224,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'QA analyst',
     label: 'QA/Sec',
     defaultAction: 'reviewing',
-    point: { x: 32, y: 47 },
+    point: { x: 38, y: 48 },
     lane: 'east',
   },
   {
@@ -233,7 +233,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'Video director',
     label: 'Director',
     defaultAction: 'idle',
-    point: { x: 90, y: 80 },
+    point: { x: 86, y: 76 },
     lane: 'east',
   },
   {
@@ -242,7 +242,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'Layout designer',
     label: 'Layout',
     defaultAction: 'reviewing',
-    point: { x: 80, y: 55 },
+    point: { x: 75, y: 58 },
     lane: 'east',
   },
   {
@@ -251,7 +251,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'Marketing visuals',
     label: 'Вітрина',
     defaultAction: 'working',
-    point: { x: 91, y: 45 },
+    point: { x: 84, y: 43 },
     lane: 'east',
   },
   {
@@ -260,7 +260,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'Market watcher',
     label: 'Trading',
     defaultAction: 'monitoring',
-    point: { x: 65, y: 78 },
+    point: { x: 59, y: 80 },
     lane: 'south',
   },
 ]
@@ -270,31 +270,31 @@ export const OFFICE_PATHS: OfficePath[] = [
     id: 'path-command-delivery',
     fromZoneId: 'command',
     toZoneId: 'delivery',
-    points: [{ x: 51, y: 38 }, { x: 39, y: 42 }, { x: 24, y: 42 }, { x: 14, y: 47 }],
+    points: [{ x: 51, y: 38 }, { x: 41, y: 44 }, { x: 27, y: 44 }, { x: 15, y: 49 }],
   },
   {
     id: 'path-delivery-ops',
     fromZoneId: 'delivery',
     toZoneId: 'ops',
-    points: [{ x: 32, y: 47 }, { x: 25, y: 58 }, { x: 25, y: 64 }, { x: 25, y: 82 }],
+    points: [{ x: 38, y: 48 }, { x: 33, y: 59 }, { x: 26, y: 66 }, { x: 24, y: 82 }],
   },
   {
     id: 'path-research-design',
     fromZoneId: 'research',
     toZoneId: 'design',
-    points: [{ x: 16, y: 25 }, { x: 37, y: 38 }, { x: 55, y: 52 }, { x: 72, y: 55 }, { x: 80, y: 55 }],
+    points: [{ x: 13, y: 24 }, { x: 30, y: 32 }, { x: 47, y: 43 }, { x: 64, y: 55 }, { x: 75, y: 58 }],
   },
   {
     id: 'path-design-marketing',
     fromZoneId: 'design',
     toZoneId: 'marketing',
-    points: [{ x: 80, y: 55 }, { x: 86, y: 58 }, { x: 91, y: 45 }],
+    points: [{ x: 75, y: 58 }, { x: 82, y: 56 }, { x: 84, y: 43 }],
   },
   {
     id: 'path-market-handoff',
     fromZoneId: 'market',
     toZoneId: 'delivery',
-    points: [{ x: 65, y: 78 }, { x: 64, y: 68 }, { x: 53, y: 66 }, { x: 45, y: 72 }, { x: 32, y: 62 }],
+    points: [{ x: 59, y: 80 }, { x: 57, y: 70 }, { x: 49, y: 66 }, { x: 42, y: 70 }, { x: 34, y: 62 }],
   },
 ]
 
@@ -534,15 +534,15 @@ function getTimedSimulationActivity(
   }
 
   if (baseActivity === 'monitoring') {
-    return phase < 0.62 ? 'monitoring' : 'walking'
+    return phase < 0.82 ? 'monitoring' : 'walking'
   }
 
   if (baseActivity === 'working' || baseActivity === 'coordinating') {
-    return phase < 0.18 ? 'walking' : baseActivity
+    return phase < 0.08 ? 'walking' : baseActivity
   }
 
   if (baseActivity === 'reviewing') {
-    return phase < 0.24 ? 'handoff' : 'reviewing'
+    return phase < 0.08 ? 'handoff' : 'reviewing'
   }
 
   return baseActivity

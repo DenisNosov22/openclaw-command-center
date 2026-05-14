@@ -147,7 +147,11 @@ async function verifyOfficeDom(page: Page) {
       Number.parseFloat(floorStyle.borderTopLeftRadius) > 0
         ? `office floor radius ${floorStyle.borderTopLeftRadius}`
         : '',
-      !floorStyle.backgroundSize.split(',').some((layerSize) => layerSize.trim() === 'cover')
+      !floorStyle.backgroundSize.split(',').some((layerSize) =>
+        window.innerWidth <= 430
+          ? ['contain', 'cover'].includes(layerSize.trim())
+          : layerSize.trim() === 'cover',
+      )
         ? `office floor background-size ${floorStyle.backgroundSize}`
         : '',
       window.innerWidth >= 821 && officeBox.height < 520
@@ -177,6 +181,43 @@ async function verifyOfficeDom(page: Page) {
   await expectVisible(page.locator(".office-floor-agent[data-agent-id='agent-vitryna'] .office-agent-status-cue"), 'Вітрина status cue')
   await expectVisible(page.locator(".office-floor-agent[data-agent-id='agent-vitryna'] .office-task-bubble"), 'Вітрина task bubble')
 
+  const vitrinaClippingIssues = await page.evaluate(() => {
+    const office = document.querySelector<HTMLElement>('.isometric-office')
+    const officeBox = office?.getBoundingClientRect()
+    const elements = [
+      document.querySelector<HTMLElement>(".office-desk[data-agent-id='agent-vitryna']"),
+      document.querySelector<HTMLElement>(".office-floor-agent[data-agent-id='agent-vitryna']"),
+    ].filter(Boolean) as HTMLElement[]
+
+    if (!officeBox) {
+      return ['missing office bounds']
+    }
+
+    return elements
+      .map((element) => {
+        const box = element.getBoundingClientRect()
+        const style = getComputedStyle(element)
+        const id = element.dataset.agentId ?? element.className
+        const visibleEnough =
+          box.left >= officeBox.left - 8 &&
+          box.top >= officeBox.top - 8 &&
+          box.right <= officeBox.right + 8 &&
+          box.bottom <= officeBox.bottom + 8 &&
+          style.opacity !== '0'
+
+        return visibleEnough
+          ? ''
+          : `${id}: ${Math.round(box.left - officeBox.left)},${Math.round(box.top - officeBox.top)} ${Math.round(box.width)}x${Math.round(box.height)} in office ${Math.round(officeBox.width)}x${Math.round(officeBox.height)}`
+      })
+      .filter(Boolean)
+  })
+
+  assert.deepEqual(
+    vitrinaClippingIssues,
+    [],
+    `Вітрина desk and physical agent should be fully visible, especially at 390px: ${vitrinaClippingIssues.join('; ')}`,
+  )
+
   assert.equal(await page.locator('.office-core, .command-core').count(), 0, 'Large central core/card block should not render in the office scene')
   assert((await page.locator('.office-desk').count()) >= 4, 'Expected multiple office stations')
   assert((await page.locator('.office-desk-cluster').count()) >= 2, 'Expected desk clusters grounding work zones')
@@ -202,6 +243,28 @@ async function verifyOfficeDom(page: Page) {
   assert.equal(await page.locator('.office-walkers, .office-walker').count(), 0, 'Standalone walking overlay should not render')
   assert((await page.locator('.office-monitor-stand').count()) >= 4, 'Expected monitor stands')
   assert((await page.locator('.office-keyboard-tray').count()) >= 4, 'Expected keyboard/tool trays')
+  const loudPcOverlayIssues = await page.evaluate(() => {
+    if (window.innerWidth <= 430) {
+      return []
+    }
+
+    return [...document.querySelectorAll<HTMLElement>('.office-terminal, .office-keyboard-tray, .office-profession-prop')]
+      .map((element) => {
+        const box = element.getBoundingClientRect()
+        const opacity = Number.parseFloat(getComputedStyle(element).opacity)
+
+        return opacity > 0.62 && box.width * box.height > 1_120
+          ? `${element.className}: ${Math.round(box.width)}x${Math.round(box.height)} opacity ${opacity.toFixed(2)}`
+          : ''
+      })
+      .filter(Boolean)
+  })
+
+  assert.deepEqual(
+    loudPcOverlayIssues,
+    [],
+    `PC/workstation overlays should stay quiet because the background already has desks and monitors: ${loudPcOverlayIssues.join('; ')}`,
+  )
   assert((await page.locator('[data-profession-prop]').count()) >= 10, 'Expected profession props at agent workstations')
   assert((await page.locator('.office-activity-chip[data-activity-state]').count()) >= 10, 'Expected compact attached activity chips')
   assert((await page.locator('.office-task-bubble').count()) >= 10, 'Expected small action bubbles on physical agents')
