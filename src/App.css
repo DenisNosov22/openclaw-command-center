@@ -3561,33 +3561,33 @@
 }
 
 .office-floor-agent[data-agent-id='agent-krab']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) {
-  --office-agent-shift-x: 10px;
-  --office-agent-shift-y: -16px;
+  --office-agent-shift-x: 4px;
+  --office-agent-shift-y: -20px;
 }
 
 .office-floor-agent[data-agent-id='agent-dev']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) {
-  --office-agent-shift-x: 8px;
-  --office-agent-shift-y: 34px;
+  --office-agent-shift-x: 12px;
+  --office-agent-shift-y: 32px;
 }
 
 .office-floor-agent[data-agent-id='agent-varta']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) {
-  --office-agent-shift-x: 8px;
-  --office-agent-shift-y: 34px;
+  --office-agent-shift-x: 28px;
+  --office-agent-shift-y: -6px;
 }
 
 .office-floor-agent[data-agent-id='agent-shturman']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) {
-  --office-agent-shift-x: 34px;
-  --office-agent-shift-y: 8px;
+  --office-agent-shift-x: 30px;
+  --office-agent-shift-y: 10px;
 }
 
 .office-floor-agent[data-agent-id='agent-spec']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) {
-  --office-agent-shift-x: 10px;
-  --office-agent-shift-y: 32px;
+  --office-agent-shift-x: -26px;
+  --office-agent-shift-y: 18px;
 }
 
 .office-floor-agent[data-agent-id='agent-bastion']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) {
   --office-agent-shift-x: 0px;
-  --office-agent-shift-y: -22px;
+  --office-agent-shift-y: -24px;
 }
 
 .office-floor-agent[data-agent-id='agent-desk']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) {
@@ -3596,18 +3596,18 @@
 }
 
 .office-floor-agent[data-agent-id='agent-verstalnyk']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) {
-  --office-agent-shift-x: -12px;
-  --office-agent-shift-y: 38px;
+  --office-agent-shift-x: -34px;
+  --office-agent-shift-y: -12px;
 }
 
 .office-floor-agent[data-agent-id='agent-vitryna']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) {
-  --office-agent-shift-x: -16px;
-  --office-agent-shift-y: 6px;
+  --office-agent-shift-x: -24px;
+  --office-agent-shift-y: 4px;
 }
 
 .office-floor-agent[data-agent-id='agent-rezhyser']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) {
-  --office-agent-shift-x: 16px;
-  --office-agent-shift-y: -8px;
+  --office-agent-shift-x: -18px;
+  --office-agent-shift-y: -12px;
 }
 
 .office-floor-agent[data-profession-prop='trading'] {
@@ -6077,6 +6077,11 @@
   z-index: 6;
 }
 
+.office-desk[data-agent-id='agent-shturman'],
+.office-desk[data-agent-id='agent-rezhyser'] {
+  z-index: 6;
+}
+
 .office-desk[data-agent-id='agent-verstalnyk'] .office-desk__label {
   width: 96px;
   max-width: 96px;
@@ -6134,13 +6139,13 @@
 }
 
 .office-desk[data-agent-id='agent-verstalnyk'] .office-desk__label {
-  width: 92px;
-  max-width: 92px;
-  transform: translate(-18%, 11px);
+  width: 82px;
+  max-width: 82px;
+  transform: translate(-58%, -2px);
 }
 
 .office-desk[data-agent-id='agent-varta'] .office-desk__label {
-  transform: translate(6%, 12px);
+  transform: translate(-10%, 9px);
 }
 
 .office-desk[data-agent-id='agent-bastion'] .office-desk__label {
@@ -6151,6 +6156,10 @@
 .office-desk[data-agent-id='agent-vitryna'] .office-desk__label,
 .office-desk[data-agent-id='agent-rezhyser'] .office-desk__label {
   background: rgba(8, 9, 8, 0.18);
+}
+
+.office-desk[data-agent-id='agent-rezhyser'] .office-desk__label {
+  transform: translate(-76%, -2px);
 }
 
 @media (max-width: 540px) {
@@ -6168,22 +6177,22 @@
 
   .office-desk__label {
     top: calc(50% - 31px);
-    max-width: 68px;
+    max-width: 72px;
     padding: 1px 3px 2px;
     background: rgba(8, 9, 8, 0.18);
     border-color: rgba(244, 241, 234, 0.06);
   }
 
   .office-desk__label strong {
-    min-width: 62px;
+    min-width: 64px;
     font-size: 0.5rem;
     line-height: 1;
   }
 
   .office-desk[data-agent-id='agent-verstalnyk'] .office-desk__label {
-    width: 78px;
-    max-width: 78px;
-    transform: translate(-28%, 8px);
+    width: 70px;
+    max-width: 70px;
+    transform: translate(-62%, 2px);
   }
 
   .office-desk[data-agent-id='agent-verstalnyk'] .office-desk__label strong {
@@ -6192,7 +6201,7 @@
   }
 
   .office-desk[data-agent-id='agent-shturman'] .office-desk__label {
-    transform: translate(-76%, -5px);
+    transform: translate(-12%, -5px);
   }
 
   .office-desk[data-agent-id='agent-spec'] .office-desk__label {
@@ -6204,7 +6213,11 @@
   }
 
   .office-desk[data-agent-id='agent-varta'] .office-desk__label {
-    transform: translate(2%, 9px);
+    transform: translate(-14%, 8px);
+  }
+
+  .office-desk[data-agent-id='agent-rezhyser'] .office-desk__label {
+    transform: translate(-92%, -10px);
   }
 }
 

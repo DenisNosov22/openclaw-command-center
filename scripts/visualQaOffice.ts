@@ -263,16 +263,16 @@ async function verifyOfficeDom(page: Page) {
     }
 
     const checks = [
-      ['agent-krab', getCenter(".office-floor-agent[data-agent-id='agent-krab']"), 38, 64, 34, 56],
-      ['agent-dev', getCenter(".office-floor-agent[data-agent-id='agent-dev']"), 7, 34, 34, 58],
-      ['agent-varta', getCenter(".office-floor-agent[data-agent-id='agent-varta']"), 20, 45, 32, 62],
-      ['agent-shturman', getCenter(".office-floor-agent[data-agent-id='agent-shturman']"), 6, 36, 18, 44],
-      ['agent-spec', getCenter(".office-floor-agent[data-agent-id='agent-spec']"), 4, 22, 22, 42],
+      ['agent-krab', getCenter(".office-floor-agent[data-agent-id='agent-krab']"), 38, 64, 28, 56],
+      ['agent-dev', getCenter(".office-floor-agent[data-agent-id='agent-dev']"), 7, 34, 36, 60],
+      ['agent-varta', getCenter(".office-floor-agent[data-agent-id='agent-varta']"), 24, 48, 58, 78],
+      ['agent-shturman', getCenter(".office-floor-agent[data-agent-id='agent-shturman']"), 8, 36, 18, 44],
+      ['agent-spec', getCenter(".office-floor-agent[data-agent-id='agent-spec']"), 20, 42, 28, 48],
       ['agent-bastion', getCenter(".office-floor-agent[data-agent-id='agent-bastion']"), 4, 34, 62, 90],
       ['agent-desk', getCenter(".office-floor-agent[data-agent-id='agent-desk']"), 48, 76, 58, 84],
-      ['agent-verstalnyk', getCenter(".office-floor-agent[data-agent-id='agent-verstalnyk']"), 2, 20, 30, 56],
+      ['agent-verstalnyk', getCenter(".office-floor-agent[data-agent-id='agent-verstalnyk']"), 62, 84, 42, 66],
       ['agent-vitryna', getCenter(".office-floor-agent[data-agent-id='agent-vitryna']"), 62, 88, 24, 54],
-      ['agent-rezhyser', getCenter(".office-floor-agent[data-agent-id='agent-rezhyser']"), 70, 98, 60, 88],
+      ['agent-rezhyser', getCenter(".office-floor-agent[data-agent-id='agent-rezhyser']"), 66, 94, 58, 86],
     ] as const
 
     return checks.map(([id, center, minX, maxX, minY, maxY]) => {
@@ -307,9 +307,6 @@ async function verifyOfficeDom(page: Page) {
     const topLeftPcAgentIds = [
       'agent-dev',
       'agent-shturman',
-      'agent-spec',
-      'agent-varta',
-      'agent-verstalnyk',
     ]
 
     return topLeftPcAgentIds
@@ -334,7 +331,88 @@ async function verifyOfficeDom(page: Page) {
   assert.deepEqual(
     topLeftPcClusterIssues,
     [],
-    `Unplaced agents should resolve into the top-left PC cluster near Штурман: ${topLeftPcClusterIssues.join('; ')}`,
+    `Only dev/research home agents should remain in the top-left PC cluster: ${topLeftPcClusterIssues.join('; ')}`,
+  )
+
+  const redistributedRoleIssues = await page.evaluate(() => {
+    if (window.innerWidth <= 430) {
+      return []
+    }
+
+    const office = document.querySelector<HTMLElement>('.isometric-office')
+    const officeBox = office?.getBoundingClientRect()
+
+    if (!officeBox) {
+      return ['missing office bounds']
+    }
+
+    const getCenter = (agentId: string) => {
+      const element = document.querySelector<HTMLElement>(`.office-floor-agent[data-agent-id='${agentId}']`)
+      const box = element?.getBoundingClientRect()
+
+      return box
+        ? {
+            x: ((box.left + box.width / 2 - officeBox.left) / officeBox.width) * 100,
+            y: ((box.top + box.height / 2 - officeBox.top) / officeBox.height) * 100,
+          }
+        : undefined
+    }
+
+    const checks = [
+      ['agent-verstalnyk', getCenter('agent-verstalnyk'), 62, 84, 42, 66],
+      ['agent-varta', getCenter('agent-varta'), 24, 48, 58, 78],
+      ['agent-spec', getCenter('agent-spec'), 20, 42, 28, 48],
+    ] as const
+
+    return checks.map(([id, center, minX, maxX, minY, maxY]) => {
+      if (!center) {
+        return `${id}: missing`
+      }
+
+      return center.x >= minX && center.x <= maxX && center.y >= minY && center.y <= maxY
+        ? ''
+        : `${id}: ${Math.round(center.x)},${Math.round(center.y)} outside redistributed home zone`
+    }).filter(Boolean)
+  })
+
+  assert.deepEqual(
+    redistributedRoleIssues,
+    [],
+    `Layout/QA/Spec agents should be distributed to role-appropriate furniture: ${redistributedRoleIssues.join('; ')}`,
+  )
+
+  const stationaryCentralWalkwayIssues = await page.evaluate(() => {
+    const office = document.querySelector<HTMLElement>('.isometric-office')
+    const officeBox = office?.getBoundingClientRect()
+
+    if (!officeBox) {
+      return ['missing office bounds']
+    }
+
+    return [...document.querySelectorAll<HTMLElement>(".office-floor-agent[data-physical-agent='true']")]
+      .map((agent) => {
+        const posture = agent.dataset.agentPosture
+
+        if (posture === 'walking' || posture === 'handoff') {
+          return ''
+        }
+
+        const box = agent.getBoundingClientRect()
+        const x = ((box.left + box.width / 2 - officeBox.left) / officeBox.width) * 100
+        const y = ((box.top + box.height / 2 - officeBox.top) / officeBox.height) * 100
+        const inCentralWalkway = x >= 38 && x <= 62 && y >= 47 && y <= 64
+
+        return inCentralWalkway
+          ? `${agent.dataset.agentId ?? 'unknown'}: ${Math.round(x)},${Math.round(y)}`
+          : ''
+      })
+      .filter(Boolean)
+  })
+
+  assert.deepEqual(
+    stationaryCentralWalkwayIssues,
+    [],
+    `Inactive/home agents should not occupy the central wooden movement corridor: ${stationaryCentralWalkwayIssues.join('; ')}`,
   )
 
   assert.equal(await page.locator('.office-core, .command-core').count(), 0, 'Large central core/card block should not render in the office scene')
@@ -563,9 +641,6 @@ async function verifyOfficeDom(page: Page) {
     const topLeftPcAgentIds = new Set([
       'agent-dev',
       'agent-shturman',
-      'agent-spec',
-      'agent-varta',
-      'agent-verstalnyk',
     ])
     const xs = desks.map((desk) => desk.x)
     const ys = desks.map((desk) => desk.y)
