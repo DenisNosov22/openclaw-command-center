@@ -10,6 +10,18 @@ import {
   OFFICE_ZONE_TOKENS,
 } from './IsometricOfficeSpriteSystem'
 
+function getOfficeFloorAgentClassName(station: ReturnType<typeof createOfficeSceneViewModel>['stations'][number]) {
+  return [
+    'office-floor-agent',
+    `office-floor-agent--${station.lane}`,
+    `office-floor-agent--posture-${station.simulation.posture}`,
+    `office-floor-agent--activity-${station.simulation.activity}`,
+    `office-floor-agent--path-${station.simulation.pathId}`,
+    `office-floor-agent--zone-${station.simulation.zoneId}`,
+    station.choreography.className,
+  ].join(' ')
+}
+
 interface IsometricOfficeSceneProps {
   agents: Agent[]
   tasks: Task[]
@@ -168,12 +180,16 @@ export function IsometricOfficeScene({
       <div className="office-agent-floor" aria-hidden="true">
         {stations.map((station) => (
           <span
-            className={`office-floor-agent office-floor-agent--${station.lane} ${station.choreography.className}`}
+            className={getOfficeFloorAgentClassName(station)}
             data-action-phase={station.choreography.phaseLabel}
             data-activity-state={station.activityState}
             data-agent-id={station.agentId}
+            data-agent-activity={station.simulation.activity}
             data-agent-path={station.simulation.pathId}
             data-agent-posture={station.simulation.posture}
+            data-agent-target={`${station.simulation.target.x},${station.simulation.target.y}`}
+            data-current-task={station.currentTask}
+            data-office-zone={station.simulation.zoneId}
             data-physical-agent="true"
             data-route-involved={station.choreography.routeInvolvement}
             key={`floor-agent-${station.id}`}
@@ -181,8 +197,10 @@ export function IsometricOfficeScene({
               '--office-agent-delay': station.choreography.animationDelay,
               '--office-agent-duration': station.choreography.animationDuration,
               '--office-agent-tempo': station.choreography.tempo,
-              '--office-agent-x': `${station.x}%`,
-              '--office-agent-y': `${station.y}%`,
+              '--office-agent-target-x': `${station.simulation.target.x}%`,
+              '--office-agent-target-y': `${station.simulation.target.y}%`,
+              '--office-agent-x': `${station.simulation.position.x}%`,
+              '--office-agent-y': `${station.simulation.position.y}%`,
             } as CSSProperties}
           >
             <span className={getOfficeAgentMarkerClassName(station.action)}>

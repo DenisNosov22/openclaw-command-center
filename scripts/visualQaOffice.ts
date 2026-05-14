@@ -118,6 +118,11 @@ async function verifyOfficeDom(page: Page) {
   assert((await page.locator('.office-agent-sprite').count()) >= 4, 'Expected office agent sprites')
   assert((await page.locator('.office-agent-floor').count()) === 1, 'Expected physical agent floor layer')
   assert((await page.locator('.office-floor-agent[data-physical-agent="true"]').count()) >= 4, 'Expected physical agent sprites on the office floor')
+  assert((await page.locator('.office-floor-agent[data-agent-posture][data-agent-activity][data-agent-path][data-agent-target]').count()) >= 4, 'Expected simulation metadata on physical floor agents')
+  assert((await page.locator(".office-floor-agent[data-agent-posture='walking']").count()) >= 1, 'Expected at least one simulation walking posture')
+  assert((await page.locator(".office-floor-agent[data-agent-posture='working'], .office-floor-agent[data-agent-posture='sitting']").count()) >= 1, 'Expected at least one calmer desk posture')
+  assert((await page.locator(".office-floor-agent[data-agent-posture='handoff']").count()) >= 1, 'Expected at least one handoff posture')
+  assert((await page.locator(".office-floor-agent[data-agent-posture='blocked'], .office-floor-agent[data-agent-activity='monitoring']").count()) >= 1, 'Expected blocked or monitoring status marker state')
   assert((await page.locator('.office-desk .office-agent-sprite').count()) === 0, 'Office agents should not be rendered inside desk blocks')
   assert((await page.locator('.office-walker .office-agent-sprite').count()) >= 2, 'Expected sprite-like walking agents on route layer')
   assert((await page.locator('.office-monitor-stand').count()) >= 4, 'Expected monitor stands')
@@ -161,6 +166,28 @@ async function verifyOfficeDom(page: Page) {
         .count()
     ) >= 4,
     'Expected behavior choreography classes',
+  )
+
+  const agentsMissingSimulationPosition = await page.evaluate(() =>
+    [...document.querySelectorAll<HTMLElement>('.office-floor-agent[data-physical-agent="true"]')]
+      .map((agent) => {
+        const style = getComputedStyle(agent)
+        const x = style.getPropertyValue('--office-agent-x').trim()
+        const y = style.getPropertyValue('--office-agent-y').trim()
+        const targetX = style.getPropertyValue('--office-agent-target-x').trim()
+        const targetY = style.getPropertyValue('--office-agent-target-y').trim()
+
+        return x.endsWith('%') && y.endsWith('%') && targetX.endsWith('%') && targetY.endsWith('%')
+          ? ''
+          : `${agent.dataset.agentId ?? 'unknown'}: ${x}/${y} -> ${targetX}/${targetY}`
+      })
+      .filter(Boolean),
+  )
+
+  assert.deepEqual(
+    agentsMissingSimulationPosition,
+    [],
+    `Floor agents should expose simulation position and target CSS variables: ${agentsMissingSimulationPosition.join('; ')}`,
   )
 
   const oversizedLabels = await page.evaluate(() =>

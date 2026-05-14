@@ -118,8 +118,41 @@ for (const station of viewModel.stations) {
 
 const componentSource = readFileSync('src/features/command-room/IsometricOfficeScene.tsx', 'utf8')
 const modelSource = readFileSync('src/features/command-room/IsometricOfficeSceneModel.ts', 'utf8')
+const stylesheetSource = readFileSync('src/App.css', 'utf8')
 
 assert(!componentSource.includes('office-core'), 'Office scene must not reintroduce core block')
 assert(!componentSource.toLowerCase().includes('oval'), 'Office scene must not reintroduce oval layout')
 assert(!componentSource.toLowerCase().includes('orbital'), 'Office scene must not reintroduce orbit wording')
 assert(modelSource.includes('OfficeSimulationModel'), 'Office scene model should read from simulation model')
+assert(
+  componentSource.includes("'--office-agent-x': `${station.simulation.position.x}%`"),
+  'Floor agent x CSS variable should use simulation position',
+)
+assert(
+  componentSource.includes("'--office-agent-y': `${station.simulation.position.y}%`"),
+  'Floor agent y CSS variable should use simulation position',
+)
+assert(
+  componentSource.includes("'--office-agent-target-x': `${station.simulation.target.x}%`"),
+  'Floor agent target x CSS variable should use simulation target',
+)
+assert(
+  componentSource.includes('data-agent-activity={station.simulation.activity}'),
+  'Floor agent DOM should expose simulation activity',
+)
+assert(
+  componentSource.includes('office-floor-agent--posture-${station.simulation.posture}'),
+  'Floor agent class should expose simulation posture',
+)
+assert(
+  stylesheetSource.includes(".office-floor-agent[data-agent-posture='walking']"),
+  'Walking posture should have simulation-keyed floor styling',
+)
+assert(
+  stylesheetSource.includes(".office-floor-agent[data-agent-posture='blocked'] .office-agent-marker"),
+  'Blocked posture should have simulation-keyed marker styling',
+)
+assert(
+  stylesheetSource.includes('@media (prefers-reduced-motion: reduce)'),
+  'Reduced-motion behavior should stay protected',
+)
