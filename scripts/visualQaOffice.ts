@@ -123,7 +123,24 @@ async function verifyOfficeDom(page: Page) {
   assert((await page.locator('.office-monitor-stand').count()) >= 4, 'Expected monitor stands')
   assert((await page.locator('.office-keyboard-tray').count()) >= 4, 'Expected keyboard/tool trays')
   assert((await page.locator('[data-profession-prop]').count()) >= 9, 'Expected profession props at agent workstations')
+  assert((await page.locator('.office-activity-chip[data-activity-state]').count()) >= 9, 'Expected compact attached activity chips')
   assert((await page.locator('.office-task-bubble').count()) >= 9, 'Expected small action bubbles on physical agents')
+  for (const activityState of [
+    'coding',
+    'monitoring',
+    'researching',
+    'reviewing',
+    'checking',
+    'filming',
+    'designing',
+    'trading',
+    'coordinating',
+  ]) {
+    assert(
+      (await page.locator(`.office-desk[data-activity-state="${activityState}"]`).count()) >= 1,
+      `Expected ${activityState} desk activity state`,
+    )
+  }
   assert(
     (await page.locator('[data-action-phase]').count()) >= 4,
     'Expected agent action phase metadata',
@@ -144,6 +161,26 @@ async function verifyOfficeDom(page: Page) {
         .count()
     ) >= 4,
     'Expected behavior choreography classes',
+  )
+
+  const oversizedLabels = await page.evaluate(() =>
+    window.innerWidth <= 430
+      ? []
+      : [...document.querySelectorAll('.office-desk__label, .office-activity-chip, .office-task-bubble')]
+          .map((element, index) => {
+            const box = element.getBoundingClientRect()
+
+            return box.width > 96 || box.height > 30
+              ? `${element.className} ${index + 1}: ${Math.round(box.width)}x${Math.round(box.height)}`
+              : ''
+          })
+          .filter(Boolean),
+  )
+
+  assert.deepEqual(
+    oversizedLabels,
+    [],
+    `Office labels and chips should stay compact attached metadata, not dashboard cards: ${oversizedLabels.join('; ')}`,
   )
 }
 

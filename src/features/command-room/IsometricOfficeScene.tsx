@@ -111,9 +111,16 @@ export function IsometricOfficeScene({
           <button
             aria-label={`${isSelected ? 'Selected' : 'Select'} read-only office station ${station.name}: ${station.role}, ${station.activity} activity, ${station.terminalMode} terminal`}
             aria-pressed={isSelected}
-            className={getOfficeStationClassName(station.lane, station.activity, station.pulse, isSelected)}
+            className={getOfficeStationClassName(
+              station.lane,
+              station.activity,
+              station.pulse,
+              station.activityState,
+              isSelected,
+            )}
             data-agent-id={station.agentId}
             data-action-phase={station.choreography.phaseLabel}
+            data-activity-state={station.activityState}
             data-office-slot={station.slot}
             data-route-involved={station.choreography.routeInvolvement}
             key={station.id}
@@ -139,6 +146,13 @@ export function IsometricOfficeScene({
             </span>
             <span className={OFFICE_SPRITE_TOKENS.keyboardTray} aria-hidden="true" />
             <span className={OFFICE_SPRITE_TOKENS.worklog} aria-hidden="true" />
+            <span
+              aria-hidden="true"
+              className={OFFICE_SPRITE_TOKENS.activityChip}
+              data-activity-state={station.activityState}
+            >
+              {station.activityLabel}
+            </span>
             <span className={OFFICE_SPRITE_TOKENS.chair} aria-hidden="true" />
             <span className={getOfficeStatusLampClassName(station.tone)} />
             <span className={OFFICE_SPRITE_TOKENS.label}>
@@ -153,6 +167,7 @@ export function IsometricOfficeScene({
           <span
             className={`office-floor-agent office-floor-agent--${station.lane} ${station.choreography.className}`}
             data-action-phase={station.choreography.phaseLabel}
+            data-activity-state={station.activityState}
             data-agent-id={station.agentId}
             data-physical-agent="true"
             data-route-involved={station.choreography.routeInvolvement}

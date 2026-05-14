@@ -17,6 +17,17 @@ export type OfficeSpritePose =
 
 export type OfficeSpriteProp = 'none' | 'sofa' | 'signal' | 'tool'
 export type OfficeSpriteMotion = 'alert' | 'calm' | 'handoff' | 'rest' | 'walk' | 'work'
+export type OfficeActivityState =
+  | 'checking'
+  | 'coding'
+  | 'coordinating'
+  | 'designing'
+  | 'filming'
+  | 'monitoring'
+  | 'presenting'
+  | 'researching'
+  | 'reviewing'
+  | 'trading'
 
 export interface OfficeSpriteActionDefinition {
   action: OfficeStationAction
@@ -103,6 +114,7 @@ export const OFFICE_SPRITE_TOKENS = {
   monitorStand: 'office-monitor-stand',
   keyboardTray: 'office-keyboard-tray',
   worklog: 'office-desk-worklog',
+  activityChip: 'office-activity-chip',
   chair: 'office-chair',
   avatar: 'office-agent-avatar',
   marker: 'office-agent-marker',
@@ -145,6 +157,7 @@ export function getOfficeStationClassName(
   lane: string,
   activity: OfficeStationActivity,
   pulse: OfficeStationPulse,
+  activityState: OfficeActivityState,
   isSelected: boolean,
 ) {
   return [
@@ -152,6 +165,7 @@ export function getOfficeStationClassName(
     OFFICE_SPRITE_TOKENS.workstation,
     `office-desk--${lane}`,
     `office-desk--${activity}`,
+    `office-desk--state-${activityState}`,
     `office-desk--pulse-${pulse}`,
     isSelected ? 'office-desk--selected' : '',
   ].filter(Boolean).join(' ')

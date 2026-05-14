@@ -1,4 +1,5 @@
 import type { ActivityEvent, Agent, CommandCenterSnapshot, Task, WorkflowEdge } from '../../shared/types'
+import type { OfficeActivityState } from './IsometricOfficeSpriteSystem'
 
 export type OfficeStationAction =
   | 'alert'
@@ -56,6 +57,8 @@ export interface OfficeAgentStation {
   pulse: OfficeStationPulse
   terminalMode: OfficeTerminalMode
   professionProp: OfficeProfessionProp
+  activityState: OfficeActivityState
+  activityLabel: string
   taskBubble: string
   choreography: OfficeBehaviorChoreography
   slot: number
@@ -131,6 +134,31 @@ const roleProfessionProp: Record<string, OfficeProfessionProp> = {
   video: 'camera',
   'UI/layout': 'canvas',
   trading: 'trading',
+}
+
+const roleActivityState: Record<string, OfficeActivityState> = {
+  'main/orchestrator': 'coordinating',
+  coding: 'coding',
+  ops: 'monitoring',
+  research: 'researching',
+  requirements: 'reviewing',
+  QA: 'checking',
+  video: 'filming',
+  'UI/layout': 'designing',
+  trading: 'trading',
+}
+
+const roleActivityLabel: Record<OfficeActivityState, string> = {
+  checking: 'check',
+  coding: 'code',
+  coordinating: 'sync',
+  designing: 'grid',
+  filming: 'shot',
+  monitoring: 'ops',
+  presenting: 'board',
+  researching: 'scan',
+  reviewing: 'spec',
+  trading: 'chart',
 }
 
 const roleTaskBubble: Record<string, string> = {
@@ -354,6 +382,8 @@ export function createOfficeAgentStations(agents: Agent[], tasks: Task[]): Offic
       pulse: getStationPulse(agent, task),
       terminalMode: getTerminalMode(agent, task),
       professionProp: roleProfessionProp[agent.role] ?? 'command',
+      activityState: roleActivityState[agent.role] ?? 'presenting',
+      activityLabel: roleActivityLabel[roleActivityState[agent.role] ?? 'presenting'],
       taskBubble: roleTaskBubble[agent.role] ?? task?.nextStep ?? task?.title ?? 'watch',
       choreography: getStationChoreography(index, getStationAction(agent, task), agent.status),
       slot: index % officeStationLayout.length,
