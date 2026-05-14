@@ -235,7 +235,7 @@ export function createOfficeAgentStatusFixture(
       }
       const targetRole = targetRoleByRole[agent.role]
       const progressByRole: Partial<Record<Agent['role'], number>> = {
-        coding: 0.86,
+        coding: 0.58,
         marketing: 0.74,
       }
 

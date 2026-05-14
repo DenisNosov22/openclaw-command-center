@@ -3602,23 +3602,23 @@
 }
 
 .office-floor-agent[data-agent-id='agent-krab']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) {
-  --office-agent-shift-x: 0px;
-  --office-agent-shift-y: 0px;
+  --office-agent-shift-x: -4px;
+  --office-agent-shift-y: 12px;
 }
 
 .office-floor-agent[data-agent-id='agent-dev']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) {
-  --office-agent-shift-x: 0px;
-  --office-agent-shift-y: 0px;
+  --office-agent-shift-x: 8px;
+  --office-agent-shift-y: 18px;
 }
 
 .office-floor-agent[data-agent-id='agent-varta']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) {
-  --office-agent-shift-x: 0px;
-  --office-agent-shift-y: 0px;
+  --office-agent-shift-x: 6px;
+  --office-agent-shift-y: 16px;
 }
 
 .office-floor-agent[data-agent-id='agent-shturman']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) {
-  --office-agent-shift-x: 0px;
-  --office-agent-shift-y: 0px;
+  --office-agent-shift-x: 8px;
+  --office-agent-shift-y: 18px;
 }
 
 .office-floor-agent[data-agent-id='agent-spec']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) {
@@ -3627,18 +3627,18 @@
 }
 
 .office-floor-agent[data-agent-id='agent-bastion']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) {
-  --office-agent-shift-x: 0px;
-  --office-agent-shift-y: 0px;
+  --office-agent-shift-x: 10px;
+  --office-agent-shift-y: -4px;
 }
 
 .office-floor-agent[data-agent-id='agent-desk']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) {
-  --office-agent-shift-x: 0px;
-  --office-agent-shift-y: 0px;
+  --office-agent-shift-x: -8px;
+  --office-agent-shift-y: -8px;
 }
 
 .office-floor-agent[data-agent-id='agent-verstalnyk']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) {
-  --office-agent-shift-x: 0px;
-  --office-agent-shift-y: 0px;
+  --office-agent-shift-x: -10px;
+  --office-agent-shift-y: -8px;
 }
 
 .office-floor-agent[data-agent-id='agent-vitryna']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) {
@@ -3647,7 +3647,7 @@
 }
 
 .office-floor-agent[data-agent-id='agent-rezhyser']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) {
-  --office-agent-shift-x: 0px;
+  --office-agent-shift-x: -12px;
   --office-agent-shift-y: 0px;
 }
 
@@ -4198,6 +4198,15 @@
   opacity: 0.26;
 }
 
+.office-floor-agent:not([data-agent-posture='walking']):not([data-agent-posture='handoff']):not([data-status-badge='blocked']):not([data-status-badge='failed']) .office-agent-status-cue {
+  opacity: 0.001;
+}
+
+.office-floor-agent:not([data-agent-posture='walking']):not([data-agent-posture='handoff']):not([data-status-badge='blocked']):not([data-status-badge='failed']) .office-agent-action-cue,
+.office-floor-agent:not([data-agent-posture='walking']):not([data-agent-posture='handoff']):not([data-status-badge='blocked']):not([data-status-badge='failed']) .office-agent-signal-prop {
+  opacity: 0.001;
+}
+
 .office-floor-agent:not([data-status-badge='running']):not([data-agent-posture='handoff']) .office-agent-action-cue {
   opacity: 0.42;
 }
@@ -4211,6 +4220,11 @@
 .office-floor-agent[data-status-badge='running'] .office-agent-action-cue,
 .office-floor-agent[data-agent-posture='handoff'] .office-agent-action-cue {
   opacity: 0.82;
+}
+
+.office-floor-agent[data-status-badge='running']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) .office-agent-action-cue,
+.office-floor-agent[data-status-badge='running']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) .office-agent-signal-prop {
+  opacity: 0.001;
 }
 
 .office-agent-route-map {
@@ -4240,6 +4254,10 @@
 
 .office-transfer::before {
   content: '';
+}
+
+.office-desk:not(.office-desk--selected):not(:hover):not(:focus-visible):not([data-status-badge='blocked']):not([data-status-badge='failed']) .office-desk__label {
+  opacity: 0;
 }
 
 .snapshot-state {
@@ -6259,6 +6277,35 @@
 
   .office-desk[data-agent-id='agent-rezhyser'] .office-desk__label {
     transform: translate(-92%, -10px);
+  }
+
+  .office-desk .office-desk__label {
+    display: none;
+  }
+
+  .office-desk--selected .office-desk__label,
+  .office-desk[data-status-badge='blocked'] .office-desk__label,
+  .office-desk[data-status-badge='failed'] .office-desk__label {
+    display: none;
+  }
+
+  .office-desk--selected .office-desk__label strong,
+  .office-desk[data-status-badge='blocked'] .office-desk__label strong,
+  .office-desk[data-status-badge='failed'] .office-desk__label strong {
+    min-width: 0;
+    font-size: 0.48rem;
+    white-space: normal;
+  }
+
+  .office-agent-status-cue,
+  .office-agent-action-cue,
+  .office-agent-signal-prop {
+    transform: scale(0.82);
+  }
+
+  .office-floor-agent:not([data-agent-posture='walking']):not([data-agent-posture='handoff']):not([data-status-badge='blocked']):not([data-status-badge='failed']) .office-agent-status-cue,
+  .office-floor-agent:not([data-status-badge='blocked']):not([data-status-badge='failed']) .office-agent-action-cue {
+    opacity: 0.001;
   }
 }
 

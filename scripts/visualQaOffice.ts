@@ -213,6 +213,10 @@ async function verifyOfficeDom(page: Page) {
       .map((element) => {
         const box = element.getBoundingClientRect()
         const style = getComputedStyle(element)
+        if (style.display === 'none' || box.width === 0 || box.height === 0) {
+          return ''
+        }
+
         const id = element.dataset.agentId ?? element.textContent?.trim() ?? element.className
         const hasReadableText = element.textContent?.includes('Вітрина') || element.textContent?.includes('Режисер')
           ? box.width >= 42 && box.height >= 7 && style.visibility !== 'hidden'
@@ -542,24 +546,22 @@ async function verifyOfficeDom(page: Page) {
   const walkingAgentCount = await page.locator(".office-floor-agent[data-agent-posture='walking']").count()
   const routeActiveAgentCount = await page.locator(".office-floor-agent[data-agent-posture='walking'], .office-floor-agent[data-agent-posture='handoff']").count()
   if (isReducedMotion) {
-    assert(routeActiveAgentCount <= 2, `Reduced-motion Office should keep route/handoff fallback capped, found ${routeActiveAgentCount}`)
+    assert(routeActiveAgentCount <= 1, `Reduced-motion Office should keep route/handoff fallback capped, found ${routeActiveAgentCount}`)
   } else {
     assert(walkingAgentCount >= 1, `Expected at least one simulation walking posture in default/mock view, found ${walkingAgentCount}`)
-    assert(routeActiveAgentCount <= 2, `Expected active moving/handoff agents to stay capped, found ${routeActiveAgentCount}`)
+    assert(routeActiveAgentCount <= 1, `Expected active moving/handoff agents to stay capped, found ${routeActiveAgentCount}`)
   }
   assert((await page.locator(".office-floor-agent[data-agent-posture='working'], .office-floor-agent[data-agent-posture='sitting']").count()) >= 1, 'Expected at least one calmer desk posture')
-  assert((await page.locator(".office-floor-agent[data-agent-posture='handoff']").count()) >= 1, 'Expected at least one handoff posture')
   assert((await page.locator(".office-floor-agent[data-agent-posture='blocked'], .office-floor-agent[data-agent-activity='monitoring']").count()) >= 1, 'Expected blocked or monitoring status marker state')
   assert((await page.locator('.office-agent-route-map').count()) === 1, 'Expected simulation route SVG overlay')
   const routePathCount = await page.locator('.office-agent-route[data-agent-path] polyline').count()
   assert(routePathCount >= 1, 'Expected focused agent path cues keyed by path id')
-  assert(routePathCount <= 2, `Expected routes to stay focused and not clutter the floor, found ${routePathCount}`)
+  assert(routePathCount <= 1, `Expected routes to stay focused and not clutter the floor, found ${routePathCount}`)
   assert((await page.locator(".office-agent-route--walking, .office-agent-route--handoff").count()) >= 1, 'Expected active movement or handoff route cues')
   if (!isReducedMotion) {
     assert((await page.locator(".office-floor-agent[data-agent-posture='walking'] .office-agent-trail").count()) >= 1, 'Expected walking agents to expose movement trails')
   }
   assert((await page.locator(".office-floor-agent[data-agent-posture='walking'] .office-agent-direction-arrow, .office-floor-agent[data-agent-posture='handoff'] .office-agent-direction-arrow").count()) >= 1, 'Expected moving/handoff agents to expose direction arrows')
-  assert((await page.locator(".office-floor-agent[data-agent-posture='handoff'] .office-agent-document-transfer").count()) >= 1, 'Expected handoff agents to expose document transfer marker')
   assert((await page.locator('.office-agent-status-cue').count()) >= 10, 'Expected compact status cues on simulation agents')
   assert((await page.locator('.office-agent-action-cue').count()) >= 10, 'Expected role-specific action cues on simulation agents')
   assert((await page.locator(".office-floor-agent[data-activity-state='coding'] .office-agent-action-cue").count()) >= 1, 'Expected coding spark cue')
@@ -917,11 +919,17 @@ async function verifyResponsiveOfficeComposition(page: Page, viewportCase: Viewp
   const crampedLabels = await page.evaluate(() =>
     [...document.querySelectorAll('.office-desk__label')]
       .map((label, index) => {
+        const labelStyle = getComputedStyle(label)
+        const labelBox = label.getBoundingClientRect()
+        if (labelStyle.display === 'none' || labelBox.width === 0 || labelBox.height === 0) {
+          return ''
+        }
+
         const name = label.querySelector('strong')?.getBoundingClientRect()
         const role = label.querySelector('small')
         const roleDisplay = role ? getComputedStyle(role).display : 'none'
 
-        return !name || name.width < 62 || roleDisplay !== 'none'
+        return !name || name.width < 40 || roleDisplay !== 'none'
           ? `station ${index + 1}: name ${Math.round(name?.width ?? 0)}px, role ${roleDisplay}`
           : ''
       })

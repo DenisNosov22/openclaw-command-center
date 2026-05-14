@@ -96,29 +96,29 @@ export type OfficeStationPulse = 'active' | 'calm' | 'danger' | 'idle'
 export type OfficeTerminalMode = 'idle' | 'monitoring' | 'typing'
 
 const officeStationLayout: Array<Pick<OfficeAgentStation, 'x' | 'y' | 'lane'>> = [
-  { x: 48, y: 37, lane: 'south' },
-  { x: 20, y: 45, lane: 'north' },
-  { x: 24, y: 74, lane: 'south' },
+  { x: 46, y: 35, lane: 'south' },
+  { x: 17, y: 46, lane: 'north' },
+  { x: 20, y: 78, lane: 'south' },
   { x: 13, y: 29, lane: 'north' },
-  { x: 44, y: 33, lane: 'east' },
-  { x: 28, y: 45, lane: 'north' },
-  { x: 88, y: 76, lane: 'east' },
-  { x: 78, y: 58, lane: 'east' },
-  { x: 84, y: 48, lane: 'east' },
-  { x: 63, y: 73, lane: 'south' },
+  { x: 42, y: 31, lane: 'east' },
+  { x: 25, y: 43, lane: 'north' },
+  { x: 87, y: 75, lane: 'east' },
+  { x: 76, y: 63, lane: 'east' },
+  { x: 86, y: 46, lane: 'east' },
+  { x: 64, y: 82, lane: 'south' },
 ]
 
 const roleOfficeLayout: Record<string, Pick<OfficeAgentStation, 'x' | 'y' | 'lane'>> = {
-  'main/orchestrator': { x: 48, y: 37, lane: 'south' },
-  coding: { x: 20, y: 45, lane: 'north' },
-  ops: { x: 24, y: 74, lane: 'south' },
+  'main/orchestrator': { x: 46, y: 35, lane: 'south' },
+  coding: { x: 17, y: 46, lane: 'north' },
+  ops: { x: 20, y: 78, lane: 'south' },
   research: { x: 13, y: 29, lane: 'north' },
-  requirements: { x: 44, y: 33, lane: 'east' },
-  QA: { x: 28, y: 45, lane: 'north' },
-  video: { x: 88, y: 76, lane: 'east' },
-  'UI/layout': { x: 78, y: 58, lane: 'east' },
-  marketing: { x: 84, y: 48, lane: 'east' },
-  trading: { x: 63, y: 73, lane: 'south' },
+  requirements: { x: 42, y: 31, lane: 'east' },
+  QA: { x: 25, y: 43, lane: 'north' },
+  video: { x: 87, y: 75, lane: 'east' },
+  'UI/layout': { x: 76, y: 63, lane: 'east' },
+  marketing: { x: 86, y: 46, lane: 'east' },
+  trading: { x: 64, y: 82, lane: 'south' },
 }
 
 const roleLabel: Record<string, string> = {
