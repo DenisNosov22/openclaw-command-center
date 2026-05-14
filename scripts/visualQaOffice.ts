@@ -119,6 +119,11 @@ async function verifyOfficeDom(page: Page) {
   await expectVisible(page.locator('.office-rug--center'), 'Central office rug/path')
   await expectVisible(page.locator('.office-cabinet--ops'), 'Ops cabinet/server furniture')
   await expectVisible(page.locator('.office-whiteboard--research'), 'Research whiteboard/search wall')
+  await expectVisible(page.locator('.office-social-board--marketing'), 'Marketing visuals/social board')
+  await expectVisible(page.locator(".office-desk[data-agent-id='agent-vitryna']"), 'Вітрина marketing visuals desk')
+  await expectVisible(page.locator(".office-floor-agent[data-agent-id='agent-vitryna'][data-physical-agent='true']"), 'Вітрина physical office agent')
+  await expectVisible(page.locator(".office-floor-agent[data-agent-id='agent-vitryna'] .office-agent-state-badge"), 'Вітрина state badge')
+  await expectVisible(page.locator(".office-floor-agent[data-agent-id='agent-vitryna'] .office-task-bubble"), 'Вітрина task bubble')
 
   assert.equal(await page.locator('.office-core, .command-core').count(), 0, 'Large central core/card block should not render in the office scene')
   assert((await page.locator('.office-desk').count()) >= 4, 'Expected multiple office stations')
@@ -140,12 +145,12 @@ async function verifyOfficeDom(page: Page) {
   assert((await page.locator(".office-floor-agent[data-agent-posture='handoff'] .office-agent-document-transfer").count()) >= 1, 'Expected handoff agents to expose document transfer marker')
   assert((await page.locator('.office-agent-state-badge').count()) >= 4, 'Expected compact state badges on simulation agents')
   assert((await page.locator('.office-desk .office-agent-sprite').count()) === 0, 'Office agents should not be rendered inside desk blocks')
-  assert((await page.locator('.office-walker .office-agent-sprite').count()) >= 2, 'Expected sprite-like walking agents on route layer')
+  assert.equal(await page.locator('.office-walkers, .office-walker').count(), 0, 'Standalone walking overlay should not render')
   assert((await page.locator('.office-monitor-stand').count()) >= 4, 'Expected monitor stands')
   assert((await page.locator('.office-keyboard-tray').count()) >= 4, 'Expected keyboard/tool trays')
-  assert((await page.locator('[data-profession-prop]').count()) >= 9, 'Expected profession props at agent workstations')
-  assert((await page.locator('.office-activity-chip[data-activity-state]').count()) >= 9, 'Expected compact attached activity chips')
-  assert((await page.locator('.office-task-bubble').count()) >= 9, 'Expected small action bubbles on physical agents')
+  assert((await page.locator('[data-profession-prop]').count()) >= 10, 'Expected profession props at agent workstations')
+  assert((await page.locator('.office-activity-chip[data-activity-state]').count()) >= 10, 'Expected compact attached activity chips')
+  assert((await page.locator('.office-task-bubble').count()) >= 10, 'Expected small action bubbles on physical agents')
   for (const activityState of [
     'coding',
     'monitoring',
@@ -154,6 +159,7 @@ async function verifyOfficeDom(page: Page) {
     'checking',
     'filming',
     'designing',
+    'presenting',
     'trading',
     'coordinating',
   ]) {
@@ -231,7 +237,7 @@ async function verifyOfficeDom(page: Page) {
       .map((element, index) => {
         const box = element.getBoundingClientRect()
 
-        return box.width > 86 || box.height > 28
+        return box.width > 112 || box.height > 30
           ? `source ${index + 1}: ${Math.round(box.width)}x${Math.round(box.height)}`
           : ''
       })
@@ -346,7 +352,6 @@ async function verifyReducedMotionOffice(page: Page) {
       '.office-agent-signal-prop',
       '.office-agent-sprite__legs',
       '.office-floor-agent',
-      '.office-walker',
       '.office-handoff-hub',
       '.office-transfer',
     ]

@@ -92,6 +92,7 @@ const roleLabel: Record<string, string> = {
   QA: 'якість',
   video: 'відео',
   'UI/layout': 'інтерфейс',
+  marketing: 'вітрина',
   trading: 'трейдинг',
 }
 
@@ -544,7 +545,8 @@ export function CommandRoomPage() {
                   role="status"
                   title={officeSourceIndicator.title}
                 >
-                  {officeSourceIndicator.label}
+                  <span>src</span>
+                  <strong>{officeSourceIndicator.label}</strong>
                 </span>
               ) : null}
               <div className="stage-stats" aria-label="Метрики активних задач">

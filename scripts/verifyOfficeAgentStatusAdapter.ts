@@ -18,6 +18,7 @@ const agents: Agent[] = [
   { id: 'agent-varta', name: 'Варта', role: 'QA', status: 'blocked', currentTaskId: 'task-qa' },
   { id: 'agent-rezhyser', name: 'Режисер', role: 'video', status: 'idle', currentTaskId: 'task-video' },
   { id: 'agent-verstalnyk', name: 'Верстальник', role: 'UI/layout', status: 'done', currentTaskId: 'task-layout' },
+  { id: 'agent-vitryna', name: 'Вітрина', role: 'marketing', status: 'working', currentTaskId: 'task-marketing' },
   { id: 'agent-desk', name: 'Деск', role: 'trading', status: 'error', currentTaskId: 'task-trading' },
 ]
 

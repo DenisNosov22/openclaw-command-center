@@ -74,6 +74,15 @@ const snapshot: CommandCenterSnapshot = {
       lastSeen: '2026-05-13T13:06:00Z',
     },
     {
+      id: 'agent-vitryna',
+      name: 'Вітрина 🖼️',
+      role: 'marketing',
+      status: 'working',
+      currentTaskId: 'task-marketing-visuals',
+      summary: 'Готує marketing visuals, соціальні превʼю і вітринні матеріали для command center.',
+      lastSeen: '2026-05-13T13:12:00Z',
+    },
+    {
       id: 'agent-desk',
       name: 'Деск 💹',
       role: 'trading',
@@ -157,6 +166,15 @@ const snapshot: CommandCenterSnapshot = {
       nextStep: 'Перевірити timeline',
       blockerReason: 'Video workflows відкладені до окремого продуктового кроку.',
     },
+    {
+      id: 'task-marketing-visuals',
+      title: 'Marketing visuals board',
+      status: 'in_progress',
+      ownerAgentId: 'agent-vitryna',
+      priority: 'medium',
+      dependency: 'Layout screenshots',
+      nextStep: 'Оновити social preview',
+    },
   ],
   activity: [
     {
@@ -208,6 +226,14 @@ const snapshot: CommandCenterSnapshot = {
       summary: 'Graphite panels і gold highlights прийняті як базова тема.',
     },
     {
+      id: 'event-006b',
+      timestamp: '2026-05-13T13:12:00Z',
+      agentId: 'agent-vitryna',
+      category: 'task',
+      severity: 'success',
+      summary: 'Вітрина готує marketing visuals і social preview materials.',
+    },
+    {
       id: 'event-007',
       timestamp: '2026-05-13T13:03:00Z',
       agentId: 'agent-krab',
@@ -257,6 +283,14 @@ const snapshot: CommandCenterSnapshot = {
         lane: 'UI',
         x: 82,
         y: 36,
+      },
+      {
+        id: 'workflow-vitryna',
+        agentId: 'agent-vitryna',
+        label: 'Вітрина',
+        lane: 'Marketing',
+        x: 82,
+        y: 52,
       },
       {
         id: 'workflow-varta',
@@ -335,6 +369,18 @@ const snapshot: CommandCenterSnapshot = {
         from: 'workflow-verstalnyk',
         to: 'workflow-varta',
         label: 'visual QA',
+      },
+      {
+        id: 'edge-verstalnyk-vitryna',
+        from: 'workflow-verstalnyk',
+        to: 'workflow-vitryna',
+        label: 'visuals',
+      },
+      {
+        id: 'edge-vitryna-varta',
+        from: 'workflow-vitryna',
+        to: 'workflow-varta',
+        label: 'preview QA',
       },
       {
         id: 'edge-varta-bastion',

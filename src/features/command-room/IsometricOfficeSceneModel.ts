@@ -97,26 +97,28 @@ export type OfficeTerminalMode = 'idle' | 'monitoring' | 'typing'
 
 const officeStationLayout: Array<Pick<OfficeAgentStation, 'x' | 'y' | 'lane'>> = [
   { x: 18, y: 51, lane: 'west' },
-  { x: 30, y: 43, lane: 'north' },
-  { x: 77, y: 28, lane: 'east' },
-  { x: 32, y: 22, lane: 'north' },
-  { x: 58, y: 23, lane: 'north' },
-  { x: 29, y: 70, lane: 'south' },
-  { x: 79, y: 68, lane: 'east' },
-  { x: 58, y: 71, lane: 'south' },
-  { x: 78, y: 48, lane: 'east' },
+  { x: 25, y: 38, lane: 'north' },
+  { x: 85, y: 22, lane: 'east' },
+  { x: 24, y: 20, lane: 'north' },
+  { x: 58, y: 19, lane: 'north' },
+  { x: 20, y: 77, lane: 'south' },
+  { x: 88, y: 81, lane: 'east' },
+  { x: 47, y: 76, lane: 'south' },
+  { x: 68, y: 61, lane: 'south' },
+  { x: 88, y: 46, lane: 'east' },
 ]
 
 const roleOfficeLayout: Record<string, Pick<OfficeAgentStation, 'x' | 'y' | 'lane'>> = {
   'main/orchestrator': { x: 18, y: 51, lane: 'west' },
-  coding: { x: 30, y: 43, lane: 'north' },
-  ops: { x: 77, y: 28, lane: 'east' },
-  research: { x: 32, y: 22, lane: 'north' },
-  requirements: { x: 58, y: 23, lane: 'north' },
-  QA: { x: 29, y: 70, lane: 'south' },
-  video: { x: 79, y: 68, lane: 'east' },
-  'UI/layout': { x: 58, y: 71, lane: 'south' },
-  trading: { x: 78, y: 48, lane: 'east' },
+  coding: { x: 25, y: 38, lane: 'north' },
+  ops: { x: 85, y: 22, lane: 'east' },
+  research: { x: 24, y: 20, lane: 'north' },
+  requirements: { x: 58, y: 19, lane: 'north' },
+  QA: { x: 20, y: 77, lane: 'south' },
+  video: { x: 88, y: 81, lane: 'east' },
+  'UI/layout': { x: 47, y: 76, lane: 'south' },
+  marketing: { x: 68, y: 61, lane: 'south' },
+  trading: { x: 88, y: 46, lane: 'east' },
 }
 
 const roleLabel: Record<string, string> = {
@@ -128,6 +130,7 @@ const roleLabel: Record<string, string> = {
   QA: 'QA/Sec',
   video: 'Director',
   'UI/layout': 'Layout',
+  marketing: 'Вітрина',
   trading: 'Trading',
 }
 
@@ -140,6 +143,7 @@ const roleProfessionProp: Record<string, OfficeProfessionProp> = {
   QA: 'qa',
   video: 'camera',
   'UI/layout': 'canvas',
+  marketing: 'canvas',
   trading: 'trading',
 }
 
@@ -152,6 +156,7 @@ const roleActivityState: Record<string, OfficeActivityState> = {
   QA: 'checking',
   video: 'filming',
   'UI/layout': 'designing',
+  marketing: 'presenting',
   trading: 'trading',
 }
 
@@ -177,6 +182,7 @@ const roleTaskBubble: Record<string, string> = {
   QA: 'visual QA',
   video: 'shot list',
   'UI/layout': 'layout',
+  marketing: 'visuals',
   trading: 'market',
 }
 
@@ -265,7 +271,7 @@ function getAgentMarker(agent: Agent) {
 }
 
 function getAgentDisplayName(agent: Agent) {
-  return agent.name.replace(/\s*\p{Extended_Pictographic}/gu, '')
+  return agent.name.replace(/\s*\p{Extended_Pictographic}[\uFE0E\uFE0F]?/gu, '').trim()
 }
 
 function getStationActionFromSimulation(simulationState: OfficeAgentSimulationState): OfficeStationAction {

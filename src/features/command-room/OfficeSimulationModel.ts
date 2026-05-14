@@ -1,6 +1,13 @@
 import type { Agent, Task } from '../../shared/types'
 
-export type OfficeZoneId = 'command' | 'delivery' | 'ops' | 'research' | 'design' | 'market'
+export type OfficeZoneId =
+  | 'command'
+  | 'delivery'
+  | 'ops'
+  | 'research'
+  | 'design'
+  | 'marketing'
+  | 'market'
 export type OfficeDeskId =
   | 'desk-command'
   | 'desk-coding'
@@ -10,11 +17,13 @@ export type OfficeDeskId =
   | 'desk-qa'
   | 'desk-video'
   | 'desk-layout'
+  | 'desk-marketing'
   | 'desk-trading'
 export type OfficePathId =
   | 'path-command-delivery'
   | 'path-delivery-ops'
   | 'path-research-design'
+  | 'path-design-marketing'
   | 'path-market-handoff'
 export type OfficeAgentPosture =
   | 'blocked'
@@ -149,7 +158,12 @@ export const OFFICE_ZONES: OfficeZone[] = [
   {
     id: 'design',
     label: 'Design and media wall',
-    bounds: { x: 52, y: 62, width: 36, height: 18 },
+    bounds: { x: 46, y: 62, width: 23, height: 18 },
+  },
+  {
+    id: 'marketing',
+    label: 'Marketing visuals wall',
+    bounds: { x: 68, y: 60, width: 18, height: 20 },
   },
   {
     id: 'market',
@@ -174,7 +188,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'Developer',
     label: 'Coding',
     defaultAction: 'working',
-    point: { x: 30, y: 43 },
+    point: { x: 25, y: 38 },
     lane: 'north',
   },
   {
@@ -183,7 +197,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'Operator',
     label: 'Ops',
     defaultAction: 'monitoring',
-    point: { x: 77, y: 28 },
+    point: { x: 85, y: 22 },
     lane: 'east',
   },
   {
@@ -192,7 +206,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'Researcher',
     label: 'Research',
     defaultAction: 'walking',
-    point: { x: 32, y: 22 },
+    point: { x: 24, y: 20 },
     lane: 'north',
   },
   {
@@ -201,7 +215,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'Spec writer',
     label: 'Spec',
     defaultAction: 'reviewing',
-    point: { x: 58, y: 23 },
+    point: { x: 58, y: 19 },
     lane: 'north',
   },
   {
@@ -210,7 +224,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'QA analyst',
     label: 'QA/Sec',
     defaultAction: 'reviewing',
-    point: { x: 29, y: 70 },
+    point: { x: 20, y: 77 },
     lane: 'south',
   },
   {
@@ -219,7 +233,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'Video director',
     label: 'Director',
     defaultAction: 'idle',
-    point: { x: 79, y: 68 },
+    point: { x: 88, y: 81 },
     lane: 'east',
   },
   {
@@ -228,7 +242,16 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'Layout designer',
     label: 'Layout',
     defaultAction: 'reviewing',
-    point: { x: 58, y: 71 },
+    point: { x: 47, y: 76 },
+    lane: 'south',
+  },
+  {
+    id: 'desk-marketing',
+    zoneId: 'marketing',
+    profession: 'Marketing visuals',
+    label: 'Вітрина',
+    defaultAction: 'working',
+    point: { x: 68, y: 61 },
     lane: 'south',
   },
   {
@@ -237,7 +260,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     profession: 'Market watcher',
     label: 'Trading',
     defaultAction: 'monitoring',
-    point: { x: 78, y: 48 },
+    point: { x: 88, y: 46 },
     lane: 'east',
   },
 ]
@@ -247,25 +270,31 @@ export const OFFICE_PATHS: OfficePath[] = [
     id: 'path-command-delivery',
     fromZoneId: 'command',
     toZoneId: 'delivery',
-    points: [{ x: 18, y: 51 }, { x: 29, y: 55 }, { x: 42, y: 58 }],
+    points: [{ x: 18, y: 51 }, { x: 27, y: 55 }, { x: 42, y: 58 }],
   },
   {
     id: 'path-delivery-ops',
     fromZoneId: 'delivery',
     toZoneId: 'ops',
-    points: [{ x: 42, y: 58 }, { x: 59, y: 45 }, { x: 77, y: 28 }],
+    points: [{ x: 42, y: 58 }, { x: 63, y: 44 }, { x: 85, y: 22 }],
   },
   {
     id: 'path-research-design',
     fromZoneId: 'research',
     toZoneId: 'design',
-    points: [{ x: 32, y: 22 }, { x: 45, y: 45 }, { x: 58, y: 71 }],
+    points: [{ x: 24, y: 20 }, { x: 41, y: 45 }, { x: 47, y: 76 }],
+  },
+  {
+    id: 'path-design-marketing',
+    fromZoneId: 'design',
+    toZoneId: 'marketing',
+    points: [{ x: 47, y: 76 }, { x: 59, y: 62 }, { x: 68, y: 61 }],
   },
   {
     id: 'path-market-handoff',
     fromZoneId: 'market',
     toZoneId: 'delivery',
-    points: [{ x: 78, y: 48 }, { x: 63, y: 55 }, { x: 48, y: 62 }],
+    points: [{ x: 88, y: 46 }, { x: 68, y: 55 }, { x: 48, y: 62 }],
   },
 ]
 
@@ -333,6 +362,14 @@ export const OFFICE_AGENT_PROFILES: Record<string, OfficeAgentProfile> = {
     deskId: 'desk-layout',
     defaultAction: 'reviewing',
     pathId: 'path-research-design',
+  },
+  marketing: {
+    role: 'marketing',
+    profession: 'Marketing visuals',
+    zoneId: 'marketing',
+    deskId: 'desk-marketing',
+    defaultAction: 'working',
+    pathId: 'path-design-marketing',
   },
   trading: {
     role: 'trading',

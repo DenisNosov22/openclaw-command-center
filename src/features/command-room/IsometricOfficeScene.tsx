@@ -150,6 +150,7 @@ export function IsometricOfficeScene({
         <span className={`office-area ${OFFICE_ZONE_TOKENS.desk}`} data-label="Desk rows" />
         <span className={`office-area ${OFFICE_ZONE_TOKENS.sofa}`} data-label="Director corner" />
         <span className={`office-area ${OFFICE_ZONE_TOKENS.hologram}`} data-label="Board wall" />
+        <span className="office-area office-area--marketing" data-label="Visual wall" />
         <span className={OFFICE_ZONE_TOKENS.loungeSofa} />
         <span className={OFFICE_ZONE_TOKENS.statusBoard} data-label="Live board" />
       </div>
@@ -161,10 +162,12 @@ export function IsometricOfficeScene({
         <span className="office-plant office-plant--left" />
         <span className="office-plant office-plant--right" />
         <span className="office-whiteboard office-whiteboard--research" />
+        <span className="office-social-board office-social-board--marketing" />
         <span className="office-desk-cluster office-desk-cluster--north" />
         <span className="office-desk-cluster office-desk-cluster--south" />
         <span className="office-zone-label office-zone-label--ops">Ops corner</span>
         <span className="office-zone-label office-zone-label--design">Design wall</span>
+        <span className="office-zone-label office-zone-label--marketing">Visual wall</span>
         <span className="office-zone-label office-zone-label--trade">Trading desk</span>
       </div>
       <div className="office-routes" aria-hidden="true">
@@ -242,24 +245,6 @@ export function IsometricOfficeScene({
             } as CSSProperties}
           />
         ))}
-      </div>
-      <div className="office-walkers" aria-hidden="true">
-        <span className="office-walker office-walker--inner">
-          <span className={OFFICE_SPRITE_TOKENS.sprite}>
-            <span className={OFFICE_SPRITE_TOKENS.head} />
-            <span className={OFFICE_SPRITE_TOKENS.body} />
-            <span className={OFFICE_SPRITE_TOKENS.hands} />
-            <span className={OFFICE_SPRITE_TOKENS.legs} />
-          </span>
-        </span>
-        <span className="office-walker office-walker--outer">
-          <span className={OFFICE_SPRITE_TOKENS.sprite}>
-            <span className={OFFICE_SPRITE_TOKENS.head} />
-            <span className={OFFICE_SPRITE_TOKENS.body} />
-            <span className={OFFICE_SPRITE_TOKENS.hands} />
-            <span className={OFFICE_SPRITE_TOKENS.legs} />
-          </span>
-        </span>
       </div>
       {stations.map((station) => {
         const isSelected = station.agentId === selectedAgentId
