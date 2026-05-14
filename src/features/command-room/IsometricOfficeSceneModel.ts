@@ -1,5 +1,9 @@
 import type { ActivityEvent, Agent, CommandCenterSnapshot, Task, WorkflowEdge } from '../../shared/types'
 import type { OfficeActivityState } from './IsometricOfficeSpriteSystem'
+import {
+  createOfficeSimulation,
+  type OfficeAgentSimulationState,
+} from './OfficeSimulationModel.ts'
 
 export type OfficeStationAction =
   | 'alert'
@@ -66,6 +70,8 @@ export interface OfficeAgentStation {
   y: number
   lane: 'north' | 'east' | 'south' | 'west'
   taskTitle: string
+  currentTask: string
+  simulation: OfficeAgentSimulationState
 }
 
 export interface OfficeSignalRoute {
@@ -363,11 +369,15 @@ function getTerminalMode(agent: Agent, task?: Task): OfficeTerminalMode {
 }
 
 export function createOfficeAgentStations(agents: Agent[], tasks: Task[]): OfficeAgentStation[] {
+  const simulation = createOfficeSimulation(agents, tasks)
+
   return agents.map((agent, index) => {
     const layout = roleOfficeLayout[agent.role] ?? officeStationLayout[index % officeStationLayout.length]
     const task =
       tasks.find((item) => item.id === agent.currentTaskId) ??
       tasks.find((item) => item.ownerAgentId === agent.id)
+    const simulationState =
+      simulation.agents.find((item) => item.agentId === agent.id) ?? simulation.agents[0]
 
     return {
       id: `office-station-${agent.id}`,
@@ -388,6 +398,8 @@ export function createOfficeAgentStations(agents: Agent[], tasks: Task[]): Offic
       choreography: getStationChoreography(index, getStationAction(agent, task), agent.status),
       slot: index % officeStationLayout.length,
       taskTitle: task?.title ?? 'Read-only station',
+      currentTask: simulationState.currentTask,
+      simulation: simulationState,
       ...layout,
     }
   })

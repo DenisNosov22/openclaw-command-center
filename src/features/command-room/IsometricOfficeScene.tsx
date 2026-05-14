@@ -109,7 +109,7 @@ export function IsometricOfficeScene({
 
         return (
           <button
-            aria-label={`${isSelected ? 'Selected' : 'Select'} read-only office station ${station.name}: ${station.role}, ${station.activity} activity, ${station.terminalMode} terminal`}
+            aria-label={`${isSelected ? 'Selected' : 'Select'} read-only office station ${station.name}: ${station.role}, ${station.activity} activity, ${station.terminalMode} terminal, ${station.currentTask}`}
             aria-pressed={isSelected}
             className={getOfficeStationClassName(
               station.lane,
@@ -121,7 +121,10 @@ export function IsometricOfficeScene({
             data-agent-id={station.agentId}
             data-action-phase={station.choreography.phaseLabel}
             data-activity-state={station.activityState}
+            data-agent-posture={station.simulation.posture}
+            data-current-task={station.currentTask}
             data-office-slot={station.slot}
+            data-office-zone={station.simulation.zoneId}
             data-route-involved={station.choreography.routeInvolvement}
             key={station.id}
             onClick={() => onSelectAgent(station.agentId)}
@@ -169,6 +172,8 @@ export function IsometricOfficeScene({
             data-action-phase={station.choreography.phaseLabel}
             data-activity-state={station.activityState}
             data-agent-id={station.agentId}
+            data-agent-path={station.simulation.pathId}
+            data-agent-posture={station.simulation.posture}
             data-physical-agent="true"
             data-route-involved={station.choreography.routeInvolvement}
             key={`floor-agent-${station.id}`}
