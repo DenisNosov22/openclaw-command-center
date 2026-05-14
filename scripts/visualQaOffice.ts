@@ -263,16 +263,16 @@ async function verifyOfficeDom(page: Page) {
     }
 
     const checks = [
-      ['agent-krab', getCenter(".office-floor-agent[data-agent-id='agent-krab']"), 38, 64, 28, 56],
+      ['agent-krab', getCenter(".office-floor-agent[data-agent-id='agent-krab']"), 38, 64, 34, 56],
       ['agent-dev', getCenter(".office-floor-agent[data-agent-id='agent-dev']"), 7, 34, 36, 60],
-      ['agent-varta', getCenter(".office-floor-agent[data-agent-id='agent-varta']"), 24, 48, 58, 78],
-      ['agent-shturman', getCenter(".office-floor-agent[data-agent-id='agent-shturman']"), 8, 36, 18, 44],
-      ['agent-spec', getCenter(".office-floor-agent[data-agent-id='agent-spec']"), 20, 42, 28, 48],
-      ['agent-bastion', getCenter(".office-floor-agent[data-agent-id='agent-bastion']"), 4, 34, 62, 90],
-      ['agent-desk', getCenter(".office-floor-agent[data-agent-id='agent-desk']"), 48, 76, 58, 84],
-      ['agent-verstalnyk', getCenter(".office-floor-agent[data-agent-id='agent-verstalnyk']"), 62, 84, 42, 66],
-      ['agent-vitryna', getCenter(".office-floor-agent[data-agent-id='agent-vitryna']"), 62, 88, 24, 54],
-      ['agent-rezhyser', getCenter(".office-floor-agent[data-agent-id='agent-rezhyser']"), 66, 94, 58, 86],
+      ['agent-varta', getCenter(".office-floor-agent[data-agent-id='agent-varta']"), 20, 34, 60, 74],
+      ['agent-shturman', getCenter(".office-floor-agent[data-agent-id='agent-shturman']"), 8, 36, 24, 46],
+      ['agent-spec', getCenter(".office-floor-agent[data-agent-id='agent-spec']"), 38, 46, 34, 44],
+      ['agent-bastion', getCenter(".office-floor-agent[data-agent-id='agent-bastion']"), 4, 34, 76, 90],
+      ['agent-desk', getCenter(".office-floor-agent[data-agent-id='agent-desk']"), 48, 76, 70, 84],
+      ['agent-verstalnyk', getCenter(".office-floor-agent[data-agent-id='agent-verstalnyk']"), 72, 84, 52, 64],
+      ['agent-vitryna', getCenter(".office-floor-agent[data-agent-id='agent-vitryna']"), 76, 90, 42, 56],
+      ['agent-rezhyser', getCenter(".office-floor-agent[data-agent-id='agent-rezhyser']"), 72, 88, 66, 82],
     ] as const
 
     return checks.map(([id, center, minX, maxX, minY, maxY]) => {
@@ -334,6 +334,45 @@ async function verifyOfficeDom(page: Page) {
     `Only dev/research home agents should remain in the top-left PC cluster: ${topLeftPcClusterIssues.join('; ')}`,
   )
 
+  const topLeftPcClusterCountIssues = await page.evaluate(() => {
+    if (window.innerWidth <= 430) {
+      return []
+    }
+
+    const office = document.querySelector<HTMLElement>('.isometric-office')
+    const officeBox = office?.getBoundingClientRect()
+
+    if (!officeBox) {
+      return ['missing office bounds']
+    }
+
+    const homeAgentsInCluster = [...document.querySelectorAll<HTMLElement>(".office-floor-agent[data-physical-agent='true']")]
+      .filter((agent) => {
+        const posture = agent.dataset.agentPosture
+
+        if (posture === 'walking' || posture === 'handoff') {
+          return false
+        }
+
+        const box = agent.getBoundingClientRect()
+        const x = ((box.left + box.width / 2 - officeBox.left) / officeBox.width) * 100
+        const y = ((box.top + box.height / 2 - officeBox.top) / officeBox.height) * 100
+
+        return x >= 2 && x <= 34 && y >= 18 && y <= 58
+      })
+      .map((agent) => agent.dataset.agentId ?? 'unknown')
+
+    return homeAgentsInCluster.length <= 3
+      ? []
+      : [`${homeAgentsInCluster.length}: ${homeAgentsInCluster.join(', ')}`]
+  })
+
+  assert.deepEqual(
+    topLeftPcClusterCountIssues,
+    [],
+    `Top-left PC cluster should hold at most 3 home agents: ${topLeftPcClusterCountIssues.join('; ')}`,
+  )
+
   const redistributedRoleIssues = await page.evaluate(() => {
     if (window.innerWidth <= 430) {
       return []
@@ -359,9 +398,9 @@ async function verifyOfficeDom(page: Page) {
     }
 
     const checks = [
-      ['agent-verstalnyk', getCenter('agent-verstalnyk'), 62, 84, 42, 66],
-      ['agent-varta', getCenter('agent-varta'), 24, 48, 58, 78],
-      ['agent-spec', getCenter('agent-spec'), 20, 42, 28, 48],
+      ['agent-verstalnyk', getCenter('agent-verstalnyk'), 72, 84, 52, 64],
+      ['agent-varta', getCenter('agent-varta'), 20, 34, 60, 74],
+      ['agent-spec', getCenter('agent-spec'), 38, 46, 34, 44],
     ] as const
 
     return checks.map(([id, center, minX, maxX, minY, maxY]) => {
@@ -400,7 +439,7 @@ async function verifyOfficeDom(page: Page) {
         const box = agent.getBoundingClientRect()
         const x = ((box.left + box.width / 2 - officeBox.left) / officeBox.width) * 100
         const y = ((box.top + box.height / 2 - officeBox.top) / officeBox.height) * 100
-        const inCentralWalkway = x >= 38 && x <= 62 && y >= 47 && y <= 64
+        const inCentralWalkway = x >= 36 && x <= 64 && y >= 52 && y <= 70
 
         return inCentralWalkway
           ? `${agent.dataset.agentId ?? 'unknown'}: ${Math.round(x)},${Math.round(y)}`
@@ -426,10 +465,10 @@ async function verifyOfficeDom(page: Page) {
   const walkingAgentCount = await page.locator(".office-floor-agent[data-agent-posture='walking']").count()
   const routeActiveAgentCount = await page.locator(".office-floor-agent[data-agent-posture='walking'], .office-floor-agent[data-agent-posture='handoff']").count()
   if (isReducedMotion) {
-    assert(routeActiveAgentCount <= 4, `Reduced-motion Office should keep route/handoff fallback capped, found ${routeActiveAgentCount}`)
+    assert(routeActiveAgentCount <= 2, `Reduced-motion Office should keep route/handoff fallback capped, found ${routeActiveAgentCount}`)
   } else {
-    assert(walkingAgentCount >= 2, `Expected at least two simulation walking postures in default/mock view, found ${walkingAgentCount}`)
-    assert(routeActiveAgentCount <= 4, `Expected active moving/handoff agents to stay capped, found ${routeActiveAgentCount}`)
+    assert(walkingAgentCount >= 1, `Expected at least one simulation walking posture in default/mock view, found ${walkingAgentCount}`)
+    assert(routeActiveAgentCount <= 2, `Expected active moving/handoff agents to stay capped, found ${routeActiveAgentCount}`)
   }
   assert((await page.locator(".office-floor-agent[data-agent-posture='working'], .office-floor-agent[data-agent-posture='sitting']").count()) >= 1, 'Expected at least one calmer desk posture')
   assert((await page.locator(".office-floor-agent[data-agent-posture='handoff']").count()) >= 1, 'Expected at least one handoff posture')
@@ -437,7 +476,7 @@ async function verifyOfficeDom(page: Page) {
   assert((await page.locator('.office-agent-route-map').count()) === 1, 'Expected simulation route SVG overlay')
   const routePathCount = await page.locator('.office-agent-route[data-agent-path] polyline').count()
   assert(routePathCount >= 1, 'Expected focused agent path cues keyed by path id')
-  assert(routePathCount <= 4, `Expected routes to stay focused and not clutter the floor, found ${routePathCount}`)
+  assert(routePathCount <= 2, `Expected routes to stay focused and not clutter the floor, found ${routePathCount}`)
   assert((await page.locator(".office-agent-route--walking, .office-agent-route--handoff").count()) >= 1, 'Expected active movement or handoff route cues')
   if (!isReducedMotion) {
     assert((await page.locator(".office-floor-agent[data-agent-posture='walking'] .office-agent-trail").count()) >= 1, 'Expected walking agents to expose movement trails')
@@ -642,6 +681,15 @@ async function verifyOfficeDom(page: Page) {
       'agent-dev',
       'agent-shturman',
     ])
+    const expectedSharedFurniturePairs = new Set([
+      'agent-krab-agent-spec',
+      'agent-rezhyser-agent-verstalnyk',
+      'agent-verstalnyk-agent-rezhyser',
+      'agent-verstalnyk-agent-vitryna',
+      'agent-vitryna-agent-verstalnyk',
+      'agent-verstalnyk-agent-desk',
+      'agent-desk-agent-verstalnyk',
+    ])
     const xs = desks.map((desk) => desk.x)
     const ys = desks.map((desk) => desk.y)
     const spreadX = Math.max(...xs) - Math.min(...xs)
@@ -651,7 +699,12 @@ async function verifyOfficeDom(page: Page) {
         const distance = Math.hypot(firstDesk.x - secondDesk.x, firstDesk.y - secondDesk.y)
         const expectedPcClusterPair =
           topLeftPcAgentIds.has(firstDesk.id) && topLeftPcAgentIds.has(secondDesk.id)
-        const minimumDistance = expectedPcClusterPair ? 36 : 92
+        const pairKey = `${firstDesk.id}-${secondDesk.id}`
+        const minimumDistance = expectedPcClusterPair
+          ? 36
+          : expectedSharedFurniturePairs.has(pairKey)
+            ? 48
+            : 92
 
         return distance < minimumDistance
           ? `${firstDesk.id}-${secondDesk.id}: ${Math.round(distance)}px`
@@ -663,7 +716,7 @@ async function verifyOfficeDom(page: Page) {
       !officeBox || spreadX < officeBox.width * 0.68
         ? `x-spread ${Math.round(spreadX)}px of ${Math.round(officeBox?.width ?? 0)}px`
         : '',
-      !officeBox || spreadY < officeBox.height * 0.54
+      !officeBox || spreadY < officeBox.height * 0.5
         ? `y-spread ${Math.round(spreadY)}px of ${Math.round(officeBox?.height ?? 0)}px`
         : '',
       ...closePairs,

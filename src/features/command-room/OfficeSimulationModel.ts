@@ -64,6 +64,13 @@ export interface OfficeDesk {
   zoneId: OfficeZoneId
   profession: string
   label: string
+  anchorKind:
+    | 'camera-studio-standing-mark'
+    | 'meeting-table-chair-edge-seat'
+    | 'pc-chair-workstation-seat'
+    | 'presentation-showcase-wall-spot'
+    | 'server-admin-console-seat'
+    | 'trading-monitor-chair'
   defaultAction: OfficeAgentActivity
   point: OfficePoint
   lane: 'north' | 'east' | 'south' | 'west'
@@ -182,8 +189,9 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     zoneId: 'command',
     profession: 'Coordinator',
     label: 'Command',
+    anchorKind: 'meeting-table-chair-edge-seat',
     defaultAction: 'coordinating',
-    point: { x: 49, y: 38 },
+    point: { x: 49, y: 43 },
     lane: 'south',
   },
   {
@@ -191,8 +199,9 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     zoneId: 'delivery',
     profession: 'Developer',
     label: 'Coding',
+    anchorKind: 'pc-chair-workstation-seat',
     defaultAction: 'working',
-    point: { x: 11, y: 52 },
+    point: { x: 13, y: 50 },
     lane: 'north',
   },
   {
@@ -200,8 +209,9 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     zoneId: 'ops',
     profession: 'Operator',
     label: 'Ops',
+    anchorKind: 'server-admin-console-seat',
     defaultAction: 'monitoring',
-    point: { x: 15, y: 86 },
+    point: { x: 16, y: 82 },
     lane: 'south',
   },
   {
@@ -209,8 +219,9 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     zoneId: 'research',
     profession: 'Researcher',
     label: 'Research',
+    anchorKind: 'pc-chair-workstation-seat',
     defaultAction: 'reviewing',
-    point: { x: 12, y: 28 },
+    point: { x: 12, y: 32 },
     lane: 'north',
   },
   {
@@ -218,8 +229,9 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     zoneId: 'research',
     profession: 'Spec writer',
     label: 'Spec',
+    anchorKind: 'meeting-table-chair-edge-seat',
     defaultAction: 'reviewing',
-    point: { x: 32, y: 37 },
+    point: { x: 42, y: 39 },
     lane: 'north',
   },
   {
@@ -227,8 +239,9 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     zoneId: 'delivery',
     profession: 'QA analyst',
     label: 'QA/Sec',
+    anchorKind: 'pc-chair-workstation-seat',
     defaultAction: 'reviewing',
-    point: { x: 27, y: 70 },
+    point: { x: 25, y: 66 },
     lane: 'west',
   },
   {
@@ -236,8 +249,9 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     zoneId: 'design',
     profession: 'Video director',
     label: 'Director',
+    anchorKind: 'camera-studio-standing-mark',
     defaultAction: 'idle',
-    point: { x: 80, y: 76 },
+    point: { x: 79, y: 72 },
     lane: 'east',
   },
   {
@@ -245,8 +259,9 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     zoneId: 'delivery',
     profession: 'Layout designer',
     label: 'Layout',
+    anchorKind: 'presentation-showcase-wall-spot',
     defaultAction: 'reviewing',
-    point: { x: 73, y: 58 },
+    point: { x: 78, y: 58 },
     lane: 'east',
   },
   {
@@ -254,8 +269,9 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     zoneId: 'marketing',
     profession: 'Marketing visuals',
     label: 'Вітрина',
+    anchorKind: 'presentation-showcase-wall-spot',
     defaultAction: 'working',
-    point: { x: 82, y: 43 },
+    point: { x: 84, y: 48 },
     lane: 'east',
   },
   {
@@ -263,8 +279,9 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     zoneId: 'market',
     profession: 'Market watcher',
     label: 'Trading',
+    anchorKind: 'trading-monitor-chair',
     defaultAction: 'monitoring',
-    point: { x: 62, y: 76 },
+    point: { x: 62, y: 78 },
     lane: 'south',
   },
 ]
@@ -303,17 +320,17 @@ export const OFFICE_PATHS: OfficePath[] = [
 ]
 
 const standingHomeRoles = new Set([
-  'main/orchestrator',
+  'UI/layout',
   'marketing',
-  'research',
   'video',
 ])
 
 const seatedHomeRoles = new Set([
+  'main/orchestrator',
   'QA',
-  'UI/layout',
   'coding',
   'ops',
+  'research',
   'trading',
 ])
 
@@ -410,7 +427,7 @@ const fallbackProfile: OfficeAgentProfile = {
 }
 
 const scenarioCycleMs = 16_000
-export const OFFICE_MAX_ACTIVE_ROUTE_AGENTS = 4
+export const OFFICE_MAX_ACTIVE_ROUTE_AGENTS = 2
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value))
@@ -532,15 +549,15 @@ function sameOfficePoint(left: OfficePoint, right: OfficePoint) {
 
 const officeHubCorridorsByDesk: Record<OfficeDeskId, OfficePoint[]> = {
   'desk-command': [],
-  'desk-coding': [{ x: 16, y: 54 }, { x: 34, y: 53 }, { x: 44, y: 51 }],
-  'desk-ops': [{ x: 18, y: 80 }, { x: 25, y: 72 }, { x: 32, y: 63 }, { x: 43, y: 55 }, { x: 49, y: 49 }],
+  'desk-coding': [{ x: 18, y: 52 }, { x: 34, y: 53 }, { x: 44, y: 51 }],
+  'desk-ops': [{ x: 18, y: 78 }, { x: 25, y: 70 }, { x: 32, y: 63 }, { x: 43, y: 55 }, { x: 49, y: 49 }],
   'desk-research': [{ x: 16, y: 35 }, { x: 35, y: 39 }, { x: 46, y: 46 }],
-  'desk-spec': [{ x: 35, y: 39 }, { x: 46, y: 46 }],
-  'desk-qa': [{ x: 30, y: 68 }, { x: 38, y: 59 }, { x: 45, y: 52 }],
+  'desk-spec': [{ x: 44, y: 42 }, { x: 47, y: 46 }],
+  'desk-qa': [{ x: 30, y: 66 }, { x: 38, y: 59 }, { x: 45, y: 52 }],
   'desk-video': [{ x: 76, y: 69 }, { x: 66, y: 60 }, { x: 56, y: 52 }, { x: 49, y: 49 }],
-  'desk-layout': [{ x: 69, y: 57 }, { x: 60, y: 53 }, { x: 52, y: 48 }],
-  'desk-marketing': [{ x: 77, y: 48 }, { x: 64, y: 50 }, { x: 56, y: 48 }],
-  'desk-trading': [{ x: 58, y: 64 }, { x: 52, y: 55 }, { x: 49, y: 49 }],
+  'desk-layout': [{ x: 74, y: 58 }, { x: 62, y: 54 }, { x: 52, y: 48 }],
+  'desk-marketing': [{ x: 80, y: 50 }, { x: 64, y: 50 }, { x: 56, y: 48 }],
+  'desk-trading': [{ x: 58, y: 66 }, { x: 52, y: 55 }, { x: 49, y: 49 }],
 }
 
 function getDeskByPoint(point: OfficePoint) {
@@ -664,7 +681,7 @@ function getSimulationPosture(
   }
 
   if (activity === 'coordinating') {
-    return 'standing'
+    return profile.role === 'main/orchestrator' ? 'sitting' : 'standing'
   }
 
   if (standingHomeRoles.has(profile.role)) {
