@@ -150,6 +150,7 @@ assertIncludes(componentSource, 'OFFICE_SPRITE_TOKENS.tool', '2D avatar action p
 assertIncludes(componentSource, 'OFFICE_SPRITE_TOKENS.restProp', '2D avatar rest/sofa prop')
 assertIncludes(componentSource, 'OFFICE_SPRITE_TOKENS.signalProp', '2D avatar signal/alert prop')
 assertIncludes(componentSource, 'getOfficeStatusLampClassName(station.tone)', 'status lamps')
+assertIncludes(componentSource, 'office-agent-action-cue', 'compact role-specific action cue attached to each physical sprite')
 assertIncludes(componentSource, 'aria-label={`${isSelected ? \'Selected\' : \'Select\'} read-only office station', 'state-aware selectable station labels')
 assertIncludes(componentSource, 'aria-pressed={isSelected}', 'selected station pressed state')
 assertIncludes(componentSource, 'data-agent-id={station.agentId}', 'station-to-agent mapping metadata')
@@ -278,6 +279,20 @@ assertIncludes(getBlock(".office-floor-agent[data-agent-posture='working'] .offi
 assertIncludes(getBlock(".office-floor-agent[data-agent-posture='handoff'] .office-agent-marker"), 'rgba(215, 180, 92', 'handoff posture gets document-transfer tone')
 assertIncludes(getBlock(".office-floor-agent[data-agent-posture='blocked'] .office-agent-marker"), 'rgba(212, 84, 77', 'blocked posture gets distinct marker tone')
 assertIncludes(getBlock(".office-floor-agent[data-agent-activity='monitoring'] .office-agent-marker::before"), '#78d4c0', 'monitoring activity gets distinct status marker')
+assertIncludes(getBlock('.office-agent-action-cue'), 'border-radius: 3px', 'role-specific action cues stay compact and attached to sprites')
+for (const actionCue of [
+  'office-action-code-spark',
+  'office-action-scan',
+  'office-action-check',
+  'office-action-blueprint',
+  'office-action-record',
+  'office-action-swatch',
+  'office-action-server-pulse',
+  'office-action-market-pulse',
+  'office-action-command-signal',
+]) {
+  assertIncludes(stylesheetSource, actionCue, `role-specific cue animation ${actionCue}`)
+}
 assertIncludes(getBlock('.office-floor-agent--north'), '--office-agent-shift-y: 60px', 'north agents stand away from desk blocks without drifting into labels')
 assertIncludes(getBlock(".office-floor-agent[data-activity-state='coding']"), '--office-agent-shift-x: 54px', 'larger coding floor agent is offset into the left aisle')
 assertIncludes(getBlock(".office-floor-agent[data-activity-state='checking']"), '--office-agent-shift-x: -52px', 'larger QA floor agent pulls away from the dev/spec cluster')
@@ -304,6 +319,7 @@ assertIncludes(stylesheetSource, '@keyframes office-floor-agent-route', 'physica
 assertIncludes(getBlock('.office-terminal--typing .office-terminal__ticks'), '3s', 'measured typing cadence')
 assertIncludes(stylesheetSource, '@media (prefers-reduced-motion: reduce)', 'reduced-motion support')
 assertIncludes(stylesheetSource, '.office-agent-avatar,', 'reduced-motion avatar fallback')
+assertIncludes(stylesheetSource, '.office-agent-action-cue,', 'reduced-motion action cue fallback')
 assertIncludes(stylesheetSource, '.office-agent-sprite__legs::before', 'reduced-motion sprite fallback')
 assertNotIncludes(componentSource, 'className="office-walkers"', 'reduced-motion no longer needs a standalone walking overlay')
 assertIncludes(stylesheetSource, '.office-floor-agent,', 'reduced-motion physical agent route fallback')

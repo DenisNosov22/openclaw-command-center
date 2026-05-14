@@ -357,6 +357,11 @@ async function verifyOfficeDom(page: Page) {
   assert((await page.locator(".office-floor-agent[data-agent-posture='walking'] .office-agent-direction-arrow, .office-floor-agent[data-agent-posture='handoff'] .office-agent-direction-arrow").count()) >= 1, 'Expected moving/handoff agents to expose direction arrows')
   assert((await page.locator(".office-floor-agent[data-agent-posture='handoff'] .office-agent-document-transfer").count()) >= 1, 'Expected handoff agents to expose document transfer marker')
   assert((await page.locator('.office-agent-status-cue').count()) >= 10, 'Expected compact status cues on simulation agents')
+  assert((await page.locator('.office-agent-action-cue').count()) >= 10, 'Expected role-specific action cues on simulation agents')
+  assert((await page.locator(".office-floor-agent[data-activity-state='coding'] .office-agent-action-cue").count()) >= 1, 'Expected coding spark cue')
+  assert((await page.locator(".office-floor-agent[data-activity-state='checking'] .office-agent-action-cue, .office-floor-agent[data-profession-prop='qa'] .office-agent-action-cue").count()) >= 1, 'Expected QA/check cue')
+  assert((await page.locator(".office-floor-agent[data-activity-state='filming'] .office-agent-action-cue").count()) >= 1, 'Expected filming record cue')
+  assert((await page.locator(".office-floor-agent[data-profession-prop='trading'] .office-agent-action-cue").count()) >= 1, 'Expected market chart cue')
   assert((await page.locator('.office-desk .office-agent-sprite').count()) === 0, 'Office agents should not be rendered inside desk blocks')
   assert.equal(await page.locator('.office-walkers, .office-walker').count(), 0, 'Standalone walking overlay should not render')
   assert.equal(

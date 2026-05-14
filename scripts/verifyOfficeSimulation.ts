@@ -11,6 +11,7 @@ import {
   OFFICE_AGENT_PROFILES,
   OFFICE_COORDINATION_HUB_POINT,
   OFFICE_DESKS,
+  OFFICE_MAX_ACTIVE_ROUTE_AGENTS,
   OFFICE_PATHS,
   OFFICE_ZONES,
   tickOfficeSimulation,
@@ -181,6 +182,39 @@ assert.deepEqual(
   tickedSimulation,
   timedSimulation,
   'Tick helper should match direct timed simulation construction',
+)
+
+const livelyAgents: Agent[] = agents.map((agent) => ({
+  ...agent,
+  status: agent.id === 'agent-bastion' || agent.id === 'agent-desk' ? agent.status : 'working',
+}))
+const livelyTasks: Task[] = tasks.map((task) => ({
+  ...task,
+  status:
+    task.ownerAgentId === 'agent-bastion' || task.ownerAgentId === 'agent-desk'
+      ? task.status
+      : 'delegated',
+}))
+const livelySimulation = createOfficeSimulation(livelyAgents, livelyTasks, {
+  elapsedMs: 1_000,
+  mode: 'animated',
+})
+const livelyRouteActiveCount = livelySimulation.agents.filter(
+  (agent) => agent.posture === 'walking' || agent.posture === 'handoff',
+).length
+
+assert(
+  livelyRouteActiveCount <= OFFICE_MAX_ACTIVE_ROUTE_AGENTS,
+  `Active fallback workday should keep movers bounded, got ${livelyRouteActiveCount}`,
+)
+assert(
+  livelySimulation.agents.some(
+    (agent) =>
+      agent.activity === 'working' &&
+      (agent.posture === 'working' || agent.posture === 'standing' || agent.posture === 'sitting') &&
+      agent.route.length === 1,
+  ),
+  'Overflow active demo agents should keep visible stationary work cues at their home desks',
 )
 
 const staticTick = tickOfficeSimulation(simulation, {

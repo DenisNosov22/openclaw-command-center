@@ -50,12 +50,13 @@ const fixtureStates: OfficeAgentLiveState[] = [
   'running',
   'running',
   'waiting',
-  'idle',
-  'done',
-  'blocked',
-  'idle',
-  'done',
-  'failed',
+  'running',
+  'running',
+  'running',
+  'running',
+  'running',
+  'running',
+  'waiting',
 ]
 
 function clamp(value: number, min: number, max: number) {
@@ -202,12 +203,19 @@ export function createOfficeAgentStatusFixture(
     .filter((agent) => getAgentProfile(agent))
     .map((agent, index) => {
       const state = fixtureStates[index % fixtureStates.length]
-      const targetRole =
-        agent.role === 'coding'
-          ? 'QA'
-          : agent.role === 'main/orchestrator'
-            ? 'coding'
-            : undefined
+      const targetRoleByRole: Partial<Record<Agent['role'], string>> = {
+        coding: 'QA',
+        main: 'coding',
+        'main/orchestrator': 'coding',
+        marketing: 'QA',
+      }
+      const targetRole = targetRoleByRole[agent.role]
+      const progressByRole: Partial<Record<Agent['role'], number>> = {
+        coding: 0.86,
+        main: 0.36,
+        'main/orchestrator': 0.36,
+        marketing: 0.74,
+      }
 
       return {
         agentId: agent.id,
@@ -215,7 +223,7 @@ export function createOfficeAgentStatusFixture(
         state,
         currentTask: agent.summary ?? 'Live status fixture',
         updatedAt,
-        ...(targetRole ? { progress: agent.role === 'coding' ? 0.86 : 0.36, targetRole } : {}),
+        ...(targetRole ? { progress: progressByRole[agent.role] ?? 0.5, targetRole } : {}),
       }
     })
 }

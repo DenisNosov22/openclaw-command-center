@@ -1556,6 +1556,7 @@
 .office-agent-target-pin,
 .office-agent-document-transfer,
 .office-agent-direction-arrow,
+.office-agent-action-cue,
 .office-agent-status-cue,
 .office-agent-state-badge {
   position: absolute;
@@ -1666,6 +1667,39 @@
 
 .office-agent-status-cue::before {
   content: '';
+}
+
+.office-agent-action-cue {
+  right: -18px;
+  bottom: 16px;
+  z-index: 6;
+  width: 18px;
+  height: 15px;
+  opacity: 0.76;
+  color: var(--office-agent-prop);
+  border: 1px solid color-mix(in srgb, currentColor 52%, rgba(244, 241, 234, 0.2));
+  border-radius: 3px;
+  background: rgba(8, 12, 12, 0.62);
+  box-shadow:
+    inset 0 1px 0 rgba(244, 241, 234, 0.08),
+    0 5px 10px rgba(0, 0, 0, 0.22);
+  transform: rotate(-5deg) skewY(-3deg);
+}
+
+.office-agent-action-cue::before,
+.office-agent-action-cue::after {
+  position: absolute;
+  content: '';
+}
+
+.office-floor-agent[data-agent-posture='walking'] .office-agent-action-cue,
+.office-floor-agent[data-agent-posture='handoff'] .office-agent-action-cue {
+  opacity: 0.46;
+}
+
+.office-floor-agent[data-agent-activity='idle'] .office-agent-action-cue {
+  opacity: 0.22;
+  filter: saturate(0.6);
 }
 
 .office-floor-agent[data-status-badge='running'] .office-agent-status-cue {
@@ -3747,6 +3781,17 @@
     rgba(244, 241, 234, 0.34);
 }
 
+.office-floor-agent[data-activity-state='coding'] .office-agent-action-cue {
+  color: #78d4c0;
+  background:
+    radial-gradient(circle at 18% 32%, currentColor 0 1.5px, transparent 1.5px),
+    radial-gradient(circle at 74% 64%, currentColor 0 1.5px, transparent 1.5px),
+    linear-gradient(90deg, transparent 0 3px, currentColor 3px 4px, transparent 4px 8px, currentColor 8px 9px, transparent 9px),
+    rgba(8, 14, 14, 0.66);
+  animation: office-action-code-spark 3.8s ease-in-out infinite;
+  animation-delay: var(--office-agent-delay, 0ms);
+}
+
 .office-floor-agent[data-activity-state='researching'] .office-agent-tool,
 .office-floor-agent[data-activity-state='checking'] .office-agent-tool,
 .office-floor-agent[data-activity-state='reviewing'] .office-agent-tool {
@@ -3776,6 +3821,17 @@
     rgba(8, 14, 14, 0.42);
 }
 
+.office-floor-agent[data-activity-state='researching'] .office-agent-action-cue {
+  color: #78d4c0;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 48% 45%, transparent 0 4px, currentColor 4px 5.5px, transparent 5.5px),
+    linear-gradient(45deg, transparent 0 58%, currentColor 58% 66%, transparent 66%),
+    rgba(8, 14, 14, 0.54);
+  animation: office-action-scan 4.9s ease-in-out infinite;
+  animation-delay: var(--office-agent-delay, 0ms);
+}
+
 .office-floor-agent[data-activity-state='checking'] .office-agent-tool::before,
 .office-floor-agent[data-activity-state='reviewing'] .office-agent-tool::before {
   inset: 3px 3px auto;
@@ -3802,6 +3858,28 @@
   opacity: 0.78;
 }
 
+.office-floor-agent[data-activity-state='checking'] .office-agent-action-cue,
+.office-floor-agent[data-profession-prop='qa'] .office-agent-action-cue {
+  color: #94d876;
+  background:
+    linear-gradient(135deg, transparent 0 46%, currentColor 46% 58%, transparent 58%),
+    linear-gradient(45deg, transparent 0 32%, currentColor 32% 44%, transparent 44%),
+    linear-gradient(180deg, rgba(244, 241, 234, 0.15) 0 1px, transparent 1px 5px, rgba(244, 241, 234, 0.13) 5px 6px, transparent 6px),
+    rgba(8, 14, 14, 0.62);
+  animation: office-action-check 4.4s ease-in-out infinite;
+  animation-delay: var(--office-agent-delay, 0ms);
+}
+
+.office-floor-agent[data-profession-prop='blueprint'] .office-agent-action-cue {
+  color: #78d4c0;
+  background:
+    linear-gradient(90deg, currentColor 0 1px, transparent 1px 5px, currentColor 5px 6px, transparent 6px 11px, currentColor 11px 12px, transparent 12px),
+    linear-gradient(180deg, currentColor 0 1px, transparent 1px 5px, currentColor 5px 6px, transparent 6px 10px, currentColor 10px 11px, transparent 11px),
+    rgba(244, 241, 234, 0.82);
+  animation: office-action-blueprint 5.4s ease-in-out infinite;
+  animation-delay: var(--office-agent-delay, 0ms);
+}
+
 .office-floor-agent[data-activity-state='filming'] .office-agent-tool {
   color: #d0a74d;
   width: 15px;
@@ -3816,6 +3894,19 @@
   background: currentColor;
   border-radius: 50%;
   opacity: 0.72;
+}
+
+.office-floor-agent[data-activity-state='filming'] .office-agent-action-cue {
+  color: #d4544d;
+  width: 16px;
+  height: 12px;
+  border-radius: 4px;
+  background:
+    radial-gradient(circle at 28% 50%, currentColor 0 2.5px, transparent 2.5px),
+    linear-gradient(90deg, rgba(244, 241, 234, 0.18) 0 9px, transparent 9px),
+    rgba(12, 13, 12, 0.7);
+  animation: office-action-record 2.8s ease-in-out infinite;
+  animation-delay: var(--office-agent-delay, 0ms);
 }
 
 .office-floor-agent[data-profession-prop='camera'] .office-agent-tool::after {
@@ -3853,6 +3944,16 @@
   border-color: rgba(240, 205, 116, 0.72);
 }
 
+.office-floor-agent[data-activity-state='designing'] .office-agent-action-cue,
+.office-floor-agent[data-activity-state='presenting'] .office-agent-action-cue {
+  color: #f4f1ea;
+  background:
+    linear-gradient(90deg, #d96a5e 0 25%, #d7b45c 25% 50%, #78d4c0 50% 75%, #f4f1ea 75%),
+    rgba(9, 12, 11, 0.58);
+  animation: office-action-swatch 5.1s ease-in-out infinite;
+  animation-delay: var(--office-agent-delay, 0ms);
+}
+
 .office-floor-agent[data-activity-state='coordinating'] .office-agent-signal-prop,
 .office-floor-agent[data-activity-state='trading'] .office-agent-signal-prop {
   opacity: 0.72;
@@ -3874,6 +3975,17 @@
     rgba(79, 127, 145, 0.46);
 }
 
+.office-floor-agent[data-profession-prop='servers'] .office-agent-action-cue {
+  color: #78d4c0;
+  background:
+    radial-gradient(circle at 22% 24%, #94d876 0 1.5px, transparent 1.5px),
+    radial-gradient(circle at 76% 24%, #d7b45c 0 1.5px, transparent 1.5px),
+    linear-gradient(180deg, currentColor 0 1px, transparent 1px 4px, currentColor 4px 5px, transparent 5px 8px, currentColor 8px 9px, transparent 9px),
+    rgba(8, 14, 14, 0.64);
+  animation: office-action-server-pulse 4.6s ease-in-out infinite;
+  animation-delay: var(--office-agent-delay, 0ms);
+}
+
 .office-floor-agent[data-activity-state='trading'] .office-agent-tool::before {
   inset: 2px;
   background:
@@ -3889,6 +4001,30 @@
     linear-gradient(135deg, transparent 0 36%, rgba(212, 84, 77, 0.76) 36% 46%, transparent 46%),
     linear-gradient(45deg, transparent 0 43%, rgba(120, 212, 192, 0.74) 43% 53%, transparent 53%),
     rgba(8, 14, 14, 0.48);
+}
+
+.office-floor-agent[data-activity-state='trading'] .office-agent-action-cue,
+.office-floor-agent[data-profession-prop='trading'] .office-agent-action-cue {
+  color: #d4544d;
+  background:
+    linear-gradient(135deg, transparent 0 34%, #d4544d 34% 44%, transparent 44%),
+    linear-gradient(45deg, transparent 0 45%, #78d4c0 45% 55%, transparent 55%),
+    linear-gradient(90deg, rgba(244, 241, 234, 0.24) 0 1px, transparent 1px 5px, rgba(244, 241, 234, 0.18) 5px 6px, transparent 6px),
+    rgba(8, 14, 14, 0.66);
+  animation: office-action-market-pulse 4.2s ease-in-out infinite;
+  animation-delay: var(--office-agent-delay, 0ms);
+}
+
+.office-floor-agent[data-activity-state='coordinating'] .office-agent-action-cue,
+.office-floor-agent[data-profession-prop='command'] .office-agent-action-cue {
+  color: #d7b45c;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 50%, currentColor 0 2px, transparent 2px),
+    radial-gradient(circle at 50% 50%, transparent 0 5px, currentColor 5px 6px, transparent 6px),
+    rgba(12, 13, 12, 0.58);
+  animation: office-action-command-signal 4.8s ease-in-out infinite;
+  animation-delay: var(--office-agent-delay, 0ms);
 }
 
 .office-room-props,
@@ -4622,6 +4758,113 @@
   }
 }
 
+@keyframes office-action-code-spark {
+  0%,
+  100% {
+    opacity: 0.56;
+    transform: rotate(-5deg) skewY(-3deg) translateY(0);
+  }
+
+  42% {
+    opacity: 0.94;
+    transform: rotate(-5deg) skewY(-3deg) translateY(-2px);
+  }
+}
+
+@keyframes office-action-scan {
+  0%,
+  100% {
+    transform: rotate(-5deg) skewY(-3deg) scale(0.92);
+  }
+
+  50% {
+    transform: rotate(10deg) skewY(-3deg) scale(1.05);
+  }
+}
+
+@keyframes office-action-check {
+  0%,
+  100% {
+    opacity: 0.58;
+    transform: rotate(-5deg) skewY(-3deg) translateY(0);
+  }
+
+  36% {
+    opacity: 0.98;
+    transform: rotate(-5deg) skewY(-3deg) translateY(2px);
+  }
+}
+
+@keyframes office-action-blueprint {
+  0%,
+  100% {
+    transform: rotate(-8deg) skewY(-3deg) scaleX(0.94);
+  }
+
+  46% {
+    transform: rotate(2deg) skewY(-3deg) scaleX(1.05);
+  }
+}
+
+@keyframes office-action-record {
+  0%,
+  100% {
+    opacity: 0.46;
+  }
+
+  38% {
+    opacity: 1;
+  }
+}
+
+@keyframes office-action-swatch {
+  0%,
+  100% {
+    filter: saturate(0.88);
+    transform: rotate(-5deg) skewY(-3deg) translateX(0);
+  }
+
+  52% {
+    filter: saturate(1.18);
+    transform: rotate(3deg) skewY(-3deg) translateX(2px);
+  }
+}
+
+@keyframes office-action-server-pulse {
+  0%,
+  100% {
+    opacity: 0.62;
+  }
+
+  30% {
+    opacity: 0.96;
+  }
+}
+
+@keyframes office-action-market-pulse {
+  0%,
+  100% {
+    transform: rotate(-5deg) skewY(-3deg) translateY(0);
+  }
+
+  44% {
+    transform: rotate(-5deg) skewY(-3deg) translateY(-2px);
+  }
+}
+
+@keyframes office-action-command-signal {
+  0%,
+  100% {
+    opacity: 0.58;
+    transform: rotate(-5deg) skewY(-3deg) scale(0.92);
+  }
+
+  50% {
+    opacity: 0.94;
+    transform: rotate(-5deg) skewY(-3deg) scale(1.08);
+  }
+}
+
 @keyframes office-live-running-pulse {
   0%,
   100% {
@@ -4737,6 +4980,7 @@
   .office-terminal--typing .office-terminal__ticks,
   .office-terminal--monitoring .office-terminal__ticks,
   .office-agent-avatar,
+  .office-agent-action-cue,
   .office-agent-tool,
   .office-agent-sprite__hands,
   .office-agent-signal-prop,

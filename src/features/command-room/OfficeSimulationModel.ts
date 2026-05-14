@@ -410,6 +410,7 @@ const fallbackProfile: OfficeAgentProfile = {
 }
 
 const scenarioCycleMs = 16_000
+export const OFFICE_MAX_ACTIVE_ROUTE_AGENTS = 4
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value))
@@ -716,6 +717,63 @@ function normalizeAgentHomeState(
   }
 }
 
+function getStationaryActiveActivity(
+  state: OfficeAgentSimulationState,
+  profile: OfficeAgentProfile,
+): OfficeAgentActivity {
+  if (state.activity !== 'walking' && state.activity !== 'handoff') {
+    return state.activity
+  }
+
+  if (profile.defaultAction === 'coordinating') {
+    return 'coordinating'
+  }
+
+  if (profile.defaultAction === 'monitoring' || profile.defaultAction === 'reviewing') {
+    return profile.defaultAction
+  }
+
+  return 'working'
+}
+
+function settleActiveAgentAtHome(state: OfficeAgentSimulationState): OfficeAgentSimulationState {
+  const profile = OFFICE_AGENT_PROFILES[state.role] ?? { ...fallbackProfile, role: state.role }
+  const desk = getOfficeDesk(state.deskId)
+  const activity = getStationaryActiveActivity(state, profile)
+
+  return normalizeAgentHomeState(
+    {
+      ...state,
+      activity,
+      posture: getSimulationPosture(activity, profile),
+    },
+    desk,
+  )
+}
+
+function isRouteActiveState(state: OfficeAgentSimulationState) {
+  return (
+    (state.posture === 'walking' || state.posture === 'handoff') &&
+    canAgentMove(state.statusBadge, state.activity, state.posture)
+  )
+}
+
+function capActiveRouteAgents(states: OfficeAgentSimulationState[]) {
+  let routeActiveCount = 0
+
+  return states.map((state) => {
+    if (!isRouteActiveState(state)) {
+      return state
+    }
+
+    routeActiveCount += 1
+
+    return routeActiveCount <= OFFICE_MAX_ACTIVE_ROUTE_AGENTS
+      ? state
+      : settleActiveAgentAtHome(state)
+  })
+}
+
 function getTimedTaskLabel(task: Task | undefined, activity: OfficeAgentActivity, elapsedMs: number) {
   const label = getTaskLabel(task)
 
@@ -759,6 +817,11 @@ function applyLiveStatus(
   }
 
   const desk = getOfficeDesk(merged.deskId)
+
+  if (merged.posture !== 'walking' && merged.posture !== 'handoff') {
+    return normalizeAgentHomeState(merged, desk)
+  }
+
   const target = liveStatus.target && canContinueFromHub(merged.statusBadge, merged.activity, merged.posture)
     ? roundPoint(liveStatus.target)
     : OFFICE_COORDINATION_HUB_POINT
@@ -825,7 +888,7 @@ export function createOfficeSimulation(
     zones: OFFICE_ZONES,
     desks: OFFICE_DESKS,
     paths: OFFICE_PATHS,
-    agents: simulationAgents,
+    agents: capActiveRouteAgents(simulationAgents),
   }
 }
 

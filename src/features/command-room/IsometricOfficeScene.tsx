@@ -301,6 +301,7 @@ export function IsometricOfficeScene({
               <span className="office-agent-trail" />
               <span className="office-agent-target-pin" />
               <span className="office-agent-status-cue" />
+              <span className="office-agent-action-cue" />
               <span className={getOfficeAgentMarkerClassName(station.action)}>
                 <span className={OFFICE_SPRITE_TOKENS.restProp} />
                 <span className={OFFICE_SPRITE_TOKENS.sprite}>

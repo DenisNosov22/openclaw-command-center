@@ -171,7 +171,16 @@ assert.deepEqual(
 )
 
 const liveViewModel = createOfficeSceneViewModel(agents, tasks, activity, workflow, undefined, {
-  liveAgents: overrides,
+  liveAgents: {
+    ...overrides,
+    'agent-varta': mapOfficeAgentStatusSnapshot({
+      agentId: 'agent-varta',
+      name: 'Варта',
+      state: 'blocked',
+      currentTask: 'Blocked live QA gate',
+      updatedAt: '2026-05-14T09:20:00.000Z',
+    }),
+  },
 })
 const blockedStation = liveViewModel.stations.find((station) => station.agentId === 'agent-varta')
 assert(blockedStation, 'Expected blocked live station')

@@ -257,8 +257,18 @@ function getLiveSnapshot(tick: number): LiveSnapshot {
   const baseSnapshot = snapshotState.snapshot
   const lastUpdated = new Date()
   const formattedLastUpdated = formatKyivTime(lastUpdated, { includeDate: true })
-  const activeAgentIds = new Set(['agent-krab', 'agent-dev', 'agent-varta'])
-  const heartbeatAgentId = ['agent-krab', 'agent-dev', 'agent-varta'][tick % 3]
+  const activeAgentIds = new Set([
+    'agent-krab',
+    'agent-dev',
+    'agent-shturman',
+    'agent-spec',
+    'agent-varta',
+    'agent-rezhyser',
+    'agent-verstalnyk',
+    'agent-vitryna',
+  ])
+  const heartbeatAgentIds = ['agent-krab', 'agent-dev', 'agent-verstalnyk', 'agent-vitryna']
+  const heartbeatAgentId = heartbeatAgentIds[tick % heartbeatAgentIds.length]
   const heartbeatEvent: ActivityEvent = {
     id: 'mock-heartbeat-live',
     timestamp: lastUpdated.toISOString(),
