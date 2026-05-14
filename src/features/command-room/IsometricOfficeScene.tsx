@@ -49,6 +49,17 @@ export function IsometricOfficeScene({
         <span className={OFFICE_ZONE_TOKENS.loungeSofa} />
         <span className={OFFICE_ZONE_TOKENS.statusBoard} data-label="Live board" />
       </div>
+      <div className="office-room-props" aria-hidden="true">
+        <span className="office-wall office-wall--back" />
+        <span className="office-wall office-wall--left" />
+        <span className="office-rug office-rug--center" />
+        <span className="office-cabinet office-cabinet--ops" />
+        <span className="office-plant office-plant--left" />
+        <span className="office-plant office-plant--right" />
+        <span className="office-whiteboard office-whiteboard--research" />
+        <span className="office-desk-cluster office-desk-cluster--north" />
+        <span className="office-desk-cluster office-desk-cluster--south" />
+      </div>
       <div className="office-routes" aria-hidden="true">
         <span className={`${OFFICE_ZONE_TOKENS.path} office-lane--inner`} />
         <span className={`${OFFICE_ZONE_TOKENS.path} office-lane--outer`} />

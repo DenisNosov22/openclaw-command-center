@@ -626,12 +626,14 @@
   overflow-clip-margin: 8px;
   isolation: isolate;
   background:
-    linear-gradient(rgba(120, 212, 192, 0.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(215, 180, 92, 0.042) 1px, transparent 1px),
-    radial-gradient(ellipse at 50% 42%, rgba(215, 180, 92, 0.08), transparent 28%),
-    radial-gradient(ellipse at 50% 72%, rgba(120, 212, 192, 0.1), transparent 34%),
-    linear-gradient(180deg, rgba(16, 18, 17, 0.82), rgba(8, 9, 9, 0.2));
+    linear-gradient(180deg, rgba(56, 53, 45, 0.36) 0 25%, transparent 25%),
+    linear-gradient(90deg, rgba(120, 212, 192, 0.04) 1px, transparent 1px),
+    linear-gradient(rgba(215, 180, 92, 0.038) 1px, transparent 1px),
+    radial-gradient(ellipse at 47% 48%, rgba(215, 180, 92, 0.09), transparent 30%),
+    radial-gradient(ellipse at 50% 74%, rgba(120, 212, 192, 0.11), transparent 36%),
+    linear-gradient(180deg, rgba(28, 29, 26, 0.92), rgba(9, 10, 9, 0.2));
   background-size:
+    auto,
     34px 34px,
     34px 34px,
     auto,
@@ -675,20 +677,18 @@
 .office-floor {
   position: absolute;
   left: 50%;
-  top: 51%;
+  top: 54%;
   z-index: 0;
-  width: min(80%, 560px);
-  aspect-ratio: 1.78;
+  width: min(84%, 610px);
+  aspect-ratio: 1.72;
   transform: translate(-50%, -50%) rotateX(60deg) rotateZ(45deg);
   background:
-    linear-gradient(rgba(120, 212, 192, 0.082) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(215, 180, 92, 0.088) 1px, transparent 1px),
+    linear-gradient(135deg, rgba(244, 241, 234, 0.05), transparent 28%),
+    repeating-linear-gradient(90deg, rgba(244, 241, 234, 0.045) 0 1px, transparent 1px 54px),
+    repeating-linear-gradient(0deg, rgba(215, 180, 92, 0.052) 0 1px, transparent 1px 42px),
     radial-gradient(ellipse at 50% 48%, rgba(240, 205, 116, 0.16), transparent 58%),
-    linear-gradient(135deg, rgba(244, 241, 234, 0.035), transparent 34%),
     rgba(16, 17, 15, 0.8);
   background-size:
-    42px 42px,
-    42px 42px,
     auto,
     auto,
     auto;
@@ -714,6 +714,191 @@
   inset: 25% 18%;
   border-color: rgba(215, 180, 92, 0.16);
   box-shadow: inset 0 0 38px rgba(120, 212, 192, 0.035);
+}
+
+.office-room-props {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.office-wall,
+.office-rug,
+.office-cabinet,
+.office-plant,
+.office-whiteboard,
+.office-desk-cluster {
+  position: absolute;
+  pointer-events: none;
+}
+
+.office-wall--back {
+  left: 8%;
+  right: 8%;
+  top: 8%;
+  height: 74px;
+  background:
+    linear-gradient(90deg, rgba(244, 241, 234, 0.045), transparent 28%, rgba(120, 212, 192, 0.04) 60%, transparent),
+    repeating-linear-gradient(90deg, rgba(215, 180, 92, 0.1) 0 1px, transparent 1px 64px),
+    rgba(20, 21, 18, 0.46);
+  border: 1px solid rgba(215, 180, 92, 0.12);
+  border-bottom-color: rgba(215, 180, 92, 0.22);
+  border-radius: 7px 7px 3px 3px;
+  opacity: 0.68;
+}
+
+.office-wall--left {
+  left: 7%;
+  top: 16%;
+  width: 54px;
+  height: 46%;
+  background:
+    linear-gradient(180deg, rgba(244, 241, 234, 0.04), transparent 72%),
+    rgba(22, 21, 18, 0.34);
+  border-left: 1px solid rgba(215, 180, 92, 0.12);
+  border-top: 1px solid rgba(120, 212, 192, 0.08);
+  opacity: 0.56;
+  transform: skewY(-7deg);
+}
+
+.office-rug--center {
+  left: 50%;
+  top: 54%;
+  width: min(44%, 310px);
+  height: 92px;
+  background:
+    repeating-linear-gradient(90deg, rgba(120, 212, 192, 0.08) 0 8px, transparent 8px 18px),
+    linear-gradient(90deg, rgba(215, 180, 92, 0.14), rgba(120, 212, 192, 0.08), rgba(215, 180, 92, 0.12)),
+    rgba(31, 27, 20, 0.36);
+  border: 1px solid rgba(215, 180, 92, 0.14);
+  border-radius: 50%;
+  opacity: 0.54;
+  transform: translate(-50%, -50%) rotate(-8deg) skewY(-4deg);
+}
+
+.office-cabinet--ops {
+  right: 9%;
+  top: 16%;
+  width: 66px;
+  height: 88px;
+  background:
+    repeating-linear-gradient(0deg, rgba(120, 212, 192, 0.14) 0 3px, transparent 3px 18px),
+    linear-gradient(90deg, rgba(244, 241, 234, 0.06), transparent 40%),
+    rgba(17, 21, 20, 0.78);
+  border: 1px solid rgba(120, 212, 192, 0.2);
+  border-radius: 5px;
+  box-shadow:
+    inset -8px 0 0 rgba(0, 0, 0, 0.16),
+    0 14px 24px rgba(0, 0, 0, 0.24);
+  transform: skewY(-4deg);
+}
+
+.office-cabinet--ops::after {
+  position: absolute;
+  right: 8px;
+  top: 12px;
+  width: 5px;
+  aspect-ratio: 1;
+  content: '';
+  background: #78d4c0;
+  border-radius: 50%;
+  box-shadow:
+    0 18px 0 #d7b45c,
+    0 36px 0 #78d4c0,
+    0 54px 0 #d4544d;
+}
+
+.office-plant {
+  width: 34px;
+  height: 48px;
+}
+
+.office-plant::before {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 0;
+  height: 16px;
+  content: '';
+  background: rgba(77, 67, 48, 0.72);
+  border: 1px solid rgba(215, 180, 92, 0.22);
+  border-radius: 3px 3px 8px 8px;
+}
+
+.office-plant::after {
+  position: absolute;
+  left: 2px;
+  top: 3px;
+  width: 30px;
+  height: 27px;
+  content: '';
+  background:
+    radial-gradient(circle at 42% 36%, rgba(120, 212, 192, 0.42), transparent 33%),
+    radial-gradient(circle at 62% 28%, rgba(215, 180, 92, 0.24), transparent 30%),
+    radial-gradient(circle at 35% 64%, rgba(120, 212, 192, 0.3), transparent 35%);
+  border-radius: 50%;
+}
+
+.office-plant--left {
+  left: 10%;
+  bottom: 18%;
+}
+
+.office-plant--right {
+  right: 12%;
+  bottom: 38%;
+}
+
+.office-whiteboard--research {
+  left: 37%;
+  top: 11%;
+  width: min(23%, 152px);
+  height: 58px;
+  background:
+    linear-gradient(135deg, rgba(244, 241, 234, 0.11), transparent 42%),
+    repeating-linear-gradient(0deg, rgba(120, 212, 192, 0.18) 0 2px, transparent 2px 12px),
+    rgba(13, 20, 20, 0.76);
+  border: 1px solid rgba(120, 212, 192, 0.22);
+  border-radius: 5px;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+  transform: skewY(-4deg);
+}
+
+.office-whiteboard--research::after {
+  position: absolute;
+  left: 11px;
+  bottom: 10px;
+  width: 44%;
+  height: 2px;
+  content: '';
+  background: rgba(215, 180, 92, 0.56);
+  box-shadow:
+    18px -12px 0 rgba(120, 212, 192, 0.44),
+    48px -4px 0 rgba(212, 84, 77, 0.38);
+  transform: rotate(-18deg);
+}
+
+.office-desk-cluster {
+  width: min(28%, 210px);
+  height: 82px;
+  background:
+    radial-gradient(ellipse, rgba(0, 0, 0, 0.3), transparent 70%),
+    linear-gradient(90deg, rgba(215, 180, 92, 0.08), transparent);
+  border: 1px solid rgba(215, 180, 92, 0.08);
+  border-radius: 50%;
+  opacity: 0.54;
+  transform: skewY(-4deg) rotate(-8deg);
+}
+
+.office-desk-cluster--north {
+  left: 25%;
+  top: 23%;
+}
+
+.office-desk-cluster--south {
+  right: 20%;
+  bottom: 20%;
 }
 
 .office-zones {
@@ -911,11 +1096,12 @@
   height: 46px;
   pointer-events: none;
   background:
-    linear-gradient(90deg, transparent, rgba(244, 241, 234, 0.06) 14%, transparent 24%),
+    repeating-linear-gradient(90deg, transparent 0 20px, rgba(244, 241, 234, 0.055) 20px 32px),
+    linear-gradient(90deg, transparent, rgba(244, 241, 234, 0.07) 14%, transparent 24%),
     linear-gradient(90deg, transparent 0 9%, rgba(120, 212, 192, 0.1) 9% 11%, transparent 11% 20%),
-    linear-gradient(90deg, rgba(215, 180, 92, 0.08), transparent 60%);
-  border-top: 1px solid rgba(120, 212, 192, 0.1);
-  border-bottom: 1px solid rgba(215, 180, 92, 0.09);
+    linear-gradient(90deg, rgba(215, 180, 92, 0.1), transparent 60%);
+  border-top: 1px dashed rgba(120, 212, 192, 0.12);
+  border-bottom: 1px dashed rgba(215, 180, 92, 0.11);
   border-radius: 999px;
   opacity: 0.48;
   transform-origin: 0 50%;
@@ -1216,6 +1402,11 @@
   grid-column: auto;
   grid-row: auto;
   width: 42px;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(244, 241, 234, 0.12), transparent 24%),
+    linear-gradient(180deg, rgba(16, 18, 17, 0.34), transparent 62%);
+  border-color: rgba(244, 241, 234, 0.08);
+  box-shadow: none;
   transform-origin: 50% 100%;
 }
 
@@ -1267,29 +1458,34 @@
 }
 
 .office-desk {
+  --office-desk-angle: 0deg;
   position: absolute;
   z-index: 4;
   display: grid;
-  grid-template-columns: 38px 30px minmax(0, 1fr);
-  grid-template-rows: auto auto;
-  gap: 6px 8px;
+  grid-template-columns: 44px 34px;
+  grid-template-rows: 36px 18px;
+  gap: 7px 9px;
   align-items: center;
-  width: clamp(144px, 19%, 176px);
-  min-height: 78px;
-  padding: 9px 10px;
+  width: clamp(116px, 15.5%, 142px);
+  min-height: 76px;
+  padding: 11px 11px 12px;
   text-align: left;
   cursor: pointer;
   background:
-    linear-gradient(180deg, rgba(244, 241, 234, 0.045), transparent 38%),
-    linear-gradient(145deg, rgba(45, 44, 39, 0.98), rgba(17, 17, 15, 0.95)),
+    linear-gradient(180deg, rgba(244, 241, 234, 0.08), transparent 34%),
+    linear-gradient(90deg, transparent 0 16px, rgba(215, 180, 92, 0.16) 16px 18px, transparent 18px),
+    linear-gradient(180deg, transparent 0 68%, rgba(0, 0, 0, 0.18) 68% 100%),
+    linear-gradient(145deg, rgba(52, 48, 40, 0.98), rgba(21, 20, 17, 0.96)),
     rgba(18, 18, 16, 0.92);
   border: 1px solid rgba(215, 180, 92, 0.24);
-  border-radius: 7px;
+  border-radius: 8px 8px 6px 6px;
   box-shadow:
     inset 0 1px 0 rgba(244, 241, 234, 0.07),
-    inset 0 -10px 18px rgba(0, 0, 0, 0.18),
+    inset 0 -13px 18px rgba(0, 0, 0, 0.2),
+    -10px 12px 0 -9px rgba(215, 180, 92, 0.22),
+    10px 12px 0 -9px rgba(215, 180, 92, 0.2),
     0 16px 34px rgba(0, 0, 0, 0.34);
-  transform: translate(-50%, -50%) skewY(-4deg);
+  transform: translate(-50%, -50%) rotate(var(--office-desk-angle)) skewY(-4deg);
   transition:
     border-color 160ms ease,
     box-shadow 160ms ease,
@@ -1304,11 +1500,14 @@
 }
 
 .office-workstation::before {
-  inset: 7px 9px auto;
-  height: 8px;
-  background: linear-gradient(90deg, rgba(215, 180, 92, 0.18), transparent 72%);
-  border-radius: 999px;
-  opacity: 0.72;
+  inset: 8px 11px auto;
+  height: 11px;
+  background:
+    linear-gradient(90deg, rgba(244, 241, 234, 0.09), transparent 24%),
+    linear-gradient(90deg, rgba(215, 180, 92, 0.2), transparent 72%);
+  border-top: 1px solid rgba(244, 241, 234, 0.08);
+  border-radius: 999px 999px 3px 3px;
+  opacity: 0.82;
 }
 
 .office-workstation::after {
@@ -1326,7 +1525,7 @@
     0 0 30px rgba(215, 180, 92, 0.18),
     0 18px 38px rgba(0, 0, 0, 0.34);
   outline: none;
-  transform: translate(-50%, -52%) skewY(-4deg);
+  transform: translate(-50%, -52%) rotate(var(--office-desk-angle)) skewY(-4deg);
 }
 
 .office-desk:hover {
@@ -1335,57 +1534,66 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.06),
     0 0 30px rgba(215, 180, 92, 0.18),
     0 14px 32px rgba(0, 0, 0, 0.3);
-  transform: translate(-50%, -52%) skewY(-4deg);
+  transform: translate(-50%, -52%) rotate(var(--office-desk-angle)) skewY(-4deg);
 }
 
 .office-desk:focus-visible {
   border-color: rgba(240, 205, 116, 0.82);
   outline: 2px solid rgba(120, 212, 192, 0.72);
   outline-offset: 4px;
-  transform: translate(-50%, -52%) skewY(-4deg);
+  transform: translate(-50%, -52%) rotate(var(--office-desk-angle)) skewY(-4deg);
 }
 
 .office-desk[data-office-slot='0'] {
+  --office-desk-angle: -2deg;
   left: 50%;
   top: 16%;
 }
 
 .office-desk[data-office-slot='1'] {
+  --office-desk-angle: 4deg;
   left: 68%;
   top: 24%;
 }
 
 .office-desk[data-office-slot='2'] {
+  --office-desk-angle: 8deg;
   left: 80%;
   top: 42%;
 }
 
 .office-desk[data-office-slot='3'] {
+  --office-desk-angle: -5deg;
   left: 76%;
   top: 64%;
 }
 
 .office-desk[data-office-slot='4'] {
+  --office-desk-angle: 3deg;
   left: 60%;
   top: 78%;
 }
 
 .office-desk[data-office-slot='5'] {
+  --office-desk-angle: -3deg;
   left: 40%;
   top: 78%;
 }
 
 .office-desk[data-office-slot='6'] {
+  --office-desk-angle: 5deg;
   left: 24%;
   top: 64%;
 }
 
 .office-desk[data-office-slot='7'] {
+  --office-desk-angle: -8deg;
   left: 20%;
   top: 42%;
 }
 
 .office-desk[data-office-slot='8'] {
+  --office-desk-angle: 2deg;
   left: 32%;
   top: 24%;
 }
@@ -1437,23 +1645,27 @@
   display: grid;
   grid-column: 1;
   grid-row: 1;
-  width: 38px;
-  aspect-ratio: 1.12;
+  width: 44px;
+  aspect-ratio: 1.18;
   place-items: center;
   background:
-    linear-gradient(180deg, rgba(120, 212, 192, 0.2), rgba(16, 35, 34, 0.74)),
+    linear-gradient(180deg, rgba(244, 241, 234, 0.08), transparent 22%),
+    linear-gradient(180deg, rgba(120, 212, 192, 0.22), rgba(16, 35, 34, 0.78)),
     rgba(9, 13, 13, 0.92);
   border: 1px solid rgba(120, 212, 192, 0.36);
-  border-radius: 5px;
-  box-shadow: 0 0 14px rgba(120, 212, 192, 0.12);
+  border-radius: 5px 5px 4px 4px;
+  box-shadow:
+    inset 0 -4px 0 rgba(0, 0, 0, 0.2),
+    0 0 14px rgba(120, 212, 192, 0.12);
+  transform: perspective(90px) rotateX(-4deg);
 }
 
 .office-monitor-stand {
   position: absolute;
   left: 50%;
-  bottom: -7px;
-  width: 18px;
-  height: 7px;
+  bottom: -9px;
+  width: 22px;
+  height: 9px;
   background:
     linear-gradient(180deg, rgba(215, 180, 92, 0.28), rgba(77, 67, 48, 0.44)),
     rgba(20, 19, 16, 0.86);
@@ -1466,8 +1678,8 @@
   position: relative;
   grid-column: 1;
   grid-row: 2;
-  width: 38px;
-  height: 12px;
+  width: 44px;
+  height: 13px;
   background:
     repeating-linear-gradient(90deg, rgba(120, 212, 192, 0.24) 0 2px, transparent 2px 5px),
     linear-gradient(180deg, rgba(244, 241, 234, 0.08), rgba(0, 0, 0, 0.12)),
@@ -1479,10 +1691,10 @@
 
 .office-desk-worklog {
   position: absolute;
-  left: 54px;
-  bottom: 13px;
-  width: 19px;
-  height: 13px;
+  left: 56px;
+  bottom: 14px;
+  width: 22px;
+  height: 15px;
   pointer-events: none;
   background:
     linear-gradient(90deg, rgba(244, 241, 234, 0.16), transparent 42%),
@@ -1496,11 +1708,11 @@
 
 .office-profession-prop {
   position: absolute;
-  right: 28px;
-  top: 14px;
+  right: 12px;
+  top: 16px;
   z-index: 1;
-  width: 28px;
-  height: 22px;
+  width: 32px;
+  height: 24px;
   pointer-events: none;
   border: 1px solid rgba(244, 241, 234, 0.12);
   border-radius: 4px;
@@ -1717,22 +1929,26 @@
   position: relative;
   grid-column: 2;
   grid-row: 1 / 3;
-  width: 28px;
-  aspect-ratio: 0.9;
+  width: 32px;
+  aspect-ratio: 0.82;
   background:
-    radial-gradient(circle at 50% 38%, rgba(215, 180, 92, 0.18), transparent 36%),
-    rgba(34, 33, 30, 0.92);
+    linear-gradient(180deg, rgba(244, 241, 234, 0.06), transparent 36%),
+    radial-gradient(circle at 50% 38%, rgba(215, 180, 92, 0.22), transparent 38%),
+    rgba(34, 33, 30, 0.94);
   border: 1px solid rgba(215, 180, 92, 0.22);
-  border-radius: 8px 8px 11px 11px;
-  box-shadow: inset 0 -8px 10px rgba(0, 0, 0, 0.18);
+  border-radius: 9px 9px 12px 12px;
+  box-shadow:
+    inset 0 -9px 10px rgba(0, 0, 0, 0.2),
+    0 7px 10px rgba(0, 0, 0, 0.16);
+  transform: translateY(3px);
 }
 
 .office-chair::after {
   position: absolute;
   left: 50%;
-  bottom: -7px;
-  width: 16px;
-  height: 7px;
+  bottom: -9px;
+  width: 19px;
+  height: 9px;
   content: '';
   background: rgba(215, 180, 92, 0.14);
   border-radius: 0 0 999px 999px;
@@ -2125,11 +2341,20 @@
 }
 
 .office-desk__label {
+  position: absolute;
+  left: 50%;
+  top: -20px;
   display: grid;
-  grid-column: 3;
-  grid-row: 1 / 3;
   gap: 2px;
-  min-width: 0;
+  min-width: 78px;
+  max-width: 92px;
+  padding: 3px 6px;
+  background: rgba(12, 13, 12, 0.72);
+  border: 1px solid rgba(215, 180, 92, 0.16);
+  border-radius: 4px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.18);
+  text-align: center;
+  transform: translateX(-50%);
 }
 
 .office-desk__label strong,
@@ -2142,12 +2367,13 @@
 
 .office-desk__label strong {
   color: #f4f1ea;
-  font-size: 0.78rem;
+  font-size: 0.64rem;
+  line-height: 1;
 }
 
 .office-desk__label small {
   color: #bdb5aa;
-  font-size: 0.62rem;
+  font-size: 0.48rem;
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
