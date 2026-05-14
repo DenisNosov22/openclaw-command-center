@@ -280,6 +280,7 @@ export function IsometricOfficeScene({
               data-current-task={station.currentTask}
               data-office-zone={station.simulation.zoneId}
               data-physical-agent="true"
+              data-profession-prop={station.professionProp}
               data-route-involved={station.choreography.routeInvolvement}
               data-status-badge={statusBadge}
               key={`floor-agent-${station.id}`}
