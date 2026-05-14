@@ -1623,10 +1623,41 @@
   --office-agent-state-color: #78d4c0;
 }
 
+.office-floor-agent[data-status-badge='running'],
+.office-desk[data-status-badge='running'] {
+  --office-agent-state-color: #78d4c0;
+}
+
+.office-floor-agent[data-status-badge='blocked'],
+.office-desk[data-status-badge='blocked'] {
+  --office-agent-state-color: #d4544d;
+}
+
+.office-floor-agent[data-status-badge='failed'],
+.office-desk[data-status-badge='failed'] {
+  --office-agent-state-color: #ff6b5f;
+}
+
+.office-floor-agent[data-status-badge='waiting'],
+.office-desk[data-status-badge='waiting'] {
+  --office-agent-state-color: #d7b45c;
+}
+
+.office-floor-agent[data-status-badge='done'],
+.office-desk[data-status-badge='done'] {
+  --office-agent-state-color: #94d876;
+}
+
+.office-floor-agent[data-status-badge='idle'],
+.office-desk[data-status-badge='idle'] {
+  --office-agent-state-color: #8f8a80;
+}
+
 .office-agent-trail,
 .office-agent-target-pin,
 .office-agent-document-transfer,
 .office-agent-direction-arrow,
+.office-agent-status-cue,
 .office-agent-state-badge {
   position: absolute;
   pointer-events: none;
@@ -1697,7 +1728,7 @@
 
 .office-agent-state-badge {
   left: 50%;
-  top: -23px;
+  top: -24px;
   z-index: 7;
   max-width: 72px;
   overflow: hidden;
@@ -1717,6 +1748,100 @@
   text-transform: uppercase;
   transform: translateX(-50%) skewY(-4deg);
   white-space: nowrap;
+}
+
+.office-agent-status-cue {
+  right: -9px;
+  top: -5px;
+  z-index: 8;
+  display: grid;
+  width: 15px;
+  aspect-ratio: 1;
+  place-items: center;
+  color: rgba(9, 12, 11, 0.94);
+  background: var(--office-agent-state-color);
+  border: 1px solid rgba(244, 241, 234, 0.52);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 2px rgba(9, 12, 11, 0.58),
+    0 0 12px color-mix(in srgb, var(--office-agent-state-color) 48%, transparent);
+  font-size: 0.5rem;
+  font-weight: 950;
+  line-height: 1;
+}
+
+.office-agent-status-cue::before {
+  content: '';
+}
+
+.office-floor-agent[data-status-badge='running'] .office-agent-status-cue {
+  animation: office-live-running-pulse 2.2s ease-in-out infinite;
+}
+
+.office-floor-agent[data-status-badge='running'] .office-agent-status-cue::before {
+  width: 7px;
+  height: 5px;
+  background:
+    linear-gradient(90deg, currentColor 0 2px, transparent 2px 3px, currentColor 3px 5px, transparent 5px 6px, currentColor 6px);
+  border-radius: 1px;
+}
+
+.office-floor-agent[data-status-badge='blocked'] .office-agent-status-cue {
+  color: rgba(244, 241, 234, 0.96);
+  border-radius: 4px;
+}
+
+.office-floor-agent[data-status-badge='blocked'] .office-agent-status-cue::before {
+  content: '!';
+}
+
+.office-floor-agent[data-status-badge='failed'] .office-agent-status-cue {
+  color: rgba(244, 241, 234, 0.96);
+  background:
+    linear-gradient(135deg, transparent 0 42%, rgba(244, 241, 234, 0.82) 42% 56%, transparent 56%),
+    linear-gradient(45deg, transparent 0 42%, rgba(244, 241, 234, 0.82) 42% 56%, transparent 56%),
+    var(--office-agent-state-color);
+  border-radius: 3px;
+  box-shadow:
+    0 0 0 2px rgba(62, 11, 10, 0.68),
+    0 0 15px rgba(255, 107, 95, 0.34);
+}
+
+.office-floor-agent[data-status-badge='waiting'] .office-agent-status-cue {
+  color: rgba(32, 25, 11, 0.94);
+  animation: office-live-waiting-blink 3.2s ease-in-out infinite;
+}
+
+.office-floor-agent[data-status-badge='waiting'] .office-agent-status-cue::before {
+  width: 6px;
+  height: 8px;
+  border-top: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: skewX(-10deg);
+}
+
+.office-floor-agent[data-status-badge='done'] .office-agent-status-cue {
+  color: rgba(8, 21, 11, 0.94);
+}
+
+.office-floor-agent[data-status-badge='done'] .office-agent-status-cue::before {
+  width: 7px;
+  height: 4px;
+  border-bottom: 2px solid currentColor;
+  border-left: 2px solid currentColor;
+  transform: translateY(-1px) rotate(-45deg);
+}
+
+.office-floor-agent[data-status-badge='idle'] .office-agent-status-cue {
+  opacity: 0.78;
+  filter: saturate(0.65);
+}
+
+.office-floor-agent[data-status-badge='idle'] .office-agent-status-cue::before {
+  width: 7px;
+  height: 2px;
+  background: currentColor;
+  border-radius: 999px;
 }
 
 .office-floor-agent[data-agent-posture='walking'] .office-agent-trail,
@@ -1816,6 +1941,31 @@
   border: 1px solid rgba(244, 241, 234, 0.42);
   border-radius: 50%;
   box-shadow: 0 0 9px currentColor;
+}
+
+.office-floor-agent[data-status-badge='failed'] .office-agent-marker {
+  border-color: rgba(255, 107, 95, 0.78);
+  box-shadow:
+    0 0 0 1px rgba(255, 107, 95, 0.18),
+    0 0 20px rgba(255, 107, 95, 0.18);
+}
+
+.office-floor-agent[data-status-badge='failed'] .office-agent-marker::after {
+  position: absolute;
+  left: -4px;
+  top: -4px;
+  width: 11px;
+  aspect-ratio: 1;
+  color: #ff6b5f;
+  content: 'x';
+  background: rgba(62, 11, 10, 0.92);
+  border: 1px solid rgba(255, 107, 95, 0.66);
+  border-radius: 3px;
+  box-shadow: 0 0 10px rgba(255, 107, 95, 0.36);
+  font-size: 0.48rem;
+  font-weight: 950;
+  line-height: 1.1;
+  text-align: center;
 }
 
 .office-floor-agent::after {
@@ -2104,6 +2254,40 @@
 
 .office-desk--walking {
   border-color: rgba(120, 212, 192, 0.32);
+}
+
+.office-desk[data-status-badge='running'] {
+  border-color: rgba(120, 212, 192, 0.46);
+  box-shadow:
+    inset 0 0 0 1px rgba(120, 212, 192, 0.14),
+    0 0 22px rgba(120, 212, 192, 0.12),
+    0 16px 34px rgba(0, 0, 0, 0.34);
+}
+
+.office-desk[data-status-badge='blocked'],
+.office-desk[data-status-badge='failed'] {
+  border-color: color-mix(in srgb, var(--office-agent-state-color) 68%, rgba(244, 241, 234, 0.12));
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--office-agent-state-color) 18%, transparent),
+    0 0 24px color-mix(in srgb, var(--office-agent-state-color) 18%, transparent),
+    0 16px 34px rgba(0, 0, 0, 0.34);
+}
+
+.office-desk[data-status-badge='waiting'] {
+  border-color: rgba(215, 180, 92, 0.46);
+}
+
+.office-desk[data-status-badge='done'] {
+  border-color: rgba(148, 216, 118, 0.44);
+}
+
+.office-desk[data-status-badge='idle'] {
+  opacity: 0.86;
+}
+
+.office-desk[data-status-badge] .office-status-lamp {
+  background: var(--office-agent-state-color);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--office-agent-state-color) 62%, transparent);
 }
 
 .office-terminal {
@@ -3579,6 +3763,31 @@
 
   50% {
     transform: translateY(2px);
+  }
+}
+
+@keyframes office-live-running-pulse {
+  0%,
+  100% {
+    opacity: 0.72;
+    transform: scale(0.92);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.12);
+  }
+}
+
+@keyframes office-live-waiting-blink {
+  0%,
+  100% {
+    opacity: 0.58;
+  }
+
+  45%,
+  62% {
+    opacity: 1;
   }
 }
 

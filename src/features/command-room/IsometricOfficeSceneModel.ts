@@ -180,6 +180,25 @@ const roleTaskBubble: Record<string, string> = {
   trading: 'market',
 }
 
+function getCompactTaskBubbleLabel(currentTask: string, fallback: string) {
+  const normalizedTask = currentTask
+    .replace(/^(route to|handoff:|monitor:)\s+/i, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+
+  if (!normalizedTask || normalizedTask === 'Read-only station') {
+    return fallback
+  }
+
+  const compactWords = normalizedTask
+    .split(' ')
+    .filter((word) => word.length > 1)
+    .slice(0, 3)
+    .join(' ')
+
+  return compactWords.length > 18 ? `${compactWords.slice(0, 17)}.` : compactWords
+}
+
 const actionPhaseMap: Record<OfficeStationAction, Pick<OfficeBehaviorChoreography, 'intensity' | 'phaseLabel' | 'tempo'>> = {
   alert: { phaseLabel: 'resolve-pulse', intensity: 'high', tempo: 'slow' },
   blocked: { phaseLabel: 'resolve-pulse', intensity: 'high', tempo: 'slow' },
@@ -363,7 +382,10 @@ export function createOfficeAgentStations(
       professionProp: roleProfessionProp[agent.role] ?? 'command',
       activityState: roleActivityState[agent.role] ?? 'presenting',
       activityLabel: roleActivityLabel[roleActivityState[agent.role] ?? 'presenting'],
-      taskBubble: roleTaskBubble[agent.role] ?? task?.nextStep ?? task?.title ?? 'watch',
+      taskBubble: getCompactTaskBubbleLabel(
+        simulationState.currentTask,
+        roleTaskBubble[agent.role] ?? task?.nextStep ?? task?.title ?? 'watch',
+      ),
       choreography: getStationChoreography(index, action, agent.status),
       slot: index % officeStationLayout.length,
       taskTitle: task?.title ?? 'Read-only station',

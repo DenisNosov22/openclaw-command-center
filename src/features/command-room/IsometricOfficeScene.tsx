@@ -46,6 +46,10 @@ function getAgentStateBadgeLabel(station: ReturnType<typeof createOfficeSceneVie
   return station.simulation.activity
 }
 
+function getAgentStatusBadge(station: ReturnType<typeof createOfficeSceneViewModel>['stations'][number]) {
+  return station.simulation.statusBadge ?? station.simulation.activity
+}
+
 interface IsometricOfficeSceneProps {
   agents: Agent[]
   tasks: Task[]
@@ -259,10 +263,11 @@ export function IsometricOfficeScene({
       </div>
       {stations.map((station) => {
         const isSelected = station.agentId === selectedAgentId
+        const statusBadge = getAgentStatusBadge(station)
 
         return (
           <button
-            aria-label={`${isSelected ? 'Selected' : 'Select'} read-only office station ${station.name}: ${station.role}, ${station.activity} activity, ${station.terminalMode} terminal, ${station.currentTask}`}
+            aria-label={`${isSelected ? 'Selected' : 'Select'} read-only office station ${station.name}: ${station.role}, ${statusBadge} status, ${station.activity} activity, ${station.terminalMode} terminal, ${station.currentTask}`}
             aria-pressed={isSelected}
             className={getOfficeStationClassName(
               station.lane,
@@ -276,6 +281,7 @@ export function IsometricOfficeScene({
             data-activity-state={station.activityState}
             data-agent-posture={station.simulation.posture}
             data-current-task={station.currentTask}
+            data-status-badge={statusBadge}
             data-office-slot={station.slot}
             data-office-zone={station.simulation.zoneId}
             data-route-involved={station.choreography.routeInvolvement}
@@ -319,51 +325,57 @@ export function IsometricOfficeScene({
         )
       })}
       <div className="office-agent-floor" aria-hidden="true">
-        {stations.map((station) => (
-          <span
-            className={getOfficeFloorAgentClassName(station)}
-            data-action-phase={station.choreography.phaseLabel}
-            data-activity-state={station.activityState}
-            data-agent-id={station.agentId}
-            data-agent-activity={station.simulation.activity}
-            data-agent-path={station.simulation.pathId}
-            data-agent-posture={station.simulation.posture}
-            data-agent-progress={station.simulation.progress}
-            data-agent-target={`${station.simulation.target.x},${station.simulation.target.y}`}
-            data-current-task={station.currentTask}
-            data-office-zone={station.simulation.zoneId}
-            data-physical-agent="true"
-            data-route-involved={station.choreography.routeInvolvement}
-            key={`floor-agent-${station.id}`}
-            style={{
-              '--office-agent-delay': station.choreography.animationDelay,
-              '--office-agent-duration': station.choreography.animationDuration,
-              '--office-agent-tempo': station.choreography.tempo,
-              '--office-agent-target-x': `${station.simulation.target.x}%`,
-              '--office-agent-target-y': `${station.simulation.target.y}%`,
-              '--office-agent-x': `${station.simulation.position.x}%`,
-              '--office-agent-y': `${station.simulation.position.y}%`,
-            } as CSSProperties}
-          >
-            <span className="office-agent-trail" />
-            <span className="office-agent-target-pin" />
-            <span className={getOfficeAgentMarkerClassName(station.action)}>
-              <span className={OFFICE_SPRITE_TOKENS.restProp} />
-              <span className={OFFICE_SPRITE_TOKENS.sprite}>
-                <span className={OFFICE_SPRITE_TOKENS.head} />
-                <span className={OFFICE_SPRITE_TOKENS.body}>{station.marker}</span>
-                <span className={OFFICE_SPRITE_TOKENS.hands} />
-                <span className={OFFICE_SPRITE_TOKENS.legs} />
+        {stations.map((station) => {
+          const statusBadge = getAgentStatusBadge(station)
+
+          return (
+            <span
+              className={getOfficeFloorAgentClassName(station)}
+              data-action-phase={station.choreography.phaseLabel}
+              data-activity-state={station.activityState}
+              data-agent-id={station.agentId}
+              data-agent-activity={station.simulation.activity}
+              data-agent-path={station.simulation.pathId}
+              data-agent-posture={station.simulation.posture}
+              data-agent-progress={station.simulation.progress}
+              data-agent-target={`${station.simulation.target.x},${station.simulation.target.y}`}
+              data-current-task={station.currentTask}
+              data-office-zone={station.simulation.zoneId}
+              data-physical-agent="true"
+              data-route-involved={station.choreography.routeInvolvement}
+              data-status-badge={statusBadge}
+              key={`floor-agent-${station.id}`}
+              style={{
+                '--office-agent-delay': station.choreography.animationDelay,
+                '--office-agent-duration': station.choreography.animationDuration,
+                '--office-agent-tempo': station.choreography.tempo,
+                '--office-agent-target-x': `${station.simulation.target.x}%`,
+                '--office-agent-target-y': `${station.simulation.target.y}%`,
+                '--office-agent-x': `${station.simulation.position.x}%`,
+                '--office-agent-y': `${station.simulation.position.y}%`,
+              } as CSSProperties}
+            >
+              <span className="office-agent-trail" />
+              <span className="office-agent-target-pin" />
+              <span className="office-agent-status-cue" />
+              <span className={getOfficeAgentMarkerClassName(station.action)}>
+                <span className={OFFICE_SPRITE_TOKENS.restProp} />
+                <span className={OFFICE_SPRITE_TOKENS.sprite}>
+                  <span className={OFFICE_SPRITE_TOKENS.head} />
+                  <span className={OFFICE_SPRITE_TOKENS.body}>{station.marker}</span>
+                  <span className={OFFICE_SPRITE_TOKENS.hands} />
+                  <span className={OFFICE_SPRITE_TOKENS.legs} />
+                </span>
+                <span className={OFFICE_SPRITE_TOKENS.signalProp} />
+                <span className={OFFICE_SPRITE_TOKENS.tool} />
               </span>
-              <span className={OFFICE_SPRITE_TOKENS.signalProp} />
-              <span className={OFFICE_SPRITE_TOKENS.tool} />
+              <span className="office-agent-document-transfer" />
+              <span className="office-agent-direction-arrow" />
+              <span className="office-agent-state-badge">{getAgentStateBadgeLabel(station)}</span>
+              <span className={OFFICE_SPRITE_TOKENS.taskBubble}>{station.taskBubble}</span>
             </span>
-            <span className="office-agent-document-transfer" />
-            <span className="office-agent-direction-arrow" />
-            <span className="office-agent-state-badge">{getAgentStateBadgeLabel(station)}</span>
-            <span className={OFFICE_SPRITE_TOKENS.taskBubble}>{station.taskBubble}</span>
-          </span>
-        ))}
+          )
+        })}
       </div>
     </div>
   )
