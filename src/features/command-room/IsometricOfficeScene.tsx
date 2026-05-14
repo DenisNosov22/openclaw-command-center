@@ -13,15 +13,7 @@ import {
   OFFICE_SPRITE_TOKENS,
 } from './IsometricOfficeSpriteSystem'
 
-const defaultCompactFloorAgentIds = new Set([
-  'agent-dev',
-  'agent-spec',
-  'agent-rezhyser',
-  'agent-shturman',
-  'agent-varta',
-  'agent-verstalnyk',
-  'agent-vitryna',
-])
+const defaultCompactFloorAgentIds = new Set<string>()
 
 function getOfficeFloorAgentClassName(station: ReturnType<typeof createOfficeSceneViewModel>['stations'][number]) {
   return [

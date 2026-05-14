@@ -187,9 +187,9 @@ async function verifyOfficeDom(page: Page) {
     'Removed office zone/room-prop/lane overlay DOM should not render',
   )
   await expectVisible(page.locator(".office-desk[data-agent-id='agent-vitryna']"), 'Вітрина marketing visuals desk')
-  await expectVisible(page.locator(".office-floor-agent[data-agent-id='agent-vitryna'][data-physical-agent='true'][data-floor-render='badge']"), 'Вітрина compact workstation badge')
+  await expectVisible(page.locator(".office-floor-agent[data-agent-id='agent-vitryna'][data-physical-agent='true'][data-floor-render='full']"), 'Вітрина visible full-size workstation agent')
   await expectVisible(page.locator(".office-desk[data-agent-id='agent-rezhyser']"), 'Режисер camera/director station')
-  await expectVisible(page.locator(".office-floor-agent[data-agent-id='agent-rezhyser'][data-physical-agent='true'][data-floor-render='badge']"), 'Режисер compact camera badge')
+  await expectVisible(page.locator(".office-floor-agent[data-agent-id='agent-rezhyser'][data-physical-agent='true'][data-floor-render='full']"), 'Режисер visible full-size camera agent')
 
   const edgeRoleClippingIssues = await page.evaluate(() => {
     const office = document.querySelector<HTMLElement>('.isometric-office')
@@ -534,67 +534,29 @@ async function verifyOfficeDom(page: Page) {
     `Inactive/home agents should not occupy the central wooden movement corridor: ${stationaryCentralWalkwayIssues.join('; ')}`,
   )
 
-  const defaultFullBodyOpenFloorIssues = await page.evaluate(() => {
-    if (window.innerWidth <= 430) {
-      return []
-    }
-
-    const office = document.querySelector<HTMLElement>('.isometric-office')
-    const officeBox = office?.getBoundingClientRect()
-
-    if (!officeBox) {
-      return ['missing office bounds']
-    }
-
-    return [...document.querySelectorAll<HTMLElement>(".office-floor-agent[data-floor-render='full'][data-physical-agent='true']")]
+  const defaultAgentVisibilityIssues = await page.evaluate(() => {
+    const fullAgents = [...document.querySelectorAll<HTMLElement>(".office-floor-agent[data-floor-render='full'][data-physical-agent='true']")]
+    const badgeAgents = [...document.querySelectorAll<HTMLElement>(".office-floor-agent[data-floor-render='badge'][data-physical-agent='true']")]
+    const tooSmallFullAgents = fullAgents
       .map((agent) => {
-        if (agent.dataset.agentPosture === 'walking' || agent.dataset.agentPosture === 'handoff') {
-          return `${agent.dataset.agentId ?? 'unknown'}: route posture in default`
-        }
-
         const box = agent.getBoundingClientRect()
-        const x = ((box.left + box.width / 2 - officeBox.left) / officeBox.width) * 100
-        const y = ((box.top + box.height / 2 - officeBox.top) / officeBox.height) * 100
-        const inOpenWoodenFloor = x >= 28 && x <= 66 && y >= 40 && y <= 76
-
-        return inOpenWoodenFloor
-          ? `${agent.dataset.agentId ?? 'unknown'}: full body at ${Math.round(x)},${Math.round(y)}`
+        return box.width < 34 || box.height < 42
+          ? `${agent.dataset.agentId ?? 'unknown'}: ${Math.round(box.width)}x${Math.round(box.height)}`
           : ''
       })
       .filter(Boolean)
+
+    return [
+      fullAgents.length < 10 ? `expected all 10 visible full-size agents, got ${fullAgents.length}` : '',
+      badgeAgents.length ? `unexpected badge agents: ${badgeAgents.map((agent) => agent.dataset.agentId).join(',')}` : '',
+      ...tooSmallFullAgents,
+    ].filter(Boolean)
   })
 
   assert.deepEqual(
-    defaultFullBodyOpenFloorIssues,
+    defaultAgentVisibilityIssues,
     [],
-    `Default desktop must not render full-size static agents on the open wooden floor: ${defaultFullBodyOpenFloorIssues.join('; ')}`,
-  )
-
-  const compactBadgeIssues = await page.evaluate(() =>
-    [...document.querySelectorAll<HTMLElement>(".office-floor-agent[data-floor-render='badge']")]
-      .map((agent) => {
-        const box = agent.getBoundingClientRect()
-        const tooSmall = box.width < 30 || box.height < 36
-        const tooLarge = box.width > 46 || box.height > 56
-        const visibleLabels = [...agent.querySelectorAll<HTMLElement>('.office-task-bubble, .office-agent-state-badge')]
-          .some((element) => {
-            const style = getComputedStyle(element)
-            const labelBox = element.getBoundingClientRect()
-
-            return style.display !== 'none' && Number.parseFloat(style.opacity || '1') > 0.03 && labelBox.width > 0 && labelBox.height > 0
-          })
-
-        return tooSmall || tooLarge || visibleLabels
-          ? `${agent.dataset.agentId ?? 'unknown'}: ${Math.round(box.width)}x${Math.round(box.height)} labels=${visibleLabels}`
-          : ''
-      })
-      .filter(Boolean),
-  )
-
-  assert.deepEqual(
-    compactBadgeIssues,
-    [],
-    `Default mini workstation agents should stay visible but label-free: ${compactBadgeIssues.join('; ')}`,
+    `Default desktop should keep normal visible full-size agents, not badges: ${defaultAgentVisibilityIssues.join('; ')}`,
   )
 
   const rightOpenFloorIssues = await page.evaluate(() => {
