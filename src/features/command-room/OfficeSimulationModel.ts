@@ -424,11 +424,14 @@ function roundPoint(point: OfficePoint): OfficePoint {
 }
 
 function getAgentSeed(agent: Agent) {
-  return [...agent.id].reduce((total, character) => total + character.charCodeAt(0), 0)
+  return [...agent.id].reduce(
+    (total, character, index) => total + character.charCodeAt(0) * (index + 1),
+    0,
+  )
 }
 
 function getScenarioPhase(agent: Agent, elapsedMs = 0) {
-  const shiftedElapsed = Math.max(0, elapsedMs) + getAgentSeed(agent) * 137
+  const shiftedElapsed = Math.max(0, elapsedMs) + getAgentSeed(agent) * 97
 
   return (shiftedElapsed % scenarioCycleMs) / scenarioCycleMs
 }
@@ -625,8 +628,8 @@ function getTimedSimulationActivity(
 
   const phase = getScenarioPhase(agent, elapsedMs)
 
-  if (baseActivity === 'handoff' || (task?.status === 'delegated' && phase > 0.5)) {
-    return phase < 0.42 ? 'walking' : 'handoff'
+  if (baseActivity === 'handoff' || task?.status === 'delegated') {
+    return phase < 0.5 ? 'walking' : 'handoff'
   }
 
   if (baseActivity === 'walking') {
@@ -634,7 +637,7 @@ function getTimedSimulationActivity(
   }
 
   if (baseActivity === 'working' || baseActivity === 'coordinating') {
-    return phase < 0.08 ? 'walking' : baseActivity
+    return phase < 0.36 ? 'walking' : baseActivity
   }
 
   if (baseActivity === 'reviewing') {

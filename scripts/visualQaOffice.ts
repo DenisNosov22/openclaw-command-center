@@ -344,7 +344,15 @@ async function verifyOfficeDom(page: Page) {
   assert((await page.locator('.office-agent-floor').count()) === 1, 'Expected physical agent floor layer')
   assert((await page.locator('.office-floor-agent[data-physical-agent="true"]').count()) >= 4, 'Expected physical agent sprites on the office floor')
   assert((await page.locator('.office-floor-agent[data-agent-posture][data-agent-activity][data-agent-path][data-agent-target]').count()) >= 4, 'Expected simulation metadata on physical floor agents')
-  assert((await page.locator(".office-floor-agent[data-agent-posture='walking']").count()) >= 1, 'Expected at least one simulation walking posture')
+  const isReducedMotion = await page.evaluate(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+  const walkingAgentCount = await page.locator(".office-floor-agent[data-agent-posture='walking']").count()
+  const routeActiveAgentCount = await page.locator(".office-floor-agent[data-agent-posture='walking'], .office-floor-agent[data-agent-posture='handoff']").count()
+  if (isReducedMotion) {
+    assert(routeActiveAgentCount <= 4, `Reduced-motion Office should keep route/handoff fallback capped, found ${routeActiveAgentCount}`)
+  } else {
+    assert(walkingAgentCount >= 2, `Expected at least two simulation walking postures in default/mock view, found ${walkingAgentCount}`)
+    assert(routeActiveAgentCount <= 4, `Expected active moving/handoff agents to stay capped, found ${routeActiveAgentCount}`)
+  }
   assert((await page.locator(".office-floor-agent[data-agent-posture='working'], .office-floor-agent[data-agent-posture='sitting']").count()) >= 1, 'Expected at least one calmer desk posture')
   assert((await page.locator(".office-floor-agent[data-agent-posture='handoff']").count()) >= 1, 'Expected at least one handoff posture')
   assert((await page.locator(".office-floor-agent[data-agent-posture='blocked'], .office-floor-agent[data-agent-activity='monitoring']").count()) >= 1, 'Expected blocked or monitoring status marker state')
@@ -353,7 +361,9 @@ async function verifyOfficeDom(page: Page) {
   assert(routePathCount >= 1, 'Expected focused agent path cues keyed by path id')
   assert(routePathCount <= 4, `Expected routes to stay focused and not clutter the floor, found ${routePathCount}`)
   assert((await page.locator(".office-agent-route--walking, .office-agent-route--handoff").count()) >= 1, 'Expected active movement or handoff route cues')
-  assert((await page.locator(".office-floor-agent[data-agent-posture='walking'] .office-agent-trail").count()) >= 1, 'Expected walking agents to expose movement trails')
+  if (!isReducedMotion) {
+    assert((await page.locator(".office-floor-agent[data-agent-posture='walking'] .office-agent-trail").count()) >= 1, 'Expected walking agents to expose movement trails')
+  }
   assert((await page.locator(".office-floor-agent[data-agent-posture='walking'] .office-agent-direction-arrow, .office-floor-agent[data-agent-posture='handoff'] .office-agent-direction-arrow").count()) >= 1, 'Expected moving/handoff agents to expose direction arrows')
   assert((await page.locator(".office-floor-agent[data-agent-posture='handoff'] .office-agent-document-transfer").count()) >= 1, 'Expected handoff agents to expose document transfer marker')
   assert((await page.locator('.office-agent-status-cue').count()) >= 10, 'Expected compact status cues on simulation agents')
@@ -481,6 +491,52 @@ async function verifyOfficeDom(page: Page) {
     [],
     `Floor agents should expose simulation position and target CSS variables: ${agentsMissingSimulationPosition.join('; ')}`,
   )
+
+  if (!isReducedMotion) {
+    const firstMovementSample = await page.evaluate(() =>
+      [...document.querySelectorAll<HTMLElement>(".office-floor-agent[data-agent-posture='walking']")]
+        .slice(0, 4)
+        .map((agent) => {
+          const box = agent.getBoundingClientRect()
+
+          return {
+            id: agent.dataset.agentId ?? 'unknown',
+            progress: agent.dataset.agentProgress ?? '',
+            x: Math.round(box.left + box.width / 2),
+            y: Math.round(box.top + box.height / 2),
+          }
+        }),
+    )
+
+    await page.waitForTimeout(900)
+
+    const secondMovementSample = await page.evaluate(() =>
+      [...document.querySelectorAll<HTMLElement>(".office-floor-agent[data-agent-posture='walking']")]
+        .slice(0, 4)
+        .map((agent) => {
+          const box = agent.getBoundingClientRect()
+
+          return {
+            id: agent.dataset.agentId ?? 'unknown',
+            progress: agent.dataset.agentProgress ?? '',
+            x: Math.round(box.left + box.width / 2),
+            y: Math.round(box.top + box.height / 2),
+          }
+        }),
+    )
+    const movingEvidence = firstMovementSample.some((first) => {
+      const second = secondMovementSample.find((sample) => sample.id === first.id)
+
+      return second
+        ? second.progress !== first.progress || Math.hypot(second.x - first.x, second.y - first.y) >= 2
+        : false
+    })
+
+    assert(
+      movingEvidence,
+      `Expected walking agents to change route progress/position over time; before ${JSON.stringify(firstMovementSample)}, after ${JSON.stringify(secondMovementSample)}`,
+    )
+  }
 
   const deskSpreadIssues = await page.evaluate(() => {
     if (window.innerWidth <= 430) {

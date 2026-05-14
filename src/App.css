@@ -1413,6 +1413,10 @@
       calc(-50% + var(--office-agent-shift-y))
     );
   transform-origin: 50% 100%;
+  transition:
+    left 340ms linear,
+    top 340ms linear,
+    opacity 180ms ease;
 }
 
 .office-floor-agent--north {
@@ -2898,12 +2902,17 @@
   animation: office-agent-walk 8.8s ease-in-out infinite;
 }
 
+.office-agent-marker--walking .office-agent-sprite {
+  animation: office-agent-body-bob 720ms steps(2, end) infinite;
+  animation-delay: var(--office-agent-delay, 0ms);
+}
+
 .office-agent-marker--walking .office-agent-sprite__legs::before {
-  animation-duration: 1.4s;
+  animation-duration: 720ms;
 }
 
 .office-agent-marker--walking .office-agent-sprite__legs::after {
-  animation-duration: 1.4s;
+  animation-duration: 720ms;
 }
 
 .office-agent-marker--walking .office-agent-tool {
@@ -2961,7 +2970,7 @@
 
 .office-behavior--path-step .office-agent-sprite__legs::before,
 .office-behavior--path-step .office-agent-sprite__legs::after {
-  animation-duration: 1.4s;
+  animation-duration: 720ms;
 }
 
 .office-behavior--sofa-idle {
@@ -3284,6 +3293,7 @@
   height: 65px;
   grid-template-rows: 21px 31px 13px;
   filter: drop-shadow(0 8px 6px rgba(0, 0, 0, 0.44));
+  transform-origin: 50% 100%;
 }
 
 .office-agent-sprite__head {
@@ -4712,11 +4722,22 @@
 @keyframes office-agent-walk {
   0%,
   100% {
-    transform: translateX(0);
+    transform: translate(0, 0) rotate(0deg);
   }
 
   50% {
-    transform: translateX(2px);
+    transform: translate(2px, -2px) rotate(-1deg);
+  }
+}
+
+@keyframes office-agent-body-bob {
+  0%,
+  100% {
+    transform: translateY(0) skewX(0deg);
+  }
+
+  50% {
+    transform: translateY(-3px) skewX(-2deg);
   }
 }
 
@@ -4750,11 +4771,11 @@
 @keyframes office-agent-step {
   0%,
   100% {
-    transform: translateY(0);
+    transform: translate(0, 0) rotate(0deg);
   }
 
   50% {
-    transform: translateY(2px);
+    transform: translate(3px, 3px) rotate(-7deg);
   }
 }
 
@@ -4980,6 +5001,7 @@
   .office-terminal--typing .office-terminal__ticks,
   .office-terminal--monitoring .office-terminal__ticks,
   .office-agent-avatar,
+  .office-agent-sprite,
   .office-agent-action-cue,
   .office-agent-tool,
   .office-agent-sprite__hands,

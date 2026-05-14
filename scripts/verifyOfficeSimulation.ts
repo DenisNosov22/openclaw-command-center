@@ -196,13 +196,17 @@ const livelyTasks: Task[] = tasks.map((task) => ({
       : 'delegated',
 }))
 const livelySimulation = createOfficeSimulation(livelyAgents, livelyTasks, {
-  elapsedMs: 1_000,
+  elapsedMs: 1_200,
   mode: 'animated',
 })
 const livelyRouteActiveCount = livelySimulation.agents.filter(
   (agent) => agent.posture === 'walking' || agent.posture === 'handoff',
 ).length
 
+assert(
+  livelyRouteActiveCount > 0,
+  'Active fallback workday should always expose at least one moving or handoff agent',
+)
 assert(
   livelyRouteActiveCount <= OFFICE_MAX_ACTIVE_ROUTE_AGENTS,
   `Active fallback workday should keep movers bounded, got ${livelyRouteActiveCount}`,
@@ -216,6 +220,49 @@ assert(
   ),
   'Overflow active demo agents should keep visible stationary work cues at their home desks',
 )
+
+const defaultAnimatedSimulation = createOfficeSimulation(snapshot.agents, snapshot.tasks, {
+  elapsedMs: 1_200,
+  mode: 'animated',
+})
+const defaultAnimatedMovers = defaultAnimatedSimulation.agents.filter(
+  (agent) => agent.posture === 'walking' || agent.posture === 'handoff',
+)
+
+assert(
+  defaultAnimatedMovers.length > 0,
+  'Default/mock animated scene should not start as a fully static office',
+)
+assert(
+  defaultAnimatedMovers.length <= OFFICE_MAX_ACTIVE_ROUTE_AGENTS,
+  `Default/mock animated scene should cap route agents, got ${defaultAnimatedMovers.length}`,
+)
+
+for (const movingAgent of defaultAnimatedMovers) {
+  assert(
+    movingAgent.route.length >= 2,
+    `${movingAgent.agentId} should expose corridor route points while moving`,
+  )
+  assert(
+    routeIncludesPoint(movingAgent.route, OFFICE_COORDINATION_HUB_POINT),
+    `${movingAgent.agentId} should move through the Краб coordination hub`,
+  )
+  assert(
+    movingAgent.progress > 0 || movingAgent.posture === 'handoff',
+    `${movingAgent.agentId} should expose route progress or an explicit handoff posture`,
+  )
+}
+
+for (const inactiveAgentId of ['agent-bastion', 'agent-desk']) {
+  const state = defaultAnimatedSimulation.agents.find((agent) => agent.agentId === inactiveAgentId)
+
+  assert(state, `Expected inactive live-truth guard target ${inactiveAgentId}`)
+  assert(
+    state.posture !== 'walking' && state.posture !== 'handoff',
+    `${inactiveAgentId} should not randomly move while waiting/failed/error`,
+  )
+  assert.equal(state.progress, 0, `${inactiveAgentId} should not expose route progress`)
+}
 
 const staticTick = tickOfficeSimulation(simulation, {
   agents: snapshot.agents,

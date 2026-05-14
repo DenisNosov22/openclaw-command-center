@@ -81,17 +81,17 @@ function usePrefersReducedMotion() {
 }
 
 function useOfficeSimulationElapsedMs(mode: OfficeSimulationMode, controlledElapsedMs?: number) {
-  const [elapsedMs, setElapsedMs] = useState(0)
+  const [elapsedMs, setElapsedMs] = useState(1_200)
 
   useEffect(() => {
     if (controlledElapsedMs !== undefined || mode === 'static') {
       return undefined
     }
 
-    const startedAt = performance.now()
+    const startedAt = performance.now() - 1_200
     const intervalId = window.setInterval(() => {
       setElapsedMs(Math.round(performance.now() - startedAt))
-    }, 1_200)
+    }, 360)
 
     return () => window.clearInterval(intervalId)
   }, [controlledElapsedMs, mode])
