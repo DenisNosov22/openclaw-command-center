@@ -131,6 +131,23 @@ assert.equal(routedOverride['agent-dev']?.posture, 'walking', 'Running targetRol
 assert(routedOverride['agent-dev']?.target, 'targetRole should resolve target point')
 assert(routedOverride['agent-dev']?.pathId, 'targetRole should resolve a known path')
 
+const leftClusterOverride = createOfficeAgentStatusSimulationOverrides(agents, [
+  {
+    agentId: 'agent-dev',
+    name: 'Дев',
+    state: 'running',
+    currentTask: 'Keep left workstation handoff local',
+    updatedAt: '2026-05-14T09:20:00.000Z',
+    targetRole: 'main/orchestrator',
+    progress: 0.6,
+  },
+])
+assert.deepEqual(
+  leftClusterOverride['agent-dev']?.target,
+  { x: 22.5, y: 54.6 },
+  'Left workstation live routes should stay local instead of crossing the whole office',
+)
+
 const arrivingOverride = createOfficeAgentStatusSimulationOverrides(agents, [
   {
     agentId: 'agent-dev',

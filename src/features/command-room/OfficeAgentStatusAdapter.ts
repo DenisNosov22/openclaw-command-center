@@ -72,6 +72,14 @@ const fixtureTargetRoles = [
   'trading',
 ]
 
+const leftWorkstationRoles = new Set(['coding', 'QA', 'research', 'requirements'])
+const localLeftHandoffRole: Record<string, string> = {
+  coding: 'QA',
+  QA: 'coding',
+  research: 'requirements',
+  requirements: 'research',
+}
+
 function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value))
 }
@@ -157,6 +165,14 @@ function getTargetPoint(targetRole: string) {
   return profile ? getOfficeDesk(profile.deskId).point : undefined
 }
 
+function getSceneSafeTargetRole(agentRole: string, targetRole: string) {
+  if (!leftWorkstationRoles.has(agentRole) || leftWorkstationRoles.has(targetRole)) {
+    return targetRole
+  }
+
+  return localLeftHandoffRole[agentRole] ?? targetRole
+}
+
 function createTargetRouteOverride(
   agent: Agent,
   snapshot: OfficeAgentStatusSnapshot,
@@ -169,14 +185,15 @@ function createTargetRouteOverride(
     return {}
   }
 
-  const target = getTargetPoint(snapshot.targetRole)
-  const path = findTargetPath(agent, snapshot.targetRole)
+  const targetRole = getSceneSafeTargetRole(agent.role, snapshot.targetRole)
+  const target = getTargetPoint(targetRole)
+  const path = findTargetPath(agent, targetRole)
 
   if (!target || !path) {
     return {}
   }
   const sourceProfile = getAgentProfile(agent)
-  const targetProfile = OFFICE_AGENT_PROFILES[snapshot.targetRole]
+  const targetProfile = OFFICE_AGENT_PROFILES[targetRole]
   const progress = clamp(snapshot.progress ?? 0.5, 0, 1)
   const isArrivingAtHandoff = progress >= 0.8
   const sameZonePosition =
