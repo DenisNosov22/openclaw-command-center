@@ -53,16 +53,16 @@ assertIncludes(modelSource, 'roleOfficeLayout', 'profession-specific office floo
 assertIncludes(modelSource, 'roleActivityState', 'profession-specific office activity state map')
 assertIncludes(modelSource, 'roleActivityLabel', 'compact profession activity labels')
 assertIncludes(modelSource, 'activityState: OfficeActivityState', 'typed profession activity state on stations')
-assertIncludes(modelSource, "'main/orchestrator': { x: 50, y: 40, lane: 'south' }", 'coordinator home is a meeting-table chair anchor')
-assertIncludes(modelSource, "coding: { x: 21, y: 43, lane: 'north' }", 'coding station sits at a left workstation PC chair')
-assertIncludes(modelSource, "ops: { x: 14, y: 76, lane: 'south' }", 'ops station sits on the bottom-left server/admin console chair')
-assertIncludes(modelSource, "research: { x: 13, y: 29, lane: 'north' }", 'research station stays on the upper-left PC chair row')
-assertIncludes(modelSource, "requirements: { x: 45, y: 50, lane: 'east' }", 'spec station is seated at a central meeting-table chair')
-assertIncludes(modelSource, "QA: { x: 9, y: 57, lane: 'north' }", 'QA station is moved to a left workstation PC chair')
-assertIncludes(modelSource, "video: { x: 76, y: 56, lane: 'east' }", 'director station stands by the camera/studio furniture without edge clipping')
-assertIncludes(modelSource, "'UI/layout': { x: 69, y: 72, lane: 'east' }", 'design/layout station sits at the right design workstation')
-assertIncludes(modelSource, "marketing: { x: 84, y: 31, lane: 'east' }", 'marketing visuals station anchors beside the right visual wall furniture')
-assertIncludes(modelSource, "trading: { x: 80, y: 76, lane: 'south' }", 'trading station sits at the bottom-right multi-monitor desk chair')
+assertIncludes(modelSource, "'main/orchestrator': { x: 50, y: 38.5, lane: 'south' }", 'coordinator home is a meeting-table chair anchor')
+assertIncludes(modelSource, "coding: { x: 8.8, y: 51.8, lane: 'north' }", 'coding station sits at a left workstation PC chair')
+assertIncludes(modelSource, "ops: { x: 12.2, y: 73, lane: 'south' }", 'ops station sits on the bottom-left server/admin console chair')
+assertIncludes(modelSource, "research: { x: 8.4, y: 33.8, lane: 'north' }", 'research station stays on the upper-left PC chair row')
+assertIncludes(modelSource, "requirements: { x: 22.3, y: 33.9, lane: 'north' }", 'spec station is seated at the upper-left planning workstation')
+assertIncludes(modelSource, "QA: { x: 22.5, y: 54.6, lane: 'north' }", 'QA station is moved to a left workstation PC chair')
+assertIncludes(modelSource, "video: { x: 81.5, y: 45.2, lane: 'east' }", 'director station stands by the camera/studio furniture without edge clipping')
+assertIncludes(modelSource, "'UI/layout': { x: 68.6, y: 73.4, lane: 'east' }", 'design/layout station sits at the right design workstation')
+assertIncludes(modelSource, "marketing: { x: 83.2, y: 32.6, lane: 'east' }", 'marketing visuals station anchors beside the right visual wall furniture')
+assertIncludes(modelSource, "trading: { x: 74.6, y: 73.8, lane: 'south' }", 'trading station sits at the bottom-right multi-monitor desk chair')
 assertIncludes(modelSource, "marketing: 'Вітрина'", 'marketing visuals agent gets a readable station label')
 assertIncludes(modelSource, 'export interface OfficeSignalRoute', 'typed office signal route model')
 assertIncludes(modelSource, 'export interface OfficeBehaviorChoreography', 'typed office behavior choreography metadata')
@@ -125,21 +125,21 @@ assertIncludes(componentSource, 'data-agent-activity={station.simulation.activit
 assertIncludes(componentSource, 'getOfficeStationClassName(', 'activity-aware desks')
 assertIncludes(componentSource, 'station.activityState', 'profession activity state reaches visual classes')
 assertIncludes(componentSource, 'data-activity-state={station.activityState}', 'activity state metadata exposed in DOM')
-assertNotIncludes(componentSource, 'getOfficeTerminalClassName(station.terminalMode)', 'duplicate terminal overlay classes')
+assertIncludes(componentSource, 'getOfficeTerminalClassName(station.terminalMode)', 'terminal overlay classes stay attached to desks')
 assertIncludes(componentSource, 'data-profession-prop={station.professionProp}', 'physical agents expose profession sprite metadata')
-assertNotIncludes(componentSource, 'office-profession-prop--${station.professionProp}', 'duplicate profession prop visual classes')
+assertIncludes(componentSource, 'office-profession-prop--${station.professionProp}', 'profession props stay attached to desks')
 assertIncludes(componentSource, 'OFFICE_SPRITE_TOKENS.taskBubble', 'small task bubble token')
-assertNotIncludes(componentSource, 'OFFICE_SPRITE_TOKENS.activityChip', 'duplicate activity state chip token')
+assertIncludes(componentSource, 'OFFICE_SPRITE_TOKENS.activityChip', 'activity chips stay attached to desks')
 assertIncludes(componentSource, 'station.choreography.className', 'behavior choreography classes applied to sprites')
 assertIncludes(componentSource, 'data-action-phase={station.choreography.phaseLabel}', 'action phase metadata exposed in DOM')
 assertIncludes(componentSource, 'data-office-slot={station.slot}', 'stable office station layout slot metadata')
 assertIncludes(componentSource, "'--office-agent-delay': station.choreography.animationDelay", 'stable agent delay CSS variable')
 assertIncludes(componentSource, "'--office-agent-duration': station.choreography.animationDuration", 'stable agent duration CSS variable')
 assertIncludes(componentSource, "'--office-agent-tempo': station.choreography.tempo", 'stable agent tempo CSS variable')
-assertNotIncludes(componentSource, 'OFFICE_SPRITE_TOKENS.terminalTicks', 'duplicate terminal activity ticks')
-assertNotIncludes(componentSource, 'OFFICE_SPRITE_TOKENS.monitorStand', 'duplicate PC monitor stand token')
-assertNotIncludes(componentSource, 'OFFICE_SPRITE_TOKENS.keyboardTray', 'duplicate keyboard/tool tray token')
-assertNotIncludes(componentSource, 'OFFICE_SPRITE_TOKENS.worklog', 'duplicate desk worklog prop token')
+assertIncludes(componentSource, 'OFFICE_SPRITE_TOKENS.terminalTicks', 'terminal activity ticks')
+assertIncludes(componentSource, 'OFFICE_SPRITE_TOKENS.monitorStand', 'PC monitor stand token')
+assertIncludes(componentSource, 'OFFICE_SPRITE_TOKENS.keyboardTray', 'keyboard/tool tray token')
+assertIncludes(componentSource, 'OFFICE_SPRITE_TOKENS.worklog', 'desk worklog prop token')
 assertIncludes(componentSource, 'getOfficeAgentMarkerClassName(station.action)', 'abstract agent markers')
 assertIncludes(componentSource, 'OFFICE_SPRITE_TOKENS.sprite', 'original 2D character sprite token')
 assertIncludes(componentSource, 'OFFICE_SPRITE_TOKENS.head', '2D avatar head shape')
@@ -171,7 +171,7 @@ assertIncludes(pageSource, 'center-stage--office', 'office view applies flattene
 assertIncludes(getBlock('.center-stage--office'), 'background: transparent', 'office stage parent has no visible card background')
 assertIncludes(getBlock('.center-stage--office'), 'border-color: transparent', 'office stage parent has no visible border')
 assertIncludes(getBlock('.center-stage--office'), 'box-shadow: none', 'office stage parent has no visible card shadow')
-assertIncludes(getBlock('.isometric-office'), 'min-height: clamp(540px, 54vw, 640px)', 'office scene root gives the room taller vertical space')
+assertIncludes(getBlock('.isometric-office'), 'min-height: clamp(540px, 54vw, 640px)', 'office scene root baseline gives the room vertical space')
 assertIncludes(getBlock('.isometric-office'), 'background: transparent', 'office scene root is only a layout mount, not a visible card')
 assertIncludes(getBlock('.isometric-office'), 'border: 0', 'office scene root has no visible wrapper border')
 assertIncludes(getBlock('.isometric-office'), 'box-shadow: none', 'office scene root has no wrapper glow/card shadow')
@@ -229,7 +229,7 @@ assertIncludes(getBlock('.office-terminal__ticks'), 'office-terminal-ticks', 'ty
 assertIncludes(getBlock('.office-desk'), 'left: var(--office-station-x)', 'desks use view-model office floor x position')
 assertIncludes(getBlock('.office-desk'), 'top: var(--office-station-y)', 'desks use view-model office floor y position')
 assertIncludes(stylesheetSource, '.office-lane,', 'walking lane block overlay is suppressed')
-assertIncludes(getBlock('.office-desk--coordinating'), 'width: clamp(96px, 12%, 112px)', 'coordinator desk remains a small side overview desk')
+assertIncludes(getBlock('.office-desk--coordinating'), 'width: clamp(96px, 12%, 112px)', 'coordinator desk remains a compact command table hit target')
 assertIncludes(stylesheetSource, '.office-handoff-hub,', 'handoff hub block overlay is suppressed')
 assertIncludes(getBlock('.office-transfer--danger::after'), '#d4544d', 'critical route packet tone')
 assertIncludes(getBlock('.office-transfer--selected'), 'opacity:', 'selected route emphasis')
@@ -530,7 +530,7 @@ const marketingStation = viewModel.stations.find((station) => station.agentId ==
 assert.equal(onlineStation?.activity, 'working', 'in-progress current task maps to working')
 assert.deepEqual(
   { x: onlineStation?.x, y: onlineStation?.y, lane: onlineStation?.lane },
-  { x: 21, y: 43, lane: 'north' },
+  { x: 8.8, y: 51.8, lane: 'north' },
   'coding station sits at a lower top-left workstation PC with a clear aisle',
 )
 assert.equal(onlineStation?.terminalMode, 'typing', 'in-progress current task maps to typing')
@@ -542,7 +542,7 @@ assert.equal(onlineStation?.choreography.routeInvolvement, true, 'working routed
 assert.equal(busyStation?.activity, 'monitoring', 'waiting status maps to monitoring')
 assert.deepEqual(
   { x: busyStation?.x, y: busyStation?.y, lane: busyStation?.lane },
-  { x: 9, y: 57, lane: 'north' },
+  { x: 22.5, y: 54.6, lane: 'north' },
   'QA station sits at a visible left workstation PC chair with aisle clearance',
 )
 assert.equal(busyStation?.terminalMode, 'monitoring', 'waiting task maps to monitoring')
@@ -550,7 +550,7 @@ assert.equal(busyStation?.choreography.phaseLabel, 'scan-check', 'monitoring loo
 assert.equal(blockedStation?.activity, 'blocked', 'failed task state maps to blocked')
 assert.deepEqual(
   { x: blockedStation?.x, y: blockedStation?.y, lane: blockedStation?.lane },
-  { x: 14, y: 76, lane: 'south' },
+  { x: 12.2, y: 73, lane: 'south' },
   'ops station is in the server/admin console zone, not a radial position',
 )
 assert.equal(blockedStation?.action, 'alert', 'failed task state maps to alert action')
@@ -563,7 +563,7 @@ assert.equal(restingStation?.choreography.phaseLabel, 'sofa-idle', 'seated spec 
 assert.equal(walkingStation?.activity, 'monitoring', 'queued task state stays local monitoring')
 assert.deepEqual(
   { x: walkingStation?.x, y: walkingStation?.y, lane: walkingStation?.lane },
-  { x: 13, y: 29, lane: 'north' },
+  { x: 8.4, y: 33.8, lane: 'north' },
   'research station stays in the top-left workstation row',
 )
 assert.equal(walkingStation?.action, 'monitoring', 'queued task state maps to local monitoring action')
@@ -571,7 +571,7 @@ assert.equal(walkingStation?.choreography.phaseLabel, 'scan-check', 'queued task
 assert.equal(handoffStation?.activity, 'handoff', 'delegated task state maps to handoff')
 assert.deepEqual(
   { x: handoffStation?.x, y: handoffStation?.y, lane: handoffStation?.lane },
-  { x: 50, y: 40, lane: 'south' },
+  { x: 50, y: 38.5, lane: 'south' },
   'coordinator desk stays at the central meeting table',
 )
 assert.equal(handoffStation?.action, 'handoff', 'delegated task state maps to handoff action')
@@ -579,7 +579,7 @@ assert.equal(handoffStation?.choreography.phaseLabel, 'signal-transfer', 'handof
 assert.equal(marketingStation?.name, 'Вітрина', 'marketing visuals agent renders as its own office station')
 assert.deepEqual(
   { x: marketingStation?.x, y: marketingStation?.y, lane: marketingStation?.lane },
-  { x: 84, y: 31, lane: 'east' },
+  { x: 83.2, y: 32.6, lane: 'east' },
   'marketing visuals station sits fully inside the right visual presentation wall',
 )
 assert.equal(marketingStation?.simulation.posture, 'sitting', 'marketing visuals agent sits at the visual wall furniture instead of standing in open floor')

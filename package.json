@@ -24,6 +24,7 @@
     "test:all": "npm run test:redaction && npm run test:adapter-selection && npm run test:adapter-diagnostics && npm run test:snapshot-state && npm run test:keyboard-accessibility && npm run test:responsive-accessibility && npm run test:content-density && npm run test:state-copy && npm run test:visual-polish && npm run test:composition-qa && npm run test:office-scene && npm run test:office-simulation && npm run test:office-agent-status-adapter && npm run test:office-agent-status-data-source",
     "smoke:html": "node --experimental-strip-types scripts/smokeHtml.ts",
     "qa:visual": "npm run build && node --experimental-strip-types scripts/visualQaOffice.ts",
+    "qa:visual:desktop": "npm run build && node --experimental-strip-types scripts/visualQaOfficeDesktop.ts",
     "preview": "vite preview"
   },
   "dependencies": {

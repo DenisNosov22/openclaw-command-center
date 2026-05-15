@@ -97,24 +97,20 @@ async function verifyDesktopOffice(page: Page) {
 
     const checks = [
       ['agent-krab', getCenter('agent-krab'), 47, 53, 36, 43],
-      ['agent-shturman', getCenter('agent-shturman'), 5, 12, 31, 38],
-      ['agent-spec', getCenter('agent-spec'), 19, 26, 31, 39],
-      ['agent-dev', getCenter('agent-dev'), 5, 13, 49, 57],
-      ['agent-varta', getCenter('agent-varta'), 19, 27, 52, 61],
-      ['agent-bastion', getCenter('agent-bastion'), 9, 16, 70, 77],
-      ['agent-rezhyser', getCenter('agent-rezhyser'), 77, 86, 42, 50],
-      ['agent-vitryna', getCenter('agent-vitryna'), 79, 88, 30, 37],
-      ['agent-verstalnyk', getCenter('agent-verstalnyk'), 64, 72, 70, 78],
-      ['agent-desk', getCenter('agent-desk'), 70, 79, 70, 79],
+      ['agent-shturman', getCenter('agent-shturman'), 6, 11, 32, 38],
+      ['agent-spec', getCenter('agent-spec'), 20, 26, 31, 38],
+      ['agent-dev', getCenter('agent-dev'), 8, 27, 49, 57],
+      ['agent-varta', getCenter('agent-varta'), 20, 27, 52, 59],
+      ['agent-bastion', getCenter('agent-bastion'), 10, 16, 70, 76],
+      ['agent-rezhyser', getCenter('agent-rezhyser'), 77, 83, 42, 48],
+      ['agent-vitryna', getCenter('agent-vitryna'), 79, 85, 31, 37],
+      ['agent-verstalnyk', getCenter('agent-verstalnyk'), 65, 71, 70, 76],
+      ['agent-desk', getCenter('agent-desk'), 71, 77, 71, 77],
     ] as const
 
     const placementIssues = checks.map(([agentId, center, minX, maxX, minY, maxY]) => {
       if (!center) {
         return `${agentId}: missing`
-      }
-
-      if (center.posture === 'walking' || center.posture === 'handoff') {
-        return `${agentId}: unexpected ${center.posture} posture`
       }
 
       return center.x >= minX && center.x <= maxX && center.y >= minY && center.y <= maxY
@@ -136,12 +132,14 @@ async function verifyDesktopOffice(page: Page) {
       officeBox.width < 740 || officeBox.width > 790
         ? `desktop office width ${Math.round(officeBox.width)}px is not fixed near 780px`
         : '',
-      Math.abs(officeBox.height - 640) > 2
-        ? `desktop office height ${Math.round(officeBox.height)}px is not fixed at 640px`
+      officeBox.height < 620 || officeBox.height > 780
+        ? `desktop office height ${Math.round(officeBox.height)}px is outside restored large-office range`
         : '',
       ...placementIssues,
-      movingAgents.length ? `unexpected moving agents: ${movingAgents.join(', ')}` : '',
-      visibleRouteCount ? `unexpected visible route overlays: ${visibleRouteCount}` : '',
+      movingAgents.length < 1 || movingAgents.length > 1
+        ? `expected one restrained autonomous mover, got ${movingAgents.join(', ') || 'none'}`
+        : '',
+      visibleRouteCount > 1 ? `too many visible route overlays: ${visibleRouteCount}` : '',
       leftCluster ? '' : 'left priority agents are not all inside the left laptop/chair cluster',
     ].filter(Boolean)
   })

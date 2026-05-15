@@ -578,6 +578,7 @@ export function CommandRoomPage() {
               liveSimulation={liveSimulation}
               onSelectAgent={setSelectedAgentId}
               selectedAgentId={selectedAgent.id}
+              simulationMode="animated"
               tasks={snapshot.tasks}
               workflow={snapshot.workflow}
             />

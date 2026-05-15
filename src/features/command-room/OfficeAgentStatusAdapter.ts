@@ -59,6 +59,19 @@ const fixtureStates: OfficeAgentLiveState[] = [
   'waiting',
 ]
 
+const fixtureTargetRoles = [
+  'coding',
+  'main/orchestrator',
+  'ops',
+  'requirements',
+  'QA',
+  'research',
+  'marketing',
+  'video',
+  'UI/layout',
+  'trading',
+]
+
 function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value))
 }
@@ -110,19 +123,32 @@ function findTargetPath(agent: Agent, targetRole: string) {
     return undefined
   }
 
-  return (
-    OFFICE_PATHS.find(
-      (path) =>
-        path.fromZoneId === sourceProfile.zoneId &&
-        path.toZoneId === targetProfile.zoneId,
-    ) ??
-    OFFICE_PATHS.find(
-      (path) =>
-        path.fromZoneId === targetProfile.zoneId &&
-        path.toZoneId === sourceProfile.zoneId,
-    ) ??
-    getOfficePath(sourceProfile.pathId)
+  const directPath = OFFICE_PATHS.find(
+    (path) =>
+      path.fromZoneId === sourceProfile.zoneId &&
+      path.toZoneId === targetProfile.zoneId,
   )
+
+  if (directPath) {
+    return directPath
+  }
+
+  const reversiblePath = OFFICE_PATHS.find(
+    (path) =>
+      path.fromZoneId === targetProfile.zoneId &&
+      path.toZoneId === sourceProfile.zoneId,
+  )
+
+  if (reversiblePath) {
+    return {
+      ...reversiblePath,
+      fromZoneId: sourceProfile.zoneId,
+      toZoneId: targetProfile.zoneId,
+      points: [...reversiblePath.points].reverse(),
+    }
+  }
+
+  return getOfficePath(sourceProfile.pathId)
 }
 
 function getTargetPoint(targetRole: string) {
@@ -239,16 +265,27 @@ export function createOfficeAgentStatusFixture(
   agents: Agent[],
   updatedAt = '2026-05-14T09:20:00.000Z',
 ): OfficeAgentStatusSnapshot[] {
+  const updatedAtSeed = Math.floor(Date.parse(updatedAt) / 15_000)
+
   return agents
     .filter((agent) => getAgentProfile(agent))
     .map((agent, index) => {
       const state = fixtureStates[index % fixtureStates.length]
-      return {
+      const targetRole = fixtureTargetRoles[(index + updatedAtSeed) % fixtureTargetRoles.length]
+      const progress = ((updatedAtSeed + index * 2) % 9 + 1) / 10
+      const snapshot: OfficeAgentStatusSnapshot = {
         agentId: agent.id,
         name: agent.name,
         state,
         currentTask: agent.summary ?? 'Live status fixture',
         updatedAt,
       }
+
+      if (state === 'running' && targetRole !== agent.role) {
+        snapshot.targetRole = targetRole
+        snapshot.progress = progress
+      }
+
+      return snapshot
     })
 }
