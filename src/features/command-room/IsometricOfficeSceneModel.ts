@@ -96,29 +96,29 @@ export type OfficeStationPulse = 'active' | 'calm' | 'danger' | 'idle'
 export type OfficeTerminalMode = 'idle' | 'monitoring' | 'typing'
 
 const officeStationLayout: Array<Pick<OfficeAgentStation, 'x' | 'y' | 'lane'>> = [
-  { x: 50, y: 40, lane: 'south' },
-  { x: 21, y: 43, lane: 'north' },
-  { x: 14, y: 76, lane: 'south' },
-  { x: 13, y: 29, lane: 'north' },
-  { x: 45, y: 50, lane: 'east' },
-  { x: 9, y: 57, lane: 'north' },
-  { x: 76, y: 56, lane: 'east' },
-  { x: 69, y: 72, lane: 'east' },
-  { x: 84, y: 31, lane: 'east' },
-  { x: 80, y: 76, lane: 'south' },
+  { x: 50, y: 38.5, lane: 'south' },
+  { x: 8.8, y: 51.8, lane: 'north' },
+  { x: 12.2, y: 73, lane: 'south' },
+  { x: 8.4, y: 33.8, lane: 'north' },
+  { x: 22.3, y: 33.9, lane: 'north' },
+  { x: 22.5, y: 54.6, lane: 'north' },
+  { x: 81.5, y: 45.2, lane: 'east' },
+  { x: 68.6, y: 73.4, lane: 'east' },
+  { x: 83.2, y: 32.6, lane: 'east' },
+  { x: 74.6, y: 73.8, lane: 'south' },
 ]
 
 const roleOfficeLayout: Record<string, Pick<OfficeAgentStation, 'x' | 'y' | 'lane'>> = {
-  'main/orchestrator': { x: 50, y: 40, lane: 'south' },
-  coding: { x: 21, y: 43, lane: 'north' },
-  ops: { x: 14, y: 76, lane: 'south' },
-  research: { x: 13, y: 29, lane: 'north' },
-  requirements: { x: 45, y: 50, lane: 'east' },
-  QA: { x: 9, y: 57, lane: 'north' },
-  video: { x: 76, y: 56, lane: 'east' },
-  'UI/layout': { x: 69, y: 72, lane: 'east' },
-  marketing: { x: 84, y: 31, lane: 'east' },
-  trading: { x: 80, y: 76, lane: 'south' },
+  'main/orchestrator': { x: 50, y: 38.5, lane: 'south' },
+  coding: { x: 8.8, y: 51.8, lane: 'north' },
+  ops: { x: 12.2, y: 73, lane: 'south' },
+  research: { x: 8.4, y: 33.8, lane: 'north' },
+  requirements: { x: 22.3, y: 33.9, lane: 'north' },
+  QA: { x: 22.5, y: 54.6, lane: 'north' },
+  video: { x: 81.5, y: 45.2, lane: 'east' },
+  'UI/layout': { x: 68.6, y: 73.4, lane: 'east' },
+  marketing: { x: 83.2, y: 32.6, lane: 'east' },
+  trading: { x: 74.6, y: 73.8, lane: 'south' },
 }
 
 const roleLabel: Record<string, string> = {

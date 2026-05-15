@@ -143,43 +143,43 @@ export interface OfficeSimulation {
   agents: OfficeAgentSimulationState[]
 }
 
-export const OFFICE_COORDINATION_HUB_POINT: OfficePoint = { x: 49, y: 42 }
+export const OFFICE_COORDINATION_HUB_POINT: OfficePoint = { x: 50, y: 38.5 }
 
 export const OFFICE_ZONES: OfficeZone[] = [
   {
     id: 'command',
     label: 'Central meeting command table',
-    bounds: { x: 41, y: 28, width: 19, height: 23 },
+    bounds: { x: 42, y: 29, width: 18, height: 18 },
   },
   {
     id: 'delivery',
     label: 'Left workstation rows',
-    bounds: { x: 8, y: 20, width: 28, height: 35 },
+    bounds: { x: 5, y: 24, width: 25, height: 36 },
   },
   {
     id: 'ops',
     label: 'Server and admin console',
-    bounds: { x: 6, y: 64, width: 28, height: 32 },
+    bounds: { x: 6, y: 65, width: 23, height: 25 },
   },
   {
     id: 'research',
     label: 'Top-left research row',
-    bounds: { x: 8, y: 20, width: 28, height: 16 },
+    bounds: { x: 5, y: 24, width: 25, height: 15 },
   },
   {
     id: 'design',
     label: 'Right presentation studio',
-    bounds: { x: 72, y: 33, width: 22, height: 62 },
+    bounds: { x: 62, y: 31, width: 31, height: 60 },
   },
   {
     id: 'marketing',
     label: 'Visual wall and showcase',
-    bounds: { x: 72, y: 33, width: 22, height: 27 },
+    bounds: { x: 76, y: 26, width: 18, height: 26 },
   },
   {
     id: 'market',
     label: 'Bottom-center ops monitors',
-    bounds: { x: 53, y: 62, width: 22, height: 28 },
+    bounds: { x: 56, y: 62, width: 24, height: 28 },
   },
 ]
 
@@ -191,7 +191,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     label: 'Command',
     anchorKind: 'meeting-table-chair-edge-seat',
     defaultAction: 'coordinating',
-    point: { x: 50, y: 40 },
+    point: { x: 50, y: 38.5 },
     lane: 'south',
   },
   {
@@ -201,7 +201,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     label: 'Coding',
     anchorKind: 'pc-chair-workstation-seat',
     defaultAction: 'working',
-    point: { x: 21, y: 43 },
+    point: { x: 8.8, y: 51.8 },
     lane: 'north',
   },
   {
@@ -211,7 +211,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     label: 'Ops',
     anchorKind: 'server-admin-console-seat',
     defaultAction: 'monitoring',
-    point: { x: 14, y: 76 },
+    point: { x: 12.2, y: 73 },
     lane: 'south',
   },
   {
@@ -221,7 +221,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     label: 'Research',
     anchorKind: 'pc-chair-workstation-seat',
     defaultAction: 'reviewing',
-    point: { x: 13, y: 29 },
+    point: { x: 8.4, y: 33.8 },
     lane: 'north',
   },
   {
@@ -229,10 +229,10 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     zoneId: 'research',
     profession: 'Spec writer',
     label: 'Spec',
-    anchorKind: 'meeting-table-chair-edge-seat',
+    anchorKind: 'pc-chair-workstation-seat',
     defaultAction: 'reviewing',
-    point: { x: 45, y: 50 },
-    lane: 'east',
+    point: { x: 22.3, y: 33.9 },
+    lane: 'north',
   },
   {
     id: 'desk-qa',
@@ -241,7 +241,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     label: 'QA/Sec',
     anchorKind: 'pc-chair-workstation-seat',
     defaultAction: 'reviewing',
-    point: { x: 9, y: 57 },
+    point: { x: 22.5, y: 54.6 },
     lane: 'north',
   },
   {
@@ -251,7 +251,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     label: 'Director',
     anchorKind: 'camera-studio-standing-mark',
     defaultAction: 'idle',
-    point: { x: 76, y: 56 },
+    point: { x: 81.5, y: 45.2 },
     lane: 'east',
   },
   {
@@ -261,7 +261,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     label: 'Layout',
     anchorKind: 'pc-chair-workstation-seat',
     defaultAction: 'reviewing',
-    point: { x: 69, y: 72 },
+    point: { x: 68.6, y: 73.4 },
     lane: 'east',
   },
   {
@@ -271,7 +271,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     label: 'Вітрина',
     anchorKind: 'presentation-showcase-wall-spot',
     defaultAction: 'working',
-    point: { x: 84, y: 31 },
+    point: { x: 83.2, y: 32.6 },
     lane: 'east',
   },
   {
@@ -281,7 +281,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     label: 'Trading',
     anchorKind: 'trading-monitor-chair',
     defaultAction: 'monitoring',
-    point: { x: 80, y: 76 },
+    point: { x: 74.6, y: 73.8 },
     lane: 'south',
   },
 ]
@@ -291,31 +291,31 @@ export const OFFICE_PATHS: OfficePath[] = [
     id: 'path-command-delivery',
     fromZoneId: 'command',
     toZoneId: 'delivery',
-    points: [{ x: 49, y: 49 }, { x: 44, y: 51 }, { x: 34, y: 53 }, { x: 24, y: 53 }, { x: 16, y: 54 }],
+    points: [{ x: 50, y: 43 }, { x: 42, y: 48 }, { x: 32, y: 51 }, { x: 22, y: 54 }, { x: 9, y: 53 }],
   },
   {
     id: 'path-delivery-ops',
     fromZoneId: 'delivery',
     toZoneId: 'ops',
-    points: [{ x: 37, y: 55 }, { x: 32, y: 63 }, { x: 25, y: 72 }, { x: 18, y: 80 }, { x: 14, y: 87 }],
+    points: [{ x: 26, y: 57 }, { x: 24, y: 64 }, { x: 20, y: 70 }, { x: 15, y: 74 }, { x: 12, y: 79 }],
   },
   {
     id: 'path-research-design',
     fromZoneId: 'research',
     toZoneId: 'design',
-    points: [{ x: 14, y: 37 }, { x: 35, y: 39 }, { x: 48, y: 52 }, { x: 64, y: 53 }, { x: 83, y: 58 }],
+    points: [{ x: 12, y: 39 }, { x: 31, y: 41 }, { x: 48, y: 48 }, { x: 66, y: 48 }, { x: 82, y: 45 }],
   },
   {
     id: 'path-design-marketing',
     fromZoneId: 'design',
     toZoneId: 'marketing',
-    points: [{ x: 83, y: 58 }, { x: 84, y: 52 }, { x: 84, y: 45 }],
+    points: [{ x: 82, y: 45 }, { x: 84, y: 39 }, { x: 83, y: 33 }],
   },
   {
     id: 'path-market-handoff',
     fromZoneId: 'market',
     toZoneId: 'delivery',
-    points: [{ x: 62, y: 72 }, { x: 56, y: 63 }, { x: 45, y: 58 }, { x: 35, y: 55 }, { x: 28, y: 54 }],
+    points: [{ x: 75, y: 74 }, { x: 62, y: 63 }, { x: 48, y: 55 }, { x: 34, y: 54 }, { x: 23, y: 55 }],
   },
 ]
 
@@ -558,15 +558,15 @@ function sameOfficePoint(left: OfficePoint, right: OfficePoint) {
 
 const officeHubCorridorsByDesk: Record<OfficeDeskId, OfficePoint[]> = {
   'desk-command': [],
-  'desk-coding': [{ x: 18, y: 45 }, { x: 20, y: 45 }, { x: 24, y: 48 }, { x: 34, y: 53 }, { x: 43, y: 51 }],
-  'desk-ops': [{ x: 16, y: 73 }, { x: 22, y: 66 }, { x: 38, y: 55 }, { x: 49, y: 49 }],
-  'desk-research': [{ x: 16, y: 35 }, { x: 35, y: 39 }, { x: 46, y: 46 }],
-  'desk-spec': [{ x: 43, y: 36 }, { x: 47, y: 42 }],
-  'desk-qa': [{ x: 12, y: 50 }, { x: 24, y: 52 }, { x: 37, y: 53 }, { x: 45, y: 52 }],
-  'desk-video': [{ x: 82, y: 69 }, { x: 70, y: 64 }, { x: 58, y: 55 }, { x: 49, y: 49 }],
-  'desk-layout': [{ x: 72, y: 61 }, { x: 62, y: 55 }, { x: 52, y: 48 }],
-  'desk-marketing': [{ x: 86, y: 30 }, { x: 68, y: 44 }, { x: 56, y: 48 }],
-  'desk-trading': [{ x: 69, y: 73 }, { x: 58, y: 61 }, { x: 49, y: 49 }],
+  'desk-coding': [{ x: 13, y: 53 }, { x: 24, y: 54 }, { x: 36, y: 52 }, { x: 45, y: 46 }],
+  'desk-ops': [{ x: 16, y: 72 }, { x: 24, y: 64 }, { x: 38, y: 53 }, { x: 47, y: 45 }],
+  'desk-research': [{ x: 13, y: 36 }, { x: 29, y: 39 }, { x: 44, y: 44 }],
+  'desk-spec': [{ x: 25, y: 37 }, { x: 36, y: 41 }, { x: 46, y: 44 }],
+  'desk-qa': [{ x: 25, y: 55 }, { x: 36, y: 53 }, { x: 46, y: 46 }],
+  'desk-video': [{ x: 76, y: 47 }, { x: 66, y: 48 }, { x: 56, y: 44 }],
+  'desk-layout': [{ x: 66, y: 69 }, { x: 61, y: 58 }, { x: 53, y: 46 }],
+  'desk-marketing': [{ x: 83, y: 37 }, { x: 72, y: 43 }, { x: 58, y: 44 }],
+  'desk-trading': [{ x: 70, y: 72 }, { x: 60, y: 60 }, { x: 52, y: 46 }],
 }
 
 function getDeskByPoint(point: OfficePoint) {
