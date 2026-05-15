@@ -191,7 +191,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     label: 'Command',
     anchorKind: 'meeting-table-chair-edge-seat',
     defaultAction: 'coordinating',
-    point: { x: 46, y: 35 },
+    point: { x: 50, y: 40 },
     lane: 'south',
   },
   {
@@ -201,7 +201,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     label: 'Coding',
     anchorKind: 'pc-chair-workstation-seat',
     defaultAction: 'working',
-    point: { x: 17, y: 44 },
+    point: { x: 21, y: 43 },
     lane: 'north',
   },
   {
@@ -211,7 +211,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     label: 'Ops',
     anchorKind: 'server-admin-console-seat',
     defaultAction: 'monitoring',
-    point: { x: 15, y: 76 },
+    point: { x: 14, y: 76 },
     lane: 'south',
   },
   {
@@ -231,7 +231,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     label: 'Spec',
     anchorKind: 'meeting-table-chair-edge-seat',
     defaultAction: 'reviewing',
-    point: { x: 42, y: 31 },
+    point: { x: 45, y: 50 },
     lane: 'east',
   },
   {
@@ -241,7 +241,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     label: 'QA/Sec',
     anchorKind: 'pc-chair-workstation-seat',
     defaultAction: 'reviewing',
-    point: { x: 8, y: 49 },
+    point: { x: 9, y: 57 },
     lane: 'north',
   },
   {
@@ -251,7 +251,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     label: 'Director',
     anchorKind: 'camera-studio-standing-mark',
     defaultAction: 'idle',
-    point: { x: 84, y: 70 },
+    point: { x: 76, y: 56 },
     lane: 'east',
   },
   {
@@ -261,7 +261,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     label: 'Layout',
     anchorKind: 'pc-chair-workstation-seat',
     defaultAction: 'reviewing',
-    point: { x: 73, y: 62 },
+    point: { x: 69, y: 72 },
     lane: 'east',
   },
   {
@@ -271,7 +271,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     label: 'Вітрина',
     anchorKind: 'presentation-showcase-wall-spot',
     defaultAction: 'working',
-    point: { x: 86, y: 22 },
+    point: { x: 84, y: 31 },
     lane: 'east',
   },
   {
@@ -281,7 +281,7 @@ export const OFFICE_DESKS: OfficeDesk[] = [
     label: 'Trading',
     anchorKind: 'trading-monitor-chair',
     defaultAction: 'monitoring',
-    point: { x: 72, y: 75 },
+    point: { x: 80, y: 76 },
     lane: 'south',
   },
 ]

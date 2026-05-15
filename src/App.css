@@ -6271,6 +6271,137 @@
   display: none;
 }
 
+.office-routes,
+.office-agent-route-map,
+.office-transfer {
+  display: none;
+}
+
+.office-floor-agent {
+  width: 54px;
+  height: 70px;
+}
+
+.office-agent-sprite {
+  width: 39px;
+  height: 58px;
+  grid-template-rows: 19px 28px 11px;
+  filter: drop-shadow(0 7px 5px rgba(0, 0, 0, 0.38));
+}
+
+.office-agent-sprite__head {
+  width: 22px;
+  height: 19px;
+}
+
+.office-agent-sprite__body {
+  width: 32px;
+  height: 28px;
+  font-size: 0.68rem;
+}
+
+.office-agent-sprite__hands {
+  top: 35px;
+  width: 41px;
+}
+
+.office-agent-sprite__legs {
+  width: 31px;
+  height: 13px;
+}
+
+.office-agent-status-cue,
+.office-agent-action-cue,
+.office-agent-state-badge,
+.office-agent-trail,
+.office-agent-target-pin,
+.office-agent-document-transfer,
+.office-agent-direction-arrow,
+.office-task-bubble {
+  display: none;
+}
+
+.office-desk__label {
+  top: calc(50% - 32px);
+  min-width: 42px;
+  max-width: 76px;
+  padding: 1px 5px 2px;
+  background: rgba(8, 9, 8, 0.22);
+  border-color: rgba(244, 241, 234, 0.07);
+  opacity: 0.78;
+}
+
+.office-desk__label strong {
+  min-width: 42px;
+  font-size: 0.54rem;
+  line-height: 0.96;
+}
+
+.office-desk--selected .office-desk__label,
+.office-desk:focus-visible .office-desk__label,
+.office-desk:hover .office-desk__label {
+  opacity: 1;
+  background: rgba(8, 9, 8, 0.42);
+  border-color: rgba(240, 205, 116, 0.22);
+}
+
+.office-desk[data-agent-id='agent-shturman'] .office-desk__label,
+.office-desk[data-agent-id='agent-dev'] .office-desk__label,
+.office-desk[data-agent-id='agent-varta'] .office-desk__label,
+.office-desk[data-agent-id='agent-bastion'] .office-desk__label,
+.office-desk[data-agent-id='agent-spec'] .office-desk__label,
+.office-desk[data-agent-id='agent-verstalnyk'] .office-desk__label,
+.office-desk[data-agent-id='agent-vitryna'] .office-desk__label,
+.office-desk[data-agent-id='agent-rezhyser'] .office-desk__label {
+  width: auto;
+  transform: translateX(-50%);
+}
+
+.office-desk[data-agent-id='agent-verstalnyk'] .office-desk__label strong,
+.office-desk[data-agent-id='agent-vitryna'] .office-desk__label strong {
+  min-width: 0;
+  font-size: 0.5rem;
+  white-space: normal;
+}
+
+.office-floor-agent[data-agent-id='agent-krab']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) {
+  --office-agent-shift-x: -2px;
+  --office-agent-shift-y: 8px;
+}
+
+.office-floor-agent[data-agent-id='agent-dev']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']),
+.office-floor-agent[data-agent-id='agent-shturman']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']),
+.office-floor-agent[data-agent-id='agent-varta']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) {
+  --office-agent-shift-x: 0px;
+  --office-agent-shift-y: 12px;
+}
+
+.office-floor-agent[data-agent-id='agent-spec']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) {
+  --office-agent-shift-x: 6px;
+  --office-agent-shift-y: 4px;
+}
+
+.office-floor-agent[data-agent-id='agent-bastion']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) {
+  --office-agent-shift-x: 6px;
+  --office-agent-shift-y: -2px;
+}
+
+.office-floor-agent[data-agent-id='agent-verstalnyk']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) {
+  --office-agent-shift-x: -8px;
+  --office-agent-shift-y: -6px;
+}
+
+.office-floor-agent[data-agent-id='agent-vitryna']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) {
+  --office-agent-shift-x: -8px;
+  --office-agent-shift-y: 10px;
+}
+
+.office-floor-agent[data-agent-id='agent-rezhyser']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']),
+.office-floor-agent[data-agent-id='agent-desk']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) {
+  --office-agent-shift-x: -10px;
+  --office-agent-shift-y: -4px;
+}
+
 @media (max-width: 540px) {
   .office-floor {
     inset: -76px -8px -26px;

@@ -53,16 +53,16 @@ assertIncludes(modelSource, 'roleOfficeLayout', 'profession-specific office floo
 assertIncludes(modelSource, 'roleActivityState', 'profession-specific office activity state map')
 assertIncludes(modelSource, 'roleActivityLabel', 'compact profession activity labels')
 assertIncludes(modelSource, 'activityState: OfficeActivityState', 'typed profession activity state on stations')
-assertIncludes(modelSource, "'main/orchestrator': { x: 46, y: 35, lane: 'south' }", 'coordinator home is a meeting-table chair anchor')
-assertIncludes(modelSource, "coding: { x: 17, y: 44, lane: 'north' }", 'coding station sits at a left workstation PC chair')
-assertIncludes(modelSource, "ops: { x: 15, y: 76, lane: 'south' }", 'ops station sits on the bottom-left server/admin console chair')
+assertIncludes(modelSource, "'main/orchestrator': { x: 50, y: 40, lane: 'south' }", 'coordinator home is a meeting-table chair anchor')
+assertIncludes(modelSource, "coding: { x: 21, y: 43, lane: 'north' }", 'coding station sits at a left workstation PC chair')
+assertIncludes(modelSource, "ops: { x: 14, y: 76, lane: 'south' }", 'ops station sits on the bottom-left server/admin console chair')
 assertIncludes(modelSource, "research: { x: 13, y: 29, lane: 'north' }", 'research station stays on the upper-left PC chair row')
-assertIncludes(modelSource, "requirements: { x: 42, y: 31, lane: 'east' }", 'spec station is seated at a central meeting-table chair')
-assertIncludes(modelSource, "QA: { x: 8, y: 49, lane: 'north' }", 'QA station is moved to a left workstation PC chair')
-assertIncludes(modelSource, "video: { x: 84, y: 70, lane: 'east' }", 'director station stands by the camera/studio furniture without edge clipping')
-assertIncludes(modelSource, "'UI/layout': { x: 73, y: 62, lane: 'east' }", 'design/layout station sits at the right design workstation')
-assertIncludes(modelSource, "marketing: { x: 86, y: 22, lane: 'east' }", 'marketing visuals station anchors beside the right visual wall furniture')
-assertIncludes(modelSource, "trading: { x: 72, y: 75, lane: 'south' }", 'trading station sits at the bottom-right multi-monitor desk chair')
+assertIncludes(modelSource, "requirements: { x: 45, y: 50, lane: 'east' }", 'spec station is seated at a central meeting-table chair')
+assertIncludes(modelSource, "QA: { x: 9, y: 57, lane: 'north' }", 'QA station is moved to a left workstation PC chair')
+assertIncludes(modelSource, "video: { x: 76, y: 56, lane: 'east' }", 'director station stands by the camera/studio furniture without edge clipping')
+assertIncludes(modelSource, "'UI/layout': { x: 69, y: 72, lane: 'east' }", 'design/layout station sits at the right design workstation')
+assertIncludes(modelSource, "marketing: { x: 84, y: 31, lane: 'east' }", 'marketing visuals station anchors beside the right visual wall furniture')
+assertIncludes(modelSource, "trading: { x: 80, y: 76, lane: 'south' }", 'trading station sits at the bottom-right multi-monitor desk chair')
 assertIncludes(modelSource, "marketing: 'Вітрина'", 'marketing visuals agent gets a readable station label')
 assertIncludes(modelSource, 'export interface OfficeSignalRoute', 'typed office signal route model')
 assertIncludes(modelSource, 'export interface OfficeBehaviorChoreography', 'typed office behavior choreography metadata')
@@ -530,7 +530,7 @@ const marketingStation = viewModel.stations.find((station) => station.agentId ==
 assert.equal(onlineStation?.activity, 'working', 'in-progress current task maps to working')
 assert.deepEqual(
   { x: onlineStation?.x, y: onlineStation?.y, lane: onlineStation?.lane },
-  { x: 17, y: 44, lane: 'north' },
+  { x: 21, y: 43, lane: 'north' },
   'coding station sits at a lower top-left workstation PC with a clear aisle',
 )
 assert.equal(onlineStation?.terminalMode, 'typing', 'in-progress current task maps to typing')
@@ -542,7 +542,7 @@ assert.equal(onlineStation?.choreography.routeInvolvement, true, 'working routed
 assert.equal(busyStation?.activity, 'monitoring', 'waiting status maps to monitoring')
 assert.deepEqual(
   { x: busyStation?.x, y: busyStation?.y, lane: busyStation?.lane },
-  { x: 8, y: 49, lane: 'north' },
+  { x: 9, y: 57, lane: 'north' },
   'QA station sits at a visible left workstation PC chair with aisle clearance',
 )
 assert.equal(busyStation?.terminalMode, 'monitoring', 'waiting task maps to monitoring')
@@ -550,7 +550,7 @@ assert.equal(busyStation?.choreography.phaseLabel, 'scan-check', 'monitoring loo
 assert.equal(blockedStation?.activity, 'blocked', 'failed task state maps to blocked')
 assert.deepEqual(
   { x: blockedStation?.x, y: blockedStation?.y, lane: blockedStation?.lane },
-  { x: 15, y: 76, lane: 'south' },
+  { x: 14, y: 76, lane: 'south' },
   'ops station is in the server/admin console zone, not a radial position',
 )
 assert.equal(blockedStation?.action, 'alert', 'failed task state maps to alert action')
@@ -571,7 +571,7 @@ assert.equal(walkingStation?.choreography.phaseLabel, 'scan-check', 'queued task
 assert.equal(handoffStation?.activity, 'handoff', 'delegated task state maps to handoff')
 assert.deepEqual(
   { x: handoffStation?.x, y: handoffStation?.y, lane: handoffStation?.lane },
-  { x: 46, y: 35, lane: 'south' },
+  { x: 50, y: 40, lane: 'south' },
   'coordinator desk stays at the central meeting table',
 )
 assert.equal(handoffStation?.action, 'handoff', 'delegated task state maps to handoff action')
@@ -579,7 +579,7 @@ assert.equal(handoffStation?.choreography.phaseLabel, 'signal-transfer', 'handof
 assert.equal(marketingStation?.name, 'Вітрина', 'marketing visuals agent renders as its own office station')
 assert.deepEqual(
   { x: marketingStation?.x, y: marketingStation?.y, lane: marketingStation?.lane },
-  { x: 86, y: 22, lane: 'east' },
+  { x: 84, y: 31, lane: 'east' },
   'marketing visuals station sits fully inside the right visual presentation wall',
 )
 assert.equal(marketingStation?.simulation.posture, 'sitting', 'marketing visuals agent sits at the visual wall furniture instead of standing in open floor')

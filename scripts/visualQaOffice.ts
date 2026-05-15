@@ -266,16 +266,16 @@ async function verifyOfficeDom(page: Page) {
     }
 
     const checks = [
-      ['agent-krab', getCenter(".office-floor-agent[data-agent-id='agent-krab']"), 44, 52, 33, 40],
+      ['agent-krab', getCenter(".office-floor-agent[data-agent-id='agent-krab']"), 47, 54, 37, 45],
       ['agent-dev', getCenter(".office-floor-agent[data-agent-id='agent-dev']"), 16, 24, 41, 49],
-      ['agent-varta', getCenter(".office-floor-agent[data-agent-id='agent-varta']"), 6, 12, 48, 54],
+      ['agent-varta', getCenter(".office-floor-agent[data-agent-id='agent-varta']"), 6, 13, 53, 63],
       ['agent-shturman', getCenter(".office-floor-agent[data-agent-id='agent-shturman']"), 9, 17, 25, 33],
-      ['agent-spec', getCenter(".office-floor-agent[data-agent-id='agent-spec']"), 40, 48, 29, 37],
+      ['agent-spec', getCenter(".office-floor-agent[data-agent-id='agent-spec']"), 42, 51, 46, 56],
       ['agent-bastion', getCenter(".office-floor-agent[data-agent-id='agent-bastion']"), 12, 20, 70, 78],
-      ['agent-desk', getCenter(".office-floor-agent[data-agent-id='agent-desk']"), 68, 76, 70, 80],
-      ['agent-verstalnyk', getCenter(".office-floor-agent[data-agent-id='agent-verstalnyk']"), 70, 84, 52, 64],
-      ['agent-vitryna', getCenter(".office-floor-agent[data-agent-id='agent-vitryna']"), 82, 90, 20, 26],
-      ['agent-rezhyser', getCenter(".office-floor-agent[data-agent-id='agent-rezhyser']"), 80, 88, 66, 74],
+      ['agent-desk', getCenter(".office-floor-agent[data-agent-id='agent-desk']"), 76, 84, 72, 82],
+      ['agent-verstalnyk', getCenter(".office-floor-agent[data-agent-id='agent-verstalnyk']"), 64, 73, 67, 77],
+      ['agent-vitryna', getCenter(".office-floor-agent[data-agent-id='agent-vitryna']"), 80, 89, 28, 38],
+      ['agent-rezhyser', getCenter(".office-floor-agent[data-agent-id='agent-rezhyser']"), 72, 80, 52, 60],
     ] as const
 
     return checks.map(([id, center, minX, maxX, minY, maxY]) => {
@@ -409,9 +409,9 @@ async function verifyOfficeDom(page: Page) {
     }
 
     const checks = [
-      ['agent-verstalnyk', getCenter('agent-verstalnyk'), 70, 84, 52, 64],
-      ['agent-varta', getCenter('agent-varta'), 6, 12, 48, 54],
-      ['agent-spec', getCenter('agent-spec'), 40, 48, 29, 37],
+      ['agent-verstalnyk', getCenter('agent-verstalnyk'), 64, 73, 67, 77],
+      ['agent-varta', getCenter('agent-varta'), 6, 13, 53, 63],
+      ['agent-spec', getCenter('agent-spec'), 42, 51, 46, 56],
     ] as const
 
     return checks.map(([id, center, minX, maxX, minY, maxY]) => {
@@ -464,7 +464,7 @@ async function verifyOfficeDom(page: Page) {
     if (!krab) {
       issues.push('agent-krab: missing')
     } else {
-      const belowMeetingTable = krab.y > 40
+      const belowMeetingTable = krab.y > 45
       const inLowerCentralWalkway = krab.x >= 36 && krab.x <= 64 && krab.y >= 52 && krab.y <= 70
 
       if (krab.posture !== 'sitting' && krab.posture !== 'working') {
@@ -480,7 +480,7 @@ async function verifyOfficeDom(page: Page) {
       issues.push('agent-varta: missing')
     } else {
       const inCentralLane = varta.x >= 36 && varta.x <= 64 && varta.y >= 45 && varta.y <= 70
-      const atPcChair = varta.x >= 6 && varta.x <= 12 && varta.y >= 48 && varta.y <= 54
+      const atPcChair = varta.x >= 6 && varta.x <= 13 && varta.y >= 53 && varta.y <= 63
 
       if (varta.render !== 'badge' && varta.posture !== 'sitting' && varta.posture !== 'working') {
         issues.push(`agent-varta: ${varta.posture ?? 'unknown'} posture`)
