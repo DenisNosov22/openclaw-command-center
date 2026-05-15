@@ -8,6 +8,7 @@ import type {
 import { canAgentMove } from './OfficeSimulationModel'
 import {
   getOfficeAgentMarkerClassName,
+  getOfficeTerminalClassName,
   getOfficeStationClassName,
   getOfficeStatusLampClassName,
   OFFICE_SPRITE_TOKENS,
@@ -173,6 +174,16 @@ export function IsometricOfficeScene({
         className="office-floor"
         role="img"
       />
+      <div className="office-floor-fixtures" aria-hidden="true">
+        <span className="office-floor-fixture office-floor-fixture--operations" />
+        <span className="office-floor-fixture office-floor-fixture--studio" />
+        <span className="office-floor-fixture office-floor-fixture--research" />
+        <span className="office-floor-fixture office-floor-fixture--showroom" />
+        <span className="office-floor-zone office-floor-zone--command">Command</span>
+        <span className="office-floor-zone office-floor-zone--build">Build</span>
+        <span className="office-floor-zone office-floor-zone--visual">Visual</span>
+        <span className="office-floor-zone office-floor-zone--ops">Ops</span>
+      </div>
       <div className="office-routes" aria-hidden="true">
         <svg
           className="office-agent-route-map"
@@ -277,6 +288,20 @@ export function IsometricOfficeScene({
             type="button"
           >
             <span className={getOfficeStatusLampClassName(station.tone)} />
+            <span className={getOfficeTerminalClassName(station.terminalMode)}>
+              <i />
+              <span className={OFFICE_SPRITE_TOKENS.terminalTicks} />
+            </span>
+            <span className={OFFICE_SPRITE_TOKENS.monitorStand} />
+            <span className={OFFICE_SPRITE_TOKENS.keyboardTray} />
+            <span className={OFFICE_SPRITE_TOKENS.chair} />
+            <span className={OFFICE_SPRITE_TOKENS.worklog} />
+            <span
+              className={`${OFFICE_SPRITE_TOKENS.professionProp} office-profession-prop--${station.professionProp}`}
+            />
+            <span className={OFFICE_SPRITE_TOKENS.activityChip}>
+              {station.activityLabel}
+            </span>
             <span className={OFFICE_SPRITE_TOKENS.label}>
               <strong>{station.name}</strong>
               <small>{station.role}</small>
