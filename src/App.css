@@ -699,7 +699,7 @@
 }
 
 .isometric-office {
-  --office-world-max-height: clamp(540px, 54vw, 640px);
+  --office-world-max-height: clamp(620px, 58vw, 760px);
   position: relative;
   z-index: 1;
   display: grid;
@@ -716,7 +716,7 @@
 
 .office-world-viewport {
   position: relative;
-  width: min(100%, 960px);
+  width: min(100%, 1140px);
   aspect-ratio: 1536 / 1024;
   overflow: hidden;
   isolation: isolate;
@@ -1410,7 +1410,7 @@
 .office-agent-floor {
   position: absolute;
   inset: 0;
-  z-index: 5;
+  z-index: 8;
   pointer-events: none;
 }
 
@@ -1422,12 +1422,20 @@
   --office-agent-hair: #2d1f19;
   --office-agent-prop: #d7b45c;
   position: absolute;
+  z-index: 12;
   left: var(--office-agent-x);
   top: var(--office-agent-y);
   display: grid;
   width: 56px;
   height: 67px;
   place-items: center;
+  padding: 0;
+  appearance: none;
+  background: transparent;
+  border: 0;
+  cursor: grab;
+  touch-action: none;
+  pointer-events: auto;
   transform:
     translate(
       calc(-50% + var(--office-agent-shift-x)),
@@ -1438,6 +1446,24 @@
     left 340ms linear,
     top 340ms linear,
     opacity 180ms ease;
+}
+
+.office-floor-agent[data-is-dragging='true'] {
+  z-index: 9;
+  cursor: grabbing;
+  transition: none;
+}
+
+.office-floor-agent:focus-visible {
+  outline: 2px solid rgba(240, 205, 116, 0.86);
+  outline-offset: 4px;
+}
+
+.office-floor-agent[aria-pressed='true'] .office-agent-marker {
+  border-color: rgba(240, 205, 116, 0.72);
+  box-shadow:
+    0 0 0 2px rgba(120, 212, 192, 0.18),
+    0 0 18px rgba(240, 205, 116, 0.16);
 }
 
 .office-floor-agent--north {

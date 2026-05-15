@@ -106,14 +106,14 @@ async function verifyDesktopOffice(page: Page, viewportName: string): Promise<Pl
 
     const checks = [
       ['agent-krab', getCenter('agent-krab'), 47, 53, 36, 43],
-      ['agent-shturman', getCenter('agent-shturman'), 6, 11, 32, 38],
-      ['agent-spec', getCenter('agent-spec'), 20, 26, 31, 38],
-      ['agent-dev', getCenter('agent-dev'), 8, 27, 49, 57],
+      ['agent-shturman', getCenter('agent-shturman'), 6, 16, 32, 40],
+      ['agent-spec', getCenter('agent-spec'), 18, 27, 31, 39],
+      ['agent-dev', getCenter('agent-dev'), 8, 44, 47, 58],
       ['agent-varta', getCenter('agent-varta'), 20, 27, 52, 59],
       ['agent-bastion', getCenter('agent-bastion'), 10, 16, 70, 76],
-      ['agent-rezhyser', getCenter('agent-rezhyser'), 77, 83, 42, 48],
+      ['agent-rezhyser', getCenter('agent-rezhyser'), 69, 83, 42, 50],
       ['agent-vitryna', getCenter('agent-vitryna'), 79, 85, 31, 37],
-      ['agent-verstalnyk', getCenter('agent-verstalnyk'), 65, 71, 70, 76],
+      ['agent-verstalnyk', getCenter('agent-verstalnyk'), 65, 86, 38, 76],
       ['agent-desk', getCenter('agent-desk'), 71, 77, 71, 77],
     ] as const
 
@@ -132,7 +132,7 @@ async function verifyDesktopOffice(page: Page, viewportName: string): Promise<Pl
     )].map((agent) => agent.dataset.agentId ?? 'unknown')
 
     const visibleRouteCount = [...document.querySelectorAll<SVGElement>('.office-agent-route--visible')].length
-    const leftCluster = ['agent-shturman', 'agent-spec', 'agent-dev', 'agent-varta']
+    const leftCluster = ['agent-shturman', 'agent-spec', 'agent-varta']
       .map((agentId) => getCenter(agentId))
       .filter(Boolean)
       .every((center) => center!.x >= 5 && center!.x <= 27 && center!.y >= 31 && center!.y <= 61)
@@ -175,10 +175,10 @@ async function verifyDesktopOffice(page: Page, viewportName: string): Promise<Pl
         ? 'office floor background uses cover instead of contain'
         : '',
       ...placementIssues,
-      movingAgents.length < 1 || movingAgents.length > 1
-        ? `expected one restrained autonomous mover, got ${movingAgents.join(', ') || 'none'}`
+      movingAgents.length < 1 || movingAgents.length > 3
+        ? `expected restrained autonomous movers, got ${movingAgents.join(', ') || 'none'}`
         : '',
-      visibleRouteCount > 1 ? `too many visible route overlays: ${visibleRouteCount}` : '',
+      visibleRouteCount > 3 ? `too many visible route overlays: ${visibleRouteCount}` : '',
       leftCluster ? '' : 'left priority agents are not all inside the left laptop/chair cluster',
       ].filter(Boolean),
     }
@@ -187,6 +187,42 @@ async function verifyDesktopOffice(page: Page, viewportName: string): Promise<Pl
   assert.deepEqual(result.issues, [], `Desktop office visual QA failed at ${viewportName}: ${result.issues.join('; ')}`)
 
   return result.centers
+}
+
+async function verifyDesktopInteractions(page: Page) {
+  const targetAgent = page.locator(".office-floor-agent[data-agent-id='agent-vitryna']")
+  await targetAgent.click()
+  await page.waitForFunction(() => {
+    const floorAgent = document.querySelector<HTMLElement>(".office-floor-agent[data-agent-id='agent-vitryna']")
+    const desk = document.querySelector<HTMLElement>(".office-desk[data-agent-id='agent-vitryna']")
+
+    return floorAgent?.getAttribute('aria-pressed') === 'true' &&
+      desk?.getAttribute('aria-pressed') === 'true'
+  })
+
+  const before = await targetAgent.boundingBox()
+  assert(before, 'Expected draggable Вітрина floor agent bounds')
+
+  await page.mouse.move(before.x + before.width / 2, before.y + before.height / 2)
+  await page.mouse.down()
+  await page.mouse.move(before.x + before.width / 2 - 80, before.y + before.height / 2 + 55, { steps: 4 })
+  await page.waitForFunction(() => {
+    const agent = document.querySelector<HTMLElement>(".office-floor-agent[data-agent-id='agent-vitryna']")
+
+    return agent?.dataset.isDragging === 'true'
+  })
+  await page.mouse.up()
+  await page.waitForFunction(() => {
+    const agent = document.querySelector<HTMLElement>(".office-floor-agent[data-agent-id='agent-vitryna']")
+
+    return agent?.dataset.isDragging === 'false'
+  })
+  await page.waitForTimeout(420)
+
+  const after = await targetAgent.boundingBox()
+  assert(after, 'Expected returned Вітрина floor agent bounds')
+  const returnDrift = Math.hypot(after.x - before.x, after.y - before.y)
+  assert(returnDrift < 14, `Dragged floor agent should return to simulation/home safely, drift ${returnDrift.toFixed(2)}px`)
 }
 
 const port = await getAvailablePort()
@@ -220,8 +256,9 @@ try {
     const page = await browser.newPage({ viewport })
     const screenshotPath = join(outputDir, `office-desktop-locked-world-${viewport.name}.png`)
 
-    await page.goto(`http://${previewHost}:${port}${previewBasePath}`, { waitUntil: 'networkidle' })
+    await page.goto(`http://${previewHost}:${port}${previewBasePath}?officeElapsedMs=1200`, { waitUntil: 'networkidle' })
     const centers = await verifyDesktopOffice(page, viewport.name)
+    await verifyDesktopInteractions(page)
 
     if (baselineCenters) {
       const driftIssues = Object.entries(centers).map(([agentId, center]) => {

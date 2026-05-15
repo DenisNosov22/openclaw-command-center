@@ -1,5 +1,5 @@
 import type { ActivityEvent, Agent, CommandCenterSnapshot, Task } from '../../shared/types'
-import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent } from 'react'
 import { createOfficeSceneViewModel } from './IsometricOfficeSceneModel'
 import type {
   OfficeAgentLiveStatusInput,
@@ -74,6 +74,13 @@ function getDefaultFloorAgentRender(
 
 function getWorldPoint(point: { x: number; y: number }) {
   return officePercentToWorldPoint(point)
+}
+
+function clampWorldPoint(point: { x: number; y: number }) {
+  return {
+    x: Math.min(OFFICE_WORLD.width, Math.max(0, point.x)),
+    y: Math.min(OFFICE_WORLD.height, Math.max(0, point.y)),
+  }
 }
 
 interface IsometricOfficeSceneProps {
@@ -176,6 +183,18 @@ export function IsometricOfficeScene({
   const effectiveSimulationMode = prefersReducedMotion ? 'static' : simulationMode
   const elapsedMs = useOfficeSimulationElapsedMs(effectiveSimulationMode, simulationElapsedMs)
   const { scale: officeWorldScale, viewportRef } = useOfficeWorldScale()
+  const worldRef = useRef<HTMLDivElement | null>(null)
+  const dragStartRef = useRef<{
+    agentId: string
+    origin: { x: number; y: number }
+    pointerId: number
+    startClientX: number
+    startClientY: number
+  } | null>(null)
+  const [draggedAgent, setDraggedAgent] = useState<{
+    agentId: string
+    point: { x: number; y: number }
+  } | null>(null)
   const { stations, signalRoutes } = useMemo(
     () =>
       createOfficeSceneViewModel(
@@ -203,6 +222,77 @@ export function IsometricOfficeScene({
   )
   const focusedSignalRoutes = signalRoutes.filter((route) => route.isSelected).slice(0, 2)
 
+  function getPointerWorldPoint(event: PointerEvent<HTMLElement>) {
+    const worldBox = worldRef.current?.getBoundingClientRect()
+
+    if (!worldBox || worldBox.width === 0 || worldBox.height === 0) {
+      return undefined
+    }
+
+    return clampWorldPoint({
+      x: ((event.clientX - worldBox.left) / worldBox.width) * OFFICE_WORLD.width,
+      y: ((event.clientY - worldBox.top) / worldBox.height) * OFFICE_WORLD.height,
+    })
+  }
+
+  function handleAgentPointerDown(
+    event: PointerEvent<HTMLElement>,
+    station: ReturnType<typeof createOfficeSceneViewModel>['stations'][number],
+  ) {
+    if (event.button !== 0) {
+      return
+    }
+
+    const point = getPointerWorldPoint(event) ?? getWorldPoint(station.simulation.position)
+
+    event.currentTarget.setPointerCapture(event.pointerId)
+    dragStartRef.current = {
+      agentId: station.agentId,
+      origin: point,
+      pointerId: event.pointerId,
+      startClientX: event.clientX,
+      startClientY: event.clientY,
+    }
+    setDraggedAgent({ agentId: station.agentId, point })
+  }
+
+  function handleAgentPointerMove(event: PointerEvent<HTMLElement>) {
+    const dragStart = dragStartRef.current
+
+    if (!dragStart || dragStart.pointerId !== event.pointerId) {
+      return
+    }
+
+    const point = getPointerWorldPoint(event)
+
+    if (point) {
+      setDraggedAgent({ agentId: dragStart.agentId, point })
+    }
+  }
+
+  function handleAgentPointerUp(event: PointerEvent<HTMLElement>, agentId: string) {
+    const dragStart = dragStartRef.current
+    const movedDistance = dragStart
+      ? Math.hypot(event.clientX - dragStart.startClientX, event.clientY - dragStart.startClientY)
+      : 0
+
+    if (dragStart?.pointerId === event.pointerId) {
+      dragStartRef.current = null
+      setDraggedAgent(null)
+    }
+
+    if (movedDistance < 6) {
+      onSelectAgent(agentId)
+    }
+  }
+
+  function handleAgentPointerCancel(event: PointerEvent<HTMLElement>) {
+    if (dragStartRef.current?.pointerId === event.pointerId) {
+      dragStartRef.current = null
+      setDraggedAgent(null)
+    }
+  }
+
   return (
     <div
       className="isometric-office"
@@ -218,6 +308,7 @@ export function IsometricOfficeScene({
         data-office-world-scale={officeWorldScale.toFixed(4)}
         data-office-world-height={OFFICE_WORLD.height}
         data-office-world-width={OFFICE_WORLD.width}
+        ref={worldRef}
         style={{
           '--office-world-scale': officeWorldScale,
           '--office-world-height': `${OFFICE_WORLD.height}px`,
@@ -371,15 +462,19 @@ export function IsometricOfficeScene({
           </button>
         )
       })}
-      <div className="office-agent-floor" aria-hidden="true">
+      <div className="office-agent-floor">
         {stations.map((station) => {
           const statusBadge = getAgentStatusBadge(station)
           const floorRender = getDefaultFloorAgentRender(station, effectiveSimulationMode)
-          const position = getWorldPoint(station.simulation.position)
+          const simulationPosition = getWorldPoint(station.simulation.position)
+          const isDragged = draggedAgent?.agentId === station.agentId
+          const position = isDragged ? draggedAgent.point : simulationPosition
           const target = getWorldPoint(station.simulation.target)
 
           return (
-            <span
+            <button
+              aria-label={`${isDragged ? 'Return' : 'Select'} office floor agent ${station.name}: ${statusBadge}, ${station.currentTask}`}
+              aria-pressed={station.agentId === selectedAgentId}
               className={getOfficeFloorAgentClassName(station)}
               data-action-phase={station.choreography.phaseLabel}
               data-activity-state={station.activityState}
@@ -391,12 +486,18 @@ export function IsometricOfficeScene({
               data-agent-target={`${station.simulation.target.x},${station.simulation.target.y}`}
               data-current-task={station.currentTask}
               data-floor-render={floorRender}
+              data-is-dragging={isDragged}
               data-office-zone={station.simulation.zoneId}
               data-physical-agent="true"
               data-profession-prop={station.professionProp}
               data-route-involved={station.choreography.routeInvolvement}
               data-status-badge={statusBadge}
               key={`floor-agent-${station.id}`}
+              onClick={(event) => event.preventDefault()}
+              onPointerCancel={handleAgentPointerCancel}
+              onPointerDown={(event) => handleAgentPointerDown(event, station)}
+              onPointerMove={handleAgentPointerMove}
+              onPointerUp={(event) => handleAgentPointerUp(event, station.agentId)}
               style={{
                 '--office-agent-delay': station.choreography.animationDelay,
                 '--office-agent-duration': station.choreography.animationDuration,
@@ -406,6 +507,7 @@ export function IsometricOfficeScene({
                 '--office-agent-x': `${position.x}px`,
                 '--office-agent-y': `${position.y}px`,
               } as CSSProperties}
+              type="button"
             >
               <span className="office-agent-trail" />
               <span className="office-agent-target-pin" />
@@ -426,7 +528,7 @@ export function IsometricOfficeScene({
               <span className="office-agent-direction-arrow" />
               <span className="office-agent-state-badge">{getAgentStateBadgeLabel(station)}</span>
               <span className={OFFICE_SPRITE_TOKENS.taskBubble}>{station.taskBubble}</span>
-            </span>
+            </button>
           )
         })}
         </div>

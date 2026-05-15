@@ -328,7 +328,7 @@ assert(
   defaultAnimatedMovers.length <= OFFICE_MAX_ACTIVE_ROUTE_AGENTS,
   `Default/mock animated scene should cap route agents, got ${defaultAnimatedMovers.length}`,
 )
-assert.equal(OFFICE_MAX_ACTIVE_ROUTE_AGENTS, 1, 'Default scene should keep only one route-active agent visible')
+assert.equal(OFFICE_MAX_ACTIVE_ROUTE_AGENTS, 3, 'Default scene should keep a bounded set of autonomous route-active agents visible')
 assert(defaultKrab, 'Expected Краб in default animated simulation')
 assert.equal(defaultKrab.posture, 'sitting', 'Краб should stay seated at the command table in the default scene')
 assert.deepEqual(defaultKrab.position, { x: 50, y: 38.5 }, 'Краб should be anchored to the visible meeting table seat')

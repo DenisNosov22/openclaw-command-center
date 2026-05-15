@@ -440,7 +440,7 @@ const fallbackProfile: OfficeAgentProfile = {
 }
 
 const scenarioCycleMs = 16_000
-export const OFFICE_MAX_ACTIVE_ROUTE_AGENTS = 1
+export const OFFICE_MAX_ACTIVE_ROUTE_AGENTS = 3
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value))

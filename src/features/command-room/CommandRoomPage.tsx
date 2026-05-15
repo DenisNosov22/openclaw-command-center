@@ -250,6 +250,16 @@ function getInitialLiveSnapshot(): LiveSnapshot {
   }
 }
 
+function getOfficeSimulationElapsedMsOverride() {
+  if (typeof window === 'undefined') {
+    return undefined
+  }
+
+  const value = Number(new URLSearchParams(window.location.search).get('officeElapsedMs'))
+
+  return Number.isFinite(value) && value >= 0 ? value : undefined
+}
+
 function getLiveSnapshot(tick: number): LiveSnapshot {
   const snapshotState = createCommandCenterSnapshotState(() =>
     adapterSelection.adapter.getSnapshot(),
@@ -331,6 +341,10 @@ export function CommandRoomPage() {
   const [selectedAgentId, setSelectedAgentId] = useState(snapshot.agents[0]?.id)
   const [stageView, setStageView] = useState<StageView>('office')
   const [activityFilter, setActivityFilter] = useState<ActivityFilter>('all')
+  const officeSimulationElapsedMs = useMemo(
+    () => getOfficeSimulationElapsedMsOverride(),
+    [],
+  )
   const selectedAgent =
     snapshot.agents.find((agent) => agent.id === selectedAgentId) ??
     snapshot.agents[0] ??
@@ -363,11 +377,13 @@ export function CommandRoomPage() {
   )
   const liveSimulation = useMemo(
     () =>
-      createOfficeAgentStatusSimulationOverrides(
-        snapshot.agents,
-        officeAgentStatus.snapshots,
-      ),
-    [officeAgentStatus.snapshots, snapshot.agents],
+      officeSimulationElapsedMs === undefined
+        ? createOfficeAgentStatusSimulationOverrides(
+            snapshot.agents,
+            officeAgentStatus.snapshots,
+          )
+        : undefined,
+    [officeAgentStatus.snapshots, officeSimulationElapsedMs, snapshot.agents],
   )
   const formattedLastUpdated = formatKyivTime(snapshot.lastUpdated, { includeDate: true })
   const officeSourceIndicator = getOfficeSourceIndicator(officeAgentStatus)
@@ -578,6 +594,7 @@ export function CommandRoomPage() {
               liveSimulation={liveSimulation}
               onSelectAgent={setSelectedAgentId}
               selectedAgentId={selectedAgent.id}
+              simulationElapsedMs={officeSimulationElapsedMs}
               simulationMode="animated"
               tasks={snapshot.tasks}
               workflow={snapshot.workflow}
