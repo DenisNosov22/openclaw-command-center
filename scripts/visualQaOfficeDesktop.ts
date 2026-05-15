@@ -9,7 +9,10 @@ import { chromium, type Browser, type Page } from '@playwright/test'
 const previewHost = '127.0.0.1'
 const previewBasePath = '/openclaw-command-center/'
 const outputDir = join('artifacts', 'visual-qa')
-const screenshotPath = join(outputDir, 'office-desktop-polished.png')
+const desktopViewports = [
+  { name: '1440x900', width: 1440, height: 900 },
+  { name: '1920x1080', width: 1920, height: 1080 },
+] as const
 
 function request(path: string, port: number): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -71,15 +74,21 @@ function getAvailablePort() {
   })
 }
 
-async function verifyDesktopOffice(page: Page) {
+type Placement = Record<string, { x: number; y: number }>
+
+async function verifyDesktopOffice(page: Page, viewportName: string): Promise<Placement> {
   await page.getByRole('heading', { name: 'Офіс агентів' }).waitFor()
 
-  const issues = await page.evaluate(() => {
-    const office = document.querySelector<HTMLElement>('.isometric-office')
-    const officeBox = office?.getBoundingClientRect()
+  const result = await page.evaluate(() => {
+    const officeViewport = document.querySelector<HTMLElement>('.office-world-viewport')
+    const officeWorld = document.querySelector<HTMLElement>('.office-world')
+    const officeFloor = document.querySelector<HTMLElement>('.office-floor')
+    const viewportBox = officeViewport?.getBoundingClientRect()
+    const worldBox = officeWorld?.getBoundingClientRect()
+    const floorBox = officeFloor?.getBoundingClientRect()
 
-    if (!office || !officeBox) {
-      return ['missing office scene']
+    if (!officeViewport || !officeWorld || !officeFloor || !viewportBox || !worldBox || !floorBox) {
+      return { issues: ['missing locked office world'], centers: {} }
     }
 
     const getCenter = (agentId: string) => {
@@ -88,8 +97,8 @@ async function verifyDesktopOffice(page: Page) {
 
       return agent && box
         ? {
-            x: ((box.left + box.width / 2 - officeBox.left) / officeBox.width) * 100,
-            y: ((box.top + box.height / 2 - officeBox.top) / officeBox.height) * 100,
+            x: ((box.left + box.width / 2 - worldBox.left) / worldBox.width) * 100,
+            y: ((box.top + box.height / 2 - worldBox.top) / worldBox.height) * 100,
             posture: agent.dataset.agentPosture ?? '',
           }
         : undefined
@@ -128,12 +137,42 @@ async function verifyDesktopOffice(page: Page) {
       .filter(Boolean)
       .every((center) => center!.x >= 5 && center!.x <= 27 && center!.y >= 31 && center!.y <= 61)
 
-    return [
-      officeBox.width < 740 || officeBox.width > 790
-        ? `desktop office width ${Math.round(officeBox.width)}px is not fixed near 780px`
+    const centers = Object.fromEntries(
+      checks.map(([agentId]) => {
+        const center = getCenter(agentId)
+
+        return [agentId, center ? { x: center.x, y: center.y } : { x: -1, y: -1 }]
+      }),
+    )
+    const worldAspect = worldBox.width / worldBox.height
+    const viewportAspect = viewportBox.width / viewportBox.height
+    const floorDrift = Math.max(
+      Math.abs(floorBox.left - worldBox.left),
+      Math.abs(floorBox.top - worldBox.top),
+      Math.abs(floorBox.width - worldBox.width),
+      Math.abs(floorBox.height - worldBox.height),
+    )
+    const worldScale = Number(officeWorld.dataset.officeWorldScale ?? '0')
+    const expectedScale = Math.min(viewportBox.width / 1536, viewportBox.height / 1024)
+    const floorBackgroundSize = getComputedStyle(officeFloor).backgroundSize
+
+    return {
+      centers,
+      issues: [
+      Math.abs(worldAspect - 1.5) > 0.01
+        ? `locked world aspect ${worldAspect.toFixed(3)} is not 1536:1024`
         : '',
-      officeBox.height < 620 || officeBox.height > 780
-        ? `desktop office height ${Math.round(officeBox.height)}px is outside restored large-office range`
+      Math.abs(viewportAspect - 1.5) > 0.01
+        ? `office viewport aspect ${viewportAspect.toFixed(3)} is not 1536:1024`
+        : '',
+      floorDrift > 1
+        ? `floor layer is not locked to world bounds, drift ${floorDrift.toFixed(2)}px`
+        : '',
+      Math.abs(worldScale - expectedScale) > 0.01
+        ? `world scale ${worldScale.toFixed(4)} does not match contain scale ${expectedScale.toFixed(4)}`
+        : '',
+      floorBackgroundSize.includes('cover')
+        ? 'office floor background uses cover instead of contain'
         : '',
       ...placementIssues,
       movingAgents.length < 1 || movingAgents.length > 1
@@ -141,10 +180,13 @@ async function verifyDesktopOffice(page: Page) {
         : '',
       visibleRouteCount > 1 ? `too many visible route overlays: ${visibleRouteCount}` : '',
       leftCluster ? '' : 'left priority agents are not all inside the left laptop/chair cluster',
-    ].filter(Boolean)
+      ].filter(Boolean),
+    }
   })
 
-  assert.deepEqual(issues, [], `Desktop office visual QA failed: ${issues.join('; ')}`)
+  assert.deepEqual(result.issues, [], `Desktop office visual QA failed at ${viewportName}: ${result.issues.join('; ')}`)
+
+  return result.centers
 }
 
 const port = await getAvailablePort()
@@ -172,12 +214,32 @@ try {
   mkdirSync(outputDir, { recursive: true })
   await waitForPreview(port)
   browser = await chromium.launch()
-  const page = await browser.newPage({ viewport: { width: 1366, height: 900 } })
+  let baselineCenters: Placement | undefined
 
-  await page.goto(`http://${previewHost}:${port}${previewBasePath}`, { waitUntil: 'networkidle' })
-  await verifyDesktopOffice(page)
-  await page.locator('.center-stage').screenshot({ path: screenshotPath })
-  console.log(`[qa:visual:desktop] captured ${screenshotPath}`)
+  for (const viewport of desktopViewports) {
+    const page = await browser.newPage({ viewport })
+    const screenshotPath = join(outputDir, `office-desktop-locked-world-${viewport.name}.png`)
+
+    await page.goto(`http://${previewHost}:${port}${previewBasePath}`, { waitUntil: 'networkidle' })
+    const centers = await verifyDesktopOffice(page, viewport.name)
+
+    if (baselineCenters) {
+      const driftIssues = Object.entries(centers).map(([agentId, center]) => {
+        const baseline = baselineCenters![agentId]
+        const drift = Math.hypot(center.x - baseline.x, center.y - baseline.y)
+
+        return drift <= 0.35 ? '' : `${agentId} drifted ${drift.toFixed(2)}%`
+      }).filter(Boolean)
+
+      assert.deepEqual(driftIssues, [], `Locked world placement drift failed at ${viewport.name}: ${driftIssues.join('; ')}`)
+    }
+
+    baselineCenters = centers
+    await page.locator('.center-stage').screenshot({ path: screenshotPath })
+    await page.close()
+    console.log(`[qa:visual:desktop] captured ${screenshotPath}`)
+  }
+
   console.log('[qa:visual:desktop] Office desktop visual QA passed.')
 } catch (error) {
   throw new Error(

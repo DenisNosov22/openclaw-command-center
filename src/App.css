@@ -699,9 +699,12 @@
 }
 
 .isometric-office {
+  --office-world-max-height: clamp(540px, 54vw, 640px);
   position: relative;
   z-index: 1;
-  min-height: clamp(540px, 54vw, 640px);
+  display: grid;
+  min-height: var(--office-world-max-height);
+  place-items: center;
   overflow: hidden;
   overflow-clip-margin: 8px;
   isolation: isolate;
@@ -709,6 +712,24 @@
   border: 0;
   border-radius: 0;
   box-shadow: none;
+}
+
+.office-world-viewport {
+  position: relative;
+  width: min(100%, 960px);
+  aspect-ratio: 1536 / 1024;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.office-world {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--office-world-width, 1536px);
+  height: var(--office-world-height, 1024px);
+  transform-origin: 50% 50%;
+  transform: translate(-50%, -50%) scale(var(--office-world-scale, 1));
 }
 
 .isometric-office::before,
@@ -728,13 +749,13 @@
 .office-floor {
   --office-floor-reference-transform: perspective(900px) rotateX(50deg);
   position: absolute;
-  inset: -44px 0 -54px;
+  inset: 0;
   z-index: 0;
   transform: none;
   background:
     linear-gradient(180deg, rgba(244, 241, 234, 0.04), rgba(215, 180, 92, 0.035)),
     radial-gradient(ellipse at 50% 58%, rgba(244, 241, 234, 0.04), transparent 50%),
-    url('./assets/office-background.png') center / cover no-repeat;
+    url('./assets/office-background.png') center / contain no-repeat;
   border: 0;
   border-radius: 0;
   box-shadow: none;
@@ -6573,16 +6594,20 @@
   }
 
   .isometric-office {
-    min-height: clamp(620px, 58vw, 760px);
+    --office-world-max-height: clamp(620px, 58vw, 760px);
+  }
+
+  .office-world-viewport {
+    width: min(100%, 1140px);
   }
 
   .office-floor {
-    inset: -50px -10px -44px;
+    inset: 0;
     background:
       linear-gradient(180deg, rgba(244, 241, 234, 0.03), rgba(9, 10, 9, 0.05)),
       radial-gradient(ellipse at 51% 52%, rgba(215, 180, 92, 0.08), transparent 52%),
       linear-gradient(90deg, rgba(9, 11, 11, 0.18), transparent 12% 88%, rgba(9, 11, 11, 0.18)),
-      url('./assets/office-background.png') center / cover no-repeat;
+      url('./assets/office-background.png') center / contain no-repeat;
   }
 
   .office-floor-fixtures {

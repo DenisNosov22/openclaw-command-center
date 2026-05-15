@@ -547,16 +547,18 @@ assert(!componentSource.toLowerCase().includes('oval'), 'Office scene must not r
 assert(!componentSource.toLowerCase().includes('orbital'), 'Office scene must not reintroduce orbit wording')
 assert(modelSource.includes('OfficeSimulationModel'), 'Office scene model should read from simulation model')
 assert(
-  componentSource.includes("'--office-agent-x': `${station.simulation.position.x}%`"),
-  'Floor agent x CSS variable should use simulation position',
+  componentSource.includes('const position = getWorldPoint(station.simulation.position)') &&
+    componentSource.includes("'--office-agent-x': `${position.x}px`"),
+  'Floor agent x CSS variable should use simulation position converted into locked world pixels',
 )
 assert(
-  componentSource.includes("'--office-agent-y': `${station.simulation.position.y}%`"),
-  'Floor agent y CSS variable should use simulation position',
+  componentSource.includes("'--office-agent-y': `${position.y}px`"),
+  'Floor agent y CSS variable should use simulation position converted into locked world pixels',
 )
 assert(
-  componentSource.includes("'--office-agent-target-x': `${station.simulation.target.x}%`"),
-  'Floor agent target x CSS variable should use simulation target',
+  componentSource.includes('const target = getWorldPoint(station.simulation.target)') &&
+    componentSource.includes("'--office-agent-target-x': `${target.x}px`"),
+  'Floor agent target x CSS variable should use simulation target converted into locked world pixels',
 )
 assert(
   componentSource.includes('data-agent-activity={station.simulation.activity}'),

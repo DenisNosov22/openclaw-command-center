@@ -1,11 +1,15 @@
 import type { ActivityEvent, Agent, CommandCenterSnapshot, Task } from '../../shared/types'
-import { useEffect, useMemo, useState, type CSSProperties } from 'react'
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { createOfficeSceneViewModel } from './IsometricOfficeSceneModel'
 import type {
   OfficeAgentLiveStatusInput,
   OfficeSimulationMode,
 } from './OfficeSimulationModel'
-import { canAgentMove } from './OfficeSimulationModel'
+import {
+  canAgentMove,
+  OFFICE_WORLD,
+  officePercentToWorldPoint,
+} from './OfficeSimulationModel'
 import {
   getOfficeAgentMarkerClassName,
   getOfficeTerminalClassName,
@@ -68,6 +72,10 @@ function getDefaultFloorAgentRender(
   return 'full'
 }
 
+function getWorldPoint(point: { x: number; y: number }) {
+  return officePercentToWorldPoint(point)
+}
+
 interface IsometricOfficeSceneProps {
   agents: Agent[]
   tasks: Task[]
@@ -122,6 +130,37 @@ function useOfficeSimulationElapsedMs(mode: OfficeSimulationMode, controlledElap
   return controlledElapsedMs ?? elapsedMs
 }
 
+function useOfficeWorldScale() {
+  const viewportRef = useRef<HTMLDivElement | null>(null)
+  const [scale, setScale] = useState(1)
+
+  useEffect(() => {
+    const viewport = viewportRef.current
+
+    if (!viewport) {
+      return undefined
+    }
+
+    const updateScale = () => {
+      const box = viewport.getBoundingClientRect()
+      const nextScale = Math.min(
+        box.width / OFFICE_WORLD.width,
+        box.height / OFFICE_WORLD.height,
+      )
+
+      setScale(Number.isFinite(nextScale) && nextScale > 0 ? nextScale : 1)
+    }
+    const resizeObserver = new ResizeObserver(updateScale)
+
+    updateScale()
+    resizeObserver.observe(viewport)
+
+    return () => resizeObserver.disconnect()
+  }, [])
+
+  return { scale, viewportRef }
+}
+
 export function IsometricOfficeScene({
   agents,
   tasks,
@@ -136,6 +175,7 @@ export function IsometricOfficeScene({
   const prefersReducedMotion = usePrefersReducedMotion()
   const effectiveSimulationMode = prefersReducedMotion ? 'static' : simulationMode
   const elapsedMs = useOfficeSimulationElapsedMs(effectiveSimulationMode, simulationElapsedMs)
+  const { scale: officeWorldScale, viewportRef } = useOfficeWorldScale()
   const { stations, signalRoutes } = useMemo(
     () =>
       createOfficeSceneViewModel(
@@ -170,6 +210,21 @@ export function IsometricOfficeScene({
       data-simulation-mode={effectiveSimulationMode}
     >
       <div
+        className="office-world-viewport"
+        ref={viewportRef}
+      >
+      <div
+        className="office-world"
+        data-office-world-scale={officeWorldScale.toFixed(4)}
+        data-office-world-height={OFFICE_WORLD.height}
+        data-office-world-width={OFFICE_WORLD.width}
+        style={{
+          '--office-world-scale': officeWorldScale,
+          '--office-world-height': `${OFFICE_WORLD.height}px`,
+          '--office-world-width': `${OFFICE_WORLD.width}px`,
+        } as CSSProperties}
+      >
+      <div
         aria-label="2D game-like real office floor plan with agents working at profession stations"
         className="office-floor"
         role="img"
@@ -188,8 +243,8 @@ export function IsometricOfficeScene({
         <svg
           className="office-agent-route-map"
           focusable="false"
-          preserveAspectRatio="none"
-          viewBox="0 0 100 100"
+          preserveAspectRatio="xMidYMid meet"
+          viewBox={`0 0 ${OFFICE_WORLD.width} ${OFFICE_WORLD.height}`}
         >
           <defs>
             <marker
@@ -207,9 +262,15 @@ export function IsometricOfficeScene({
             const routePoints = station.simulation.route.length
               ? station.simulation.route
               : [station.simulation.position, station.simulation.target]
-            const points = routePoints.map((point) => `${point.x},${point.y}`).join(' ')
+            const points = routePoints.map((point) => {
+              const worldPoint = getWorldPoint(point)
+
+              return `${worldPoint.x},${worldPoint.y}`
+            }).join(' ')
             const isMoving = station.simulation.posture === 'walking'
             const isHandoff = station.simulation.posture === 'handoff'
+            const position = getWorldPoint(station.simulation.position)
+            const target = getWorldPoint(station.simulation.target)
 
             return (
               <g
@@ -223,16 +284,16 @@ export function IsometricOfficeScene({
                 <line
                   className="office-agent-route__heading"
                   markerEnd="url(#office-route-arrow)"
-                  x1={station.simulation.position.x}
-                  x2={station.simulation.target.x}
-                  y1={station.simulation.position.y}
-                  y2={station.simulation.target.y}
+                  x1={position.x}
+                  x2={target.x}
+                  y1={position.y}
+                  y2={target.y}
                 />
                 <circle
                   className="office-agent-route__target"
-                  cx={station.simulation.target.x}
-                  cy={station.simulation.target.y}
-                  r={isMoving || isHandoff ? 1.45 : 1.08}
+                  cx={target.x}
+                  cy={target.y}
+                  r={isMoving || isHandoff ? 14.5 : 10.8}
                 />
               </g>
             )
@@ -255,6 +316,7 @@ export function IsometricOfficeScene({
       {stations.map((station) => {
         const isSelected = station.agentId === selectedAgentId
         const statusBadge = getAgentStatusBadge(station)
+        const stationPoint = getWorldPoint(station)
 
         return (
           <button
@@ -282,8 +344,8 @@ export function IsometricOfficeScene({
               '--office-agent-delay': station.choreography.animationDelay,
               '--office-agent-duration': station.choreography.animationDuration,
               '--office-agent-tempo': station.choreography.tempo,
-              '--office-station-x': `${station.x}%`,
-              '--office-station-y': `${station.y}%`,
+              '--office-station-x': `${stationPoint.x}px`,
+              '--office-station-y': `${stationPoint.y}px`,
             } as CSSProperties}
             type="button"
           >
@@ -313,6 +375,8 @@ export function IsometricOfficeScene({
         {stations.map((station) => {
           const statusBadge = getAgentStatusBadge(station)
           const floorRender = getDefaultFloorAgentRender(station, effectiveSimulationMode)
+          const position = getWorldPoint(station.simulation.position)
+          const target = getWorldPoint(station.simulation.target)
 
           return (
             <span
@@ -337,10 +401,10 @@ export function IsometricOfficeScene({
                 '--office-agent-delay': station.choreography.animationDelay,
                 '--office-agent-duration': station.choreography.animationDuration,
                 '--office-agent-tempo': station.choreography.tempo,
-                '--office-agent-target-x': `${station.simulation.target.x}%`,
-                '--office-agent-target-y': `${station.simulation.target.y}%`,
-                '--office-agent-x': `${station.simulation.position.x}%`,
-                '--office-agent-y': `${station.simulation.position.y}%`,
+                '--office-agent-target-x': `${target.x}px`,
+                '--office-agent-target-y': `${target.y}px`,
+                '--office-agent-x': `${position.x}px`,
+                '--office-agent-y': `${position.y}px`,
               } as CSSProperties}
             >
               <span className="office-agent-trail" />
@@ -365,6 +429,8 @@ export function IsometricOfficeScene({
             </span>
           )
         })}
+        </div>
+      </div>
       </div>
     </div>
   )

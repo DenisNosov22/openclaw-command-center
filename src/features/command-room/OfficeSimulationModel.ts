@@ -48,6 +48,19 @@ export interface OfficePoint {
   y: number
 }
 
+export const OFFICE_WORLD = {
+  width: 1536,
+  height: 1024,
+  aspectRatio: 1536 / 1024,
+} as const
+
+export function officePercentToWorldPoint(point: OfficePoint): OfficePoint {
+  return roundPoint({
+    x: (point.x / 100) * OFFICE_WORLD.width,
+    y: (point.y / 100) * OFFICE_WORLD.height,
+  })
+}
+
 export interface OfficeZone {
   id: OfficeZoneId
   label: string
