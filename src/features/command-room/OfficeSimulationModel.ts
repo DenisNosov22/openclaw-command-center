@@ -158,6 +158,7 @@ export interface OfficeSimulation {
 }
 
 export const OFFICE_COORDINATION_HUB_POINT: OfficePoint = { x: 50, y: 38.5 }
+export const OFFICE_COORDINATION_WALKWAY_POINT: OfficePoint = { x: 50, y: 47.5 }
 
 export const OFFICE_ZONES: OfficeZone[] = [
   {
@@ -627,28 +628,41 @@ function sameOfficePoint(left: OfficePoint, right: OfficePoint) {
 
 const officeHubCorridorsByDesk: Record<OfficeDeskId, OfficePoint[]> = {
   'desk-command': [],
-  'desk-coding': [{ x: 13, y: 53 }, { x: 24, y: 54 }, { x: 36, y: 52 }, { x: 45, y: 46 }],
-  'desk-ops': [{ x: 16, y: 72 }, { x: 24, y: 64 }, { x: 38, y: 53 }, { x: 47, y: 45 }],
-  'desk-research': [{ x: 13, y: 36 }, { x: 29, y: 39 }, { x: 44, y: 44 }],
-  'desk-spec': [{ x: 25, y: 37 }, { x: 36, y: 41 }, { x: 46, y: 44 }],
-  'desk-qa': [{ x: 25, y: 55 }, { x: 36, y: 53 }, { x: 46, y: 46 }],
-  'desk-video': [{ x: 76, y: 47 }, { x: 66, y: 48 }, { x: 56, y: 44 }],
-  'desk-layout': [{ x: 66, y: 69 }, { x: 61, y: 58 }, { x: 53, y: 46 }],
-  'desk-marketing': [{ x: 83, y: 37 }, { x: 72, y: 43 }, { x: 58, y: 44 }],
-  'desk-trading': [{ x: 70, y: 72 }, { x: 60, y: 60 }, { x: 52, y: 46 }],
+  'desk-coding': [{ x: 14, y: 62 }, { x: 28, y: 62 }, { x: 40, y: 56 }, { x: 47, y: 49 }],
+  'desk-ops': [{ x: 18, y: 65 }, { x: 29, y: 64 }, { x: 40, y: 57 }, { x: 47, y: 49 }],
+  'desk-research': [{ x: 14, y: 43 }, { x: 30, y: 43 }, { x: 44, y: 46 }],
+  'desk-spec': [{ x: 27, y: 43 }, { x: 39, y: 44 }, { x: 47, y: 47 }],
+  'desk-qa': [{ x: 27, y: 62 }, { x: 38, y: 59 }, { x: 47, y: 50 }],
+  'desk-video': [{ x: 76, y: 57 }, { x: 67, y: 53 }, { x: 57, y: 49 }],
+  'desk-layout': [{ x: 62, y: 63 }, { x: 58, y: 57 }, { x: 53, y: 50 }],
+  'desk-marketing': [{ x: 76, y: 49 }, { x: 67, y: 49 }, { x: 58, y: 48 }],
+  'desk-trading': [{ x: 64, y: 63 }, { x: 58, y: 58 }, { x: 53, y: 50 }],
 }
 
 const officeHubApproachByDesk: Record<OfficeDeskId, OfficePoint> = {
-  'desk-command': OFFICE_COORDINATION_HUB_POINT,
-  'desk-coding': { x: 45, y: 43 },
-  'desk-ops': { x: 46, y: 50 },
-  'desk-research': { x: 47, y: 35 },
-  'desk-spec': { x: 53, y: 35 },
-  'desk-qa': { x: 45, y: 48 },
-  'desk-video': { x: 58, y: 43 },
-  'desk-layout': { x: 56, y: 48 },
-  'desk-marketing': { x: 59, y: 39 },
-  'desk-trading': { x: 55, y: 51 },
+  'desk-command': OFFICE_COORDINATION_WALKWAY_POINT,
+  'desk-coding': { x: 45, y: 49 },
+  'desk-ops': { x: 46, y: 51 },
+  'desk-research': { x: 47, y: 46 },
+  'desk-spec': { x: 53, y: 46 },
+  'desk-qa': { x: 45, y: 51 },
+  'desk-video': { x: 58, y: 48 },
+  'desk-layout': { x: 56, y: 51 },
+  'desk-marketing': { x: 59, y: 48 },
+  'desk-trading': { x: 55, y: 52 },
+}
+
+const officeWalkLaneByDesk: Record<OfficeDeskId, OfficePoint> = {
+  'desk-command': OFFICE_COORDINATION_WALKWAY_POINT,
+  'desk-coding': { x: 14, y: 62 },
+  'desk-ops': { x: 18, y: 65 },
+  'desk-research': { x: 14, y: 43 },
+  'desk-spec': { x: 27, y: 43 },
+  'desk-qa': { x: 27, y: 62 },
+  'desk-video': { x: 76, y: 57 },
+  'desk-layout': { x: 62, y: 63 },
+  'desk-marketing': { x: 76, y: 49 },
+  'desk-trading': { x: 64, y: 63 },
 }
 
 function getDeskByPoint(point: OfficePoint) {
@@ -656,13 +670,14 @@ function getDeskByPoint(point: OfficePoint) {
 }
 
 function getCoordinationHubRoute(desk: OfficeDesk, finalTarget = officeHubApproachByDesk[desk.id]) {
+  const start = officeWalkLaneByDesk[desk.id] ?? desk.point
   const route = [
-    roundPoint(desk.point),
+    roundPoint(start),
     ...officeHubCorridorsByDesk[desk.id].map(roundPoint),
-    roundPoint(OFFICE_COORDINATION_HUB_POINT),
+    roundPoint(OFFICE_COORDINATION_WALKWAY_POINT),
   ]
 
-  if (sameOfficePoint(finalTarget, OFFICE_COORDINATION_HUB_POINT)) {
+  if (sameOfficePoint(finalTarget, OFFICE_COORDINATION_WALKWAY_POINT)) {
     return route
   }
 
@@ -670,11 +685,14 @@ function getCoordinationHubRoute(desk: OfficeDesk, finalTarget = officeHubApproa
   const continuation = targetDesk
     ? [...officeHubCorridorsByDesk[targetDesk.id]].reverse()
     : []
+  const resolvedTarget = targetDesk
+    ? officeWalkLaneByDesk[targetDesk.id]
+    : finalTarget
 
   return [
     ...route,
     ...continuation.map(roundPoint),
-    roundPoint(finalTarget),
+    roundPoint(resolvedTarget),
   ]
 }
 
@@ -808,7 +826,7 @@ function getAgentPosition(
   posture: OfficeAgentPosture,
   progress = 0.5,
 ) {
-  if (posture !== 'walking') {
+  if (posture !== 'walking' && posture !== 'handoff') {
     return desk.point
   }
 
@@ -965,10 +983,11 @@ function applyLiveStatus(
     : officeHubApproachByDesk[desk.id]
 
   const route = getCoordinationHubRoute(desk, target)
+  const resolvedRouteTarget = route[route.length - 1] ?? target
 
   return {
     ...merged,
-    target: roundPoint(target),
+    target: roundPoint(resolvedRouteTarget),
     route,
     heading: getRouteHeading(route, merged.progress),
   }

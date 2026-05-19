@@ -274,7 +274,7 @@ async function verifyOfficeDom(page: Page) {
       ['agent-dev', getCenter(".office-floor-agent[data-agent-id='agent-dev']"), 16, 24, 41, 49],
       ['agent-varta', getCenter(".office-floor-agent[data-agent-id='agent-varta']"), 19, 27, 51, 60],
       ['agent-shturman', getCenter(".office-floor-agent[data-agent-id='agent-shturman']"), 6, 14, 34, 43],
-      ['agent-spec', getCenter(".office-floor-agent[data-agent-id='agent-spec']"), 18, 36, 34, 46],
+      ['agent-spec', getCenter(".office-floor-agent[data-agent-id='agent-spec']"), 18, 38, 34, 47],
       ['agent-bastion', getCenter(".office-floor-agent[data-agent-id='agent-bastion']"), 9, 17, 62, 70],
       ['agent-desk', getCenter(".office-floor-agent[data-agent-id='agent-desk']"), 70, 79, 62, 70],
       ['agent-verstalnyk', getCenter(".office-floor-agent[data-agent-id='agent-verstalnyk']"), 64, 73, 67, 77],
@@ -416,7 +416,7 @@ async function verifyOfficeDom(page: Page) {
     const checks = [
       ['agent-verstalnyk', getCenter('agent-verstalnyk'), 48, 56, 39, 47],
       ['agent-varta', getCenter('agent-varta'), 19, 27, 51, 60],
-      ['agent-spec', getCenter('agent-spec'), 18, 36, 34, 46],
+      ['agent-spec', getCenter('agent-spec'), 18, 38, 34, 47],
     ] as const
 
     return checks.map(([id, center, minX, maxX, minY, maxY]) => {
@@ -541,6 +541,45 @@ async function verifyOfficeDom(page: Page) {
     stationaryCentralWalkwayIssues,
     [],
     `Inactive/home agents should not occupy the central wooden movement corridor: ${stationaryCentralWalkwayIssues.join('; ')}`,
+  )
+
+  const movingFurnitureIssues = await page.evaluate(() => {
+    const furnitureNoWalkRects = [
+      { label: 'upper-left desks', x1: 4, x2: 29, y1: 28, y2: 39 },
+      { label: 'lower-left desks', x1: 4, x2: 29, y1: 49, y2: 59 },
+      { label: 'command meeting table', x1: 43, x2: 57, y1: 34, y2: 44 },
+      { label: 'server racks', x1: 5, x2: 24, y1: 70, y2: 87 },
+      { label: 'right wall/showcase furniture', x1: 77, x2: 90, y1: 26, y2: 43 },
+      { label: 'bottom monitor desks', x1: 55, x2: 80, y1: 68, y2: 80 },
+      { label: 'camera gear', x1: 78, x2: 92, y1: 66, y2: 84 },
+    ]
+
+    return [...document.querySelectorAll<HTMLElement>(".office-floor-agent[data-physical-agent='true']")]
+      .map((agent) => {
+        const posture = agent.dataset.agentPosture
+
+        if (posture !== 'walking' && posture !== 'handoff') {
+          return ''
+        }
+
+        const style = agent.style
+        const x = (Number.parseFloat(style.getPropertyValue('--office-agent-x')) / 1536) * 100
+        const y = (Number.parseFloat(style.getPropertyValue('--office-agent-y')) / 1024) * 100
+        const furnitureHit = furnitureNoWalkRects.find(
+          (rect) => x > rect.x1 && x < rect.x2 && y > rect.y1 && y < rect.y2,
+        )
+
+        return furnitureHit
+          ? `${agent.dataset.agentId ?? 'unknown'}: ${Math.round(x)},${Math.round(y)} on ${furnitureHit.label}`
+          : ''
+      })
+      .filter(Boolean)
+  })
+
+  assert.deepEqual(
+    movingFurnitureIssues,
+    [],
+    `Moving agents should use floor lanes instead of desks/tables: ${movingFurnitureIssues.join('; ')}`,
   )
 
   const defaultAgentVisibilityIssues = await page.evaluate(() => {

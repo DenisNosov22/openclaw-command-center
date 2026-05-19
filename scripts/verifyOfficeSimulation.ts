@@ -11,6 +11,7 @@ import {
   getOfficePath,
   OFFICE_AGENT_PROFILES,
   OFFICE_COORDINATION_HUB_POINT,
+  OFFICE_COORDINATION_WALKWAY_POINT,
   OFFICE_DESKS,
   OFFICE_MAX_ACTIVE_ROUTE_AGENTS,
   OFFICE_PATHS,
@@ -77,6 +78,28 @@ const simulation = createOfficeSimulation(snapshot.agents, snapshot.tasks)
 
 function routeIncludesPoint(route: Array<{ x: number; y: number }>, point: { x: number; y: number }) {
   return route.some((routePoint) => routePoint.x === point.x && routePoint.y === point.y)
+}
+
+function pointInsideRect(point: { x: number; y: number }, rect: { x1: number; x2: number; y1: number; y2: number }) {
+  return point.x > rect.x1 && point.x < rect.x2 && point.y > rect.y1 && point.y < rect.y2
+}
+
+const furnitureNoWalkRects = [
+  { label: 'upper-left desks', x1: 4, x2: 29, y1: 28, y2: 39 },
+  { label: 'lower-left desks', x1: 4, x2: 29, y1: 49, y2: 59 },
+  { label: 'command meeting table', x1: 43, x2: 57, y1: 34, y2: 44 },
+  { label: 'server racks', x1: 5, x2: 24, y1: 70, y2: 87 },
+  { label: 'right wall/showcase furniture', x1: 77, x2: 90, y1: 26, y2: 43 },
+  { label: 'bottom monitor desks', x1: 55, x2: 80, y1: 68, y2: 80 },
+  { label: 'camera gear', x1: 78, x2: 92, y1: 66, y2: 84 },
+] as const
+
+function routeFurnitureIssues(route: Array<{ x: number; y: number }>) {
+  return route.flatMap((point) =>
+    furnitureNoWalkRects
+      .filter((rect) => pointInsideRect(point, rect))
+      .map((rect) => rect.label + ': ' + point.x + ',' + point.y),
+  )
 }
 
 assert(OFFICE_ZONES.length >= 4, 'Expected office simulation zones')
@@ -225,16 +248,21 @@ for (const state of simulation.agents.filter((agent) => agent.posture === 'walki
 for (const state of simulation.agents.filter((agent) => agent.route.length > 1)) {
   const desk = getOfficeDeskForProfession(state.role)
 
-  assert.deepEqual(state.route[0], desk.point, `${state.agentId} active route should start from home station`)
+  assert.notDeepEqual(state.route[0], desk.point, `${state.agentId} active route should start from a floor lane, not the desk/table anchor`)
   assert(
-    routeIncludesPoint(state.route, OFFICE_COORDINATION_HUB_POINT),
-    `${state.agentId} active route should pass through Краб coordination hub`,
+    routeIncludesPoint(state.route, OFFICE_COORDINATION_WALKWAY_POINT),
+    `${state.agentId} active route should pass through the floor lane beside Краб coordination hub`,
   )
   assert(state.target, `${state.agentId} active target should be a routed hub approach point`)
   assert(
     Math.abs(state.target.x - OFFICE_COORDINATION_HUB_POINT.x) <= 10 &&
       Math.abs(state.target.y - OFFICE_COORDINATION_HUB_POINT.y) <= 14,
     `${state.agentId} active target should stay near the Краб coordination hub`,
+  )
+  assert.deepEqual(
+    routeFurnitureIssues(state.route),
+    [],
+    `${state.agentId} active route should stay on visible floor lanes, not furniture`,
   )
 }
 
@@ -344,8 +372,8 @@ for (const movingAgent of defaultAnimatedMovers) {
     `${movingAgent.agentId} should expose corridor route points while moving`,
   )
   assert(
-    routeIncludesPoint(movingAgent.route, OFFICE_COORDINATION_HUB_POINT),
-    `${movingAgent.agentId} should move through the Краб coordination hub`,
+    routeIncludesPoint(movingAgent.route, OFFICE_COORDINATION_WALKWAY_POINT),
+    `${movingAgent.agentId} should move through the floor lane beside the Краб coordination hub`,
   )
   assert(
     movingAgent.progress > 0 || movingAgent.posture === 'handoff',
@@ -430,12 +458,17 @@ const liveHandoffSimulation = createOfficeSimulation(snapshot.agents, snapshot.t
 })
 const liveHandoffAgent = liveHandoffSimulation.agents.find((agent) => agent.agentId === 'agent-dev')
 assert(liveHandoffAgent, 'Expected live handoff override target')
-assert.deepEqual(liveHandoffAgent.route[0], { x: 8.8, y: 51.8 }, 'Live handoff route should start at the home station')
+assert.deepEqual(liveHandoffAgent.route[0], { x: 14, y: 62 }, 'Live handoff route should start on the coding floor lane')
 assert(
-  routeIncludesPoint(liveHandoffAgent.route, OFFICE_COORDINATION_HUB_POINT),
-  'Live handoff route should pass through Краб central hub before continuing',
+  routeIncludesPoint(liveHandoffAgent.route, OFFICE_COORDINATION_WALKWAY_POINT),
+  'Live handoff route should pass through the floor lane beside Краб central hub before continuing',
 )
-assert.deepEqual(liveHandoffAgent.target, { x: 22.5, y: 54.6 }, 'Live handoff route may continue from hub to target station')
+assert.deepEqual(liveHandoffAgent.target, { x: 27, y: 62 }, 'Live handoff route should resolve target stations to their floor lane')
+assert.deepEqual(
+  routeFurnitureIssues(liveHandoffAgent.route),
+  [],
+  'Live handoff route should keep every cue point off furniture',
+)
 
 const queuedBaseline = snapshot.agents.find((agent) => agent.id === 'agent-shturman')
 assert(queuedBaseline, 'Expected queued fixture agent')
@@ -488,12 +521,12 @@ assert(
   activeTick.posture === 'walking' || activeTick.posture === 'handoff',
   'Delegated active task should expose walking or handoff posture',
 )
-assert.deepEqual(activeTick.route[0], { x: 8.8, y: 51.8 }, 'Delegated active task should start its route from the coding desk')
+assert.deepEqual(activeTick.route[0], { x: 14, y: 62 }, 'Delegated active task should start its route from the coding floor lane')
 assert(
-  routeIncludesPoint(activeTick.route, OFFICE_COORDINATION_HUB_POINT),
-  'Delegated active task should route through Краб central coordination hub',
+  routeIncludesPoint(activeTick.route, OFFICE_COORDINATION_WALKWAY_POINT),
+  'Delegated active task should route through the floor lane beside Краб central coordination hub',
 )
-assert.deepEqual(activeTick.target, { x: 45, y: 43 }, 'Delegated active task should target the coding-side Краб hub approach point')
+assert.deepEqual(activeTick.target, { x: 45, y: 49 }, 'Delegated active task should target the coding-side floor approach point')
 
 for (const state of timedSimulation.agents) {
   assert(
