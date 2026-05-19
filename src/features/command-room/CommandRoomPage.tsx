@@ -255,9 +255,23 @@ function getOfficeSimulationElapsedMsOverride() {
     return undefined
   }
 
-  const value = Number(new URLSearchParams(window.location.search).get('officeElapsedMs'))
+  const params = new URLSearchParams(window.location.search)
+
+  if (!params.has('officeElapsedMs')) {
+    return undefined
+  }
+
+  const value = Number(params.get('officeElapsedMs'))
 
   return Number.isFinite(value) && value >= 0 ? value : undefined
+}
+
+function shouldUseOfficeLiveStatusOverrides() {
+  if (typeof window === 'undefined') {
+    return false
+  }
+
+  return new URLSearchParams(window.location.search).get('officeLiveStatus') === '1'
 }
 
 function getLiveSnapshot(tick: number): LiveSnapshot {
@@ -345,6 +359,10 @@ export function CommandRoomPage() {
     () => getOfficeSimulationElapsedMsOverride(),
     [],
   )
+  const useOfficeLiveStatusOverrides = useMemo(
+    () => shouldUseOfficeLiveStatusOverrides(),
+    [],
+  )
   const selectedAgent =
     snapshot.agents.find((agent) => agent.id === selectedAgentId) ??
     snapshot.agents[0] ??
@@ -378,12 +396,13 @@ export function CommandRoomPage() {
   const liveSimulation = useMemo(
     () =>
       officeSimulationElapsedMs === undefined
+        && useOfficeLiveStatusOverrides
         ? createOfficeAgentStatusSimulationOverrides(
             snapshot.agents,
             officeAgentStatus.snapshots,
           )
         : undefined,
-    [officeAgentStatus.snapshots, officeSimulationElapsedMs, snapshot.agents],
+    [officeAgentStatus.snapshots, officeSimulationElapsedMs, snapshot.agents, useOfficeLiveStatusOverrides],
   )
   const formattedLastUpdated = formatKyivTime(snapshot.lastUpdated, { includeDate: true })
   const officeSourceIndicator = getOfficeSourceIndicator(officeAgentStatus)

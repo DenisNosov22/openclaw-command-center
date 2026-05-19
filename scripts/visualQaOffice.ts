@@ -274,7 +274,7 @@ async function verifyOfficeDom(page: Page) {
       ['agent-dev', getCenter(".office-floor-agent[data-agent-id='agent-dev']"), 16, 24, 41, 49],
       ['agent-varta', getCenter(".office-floor-agent[data-agent-id='agent-varta']"), 19, 27, 51, 60],
       ['agent-shturman', getCenter(".office-floor-agent[data-agent-id='agent-shturman']"), 6, 14, 34, 43],
-      ['agent-spec', getCenter(".office-floor-agent[data-agent-id='agent-spec']"), 18, 27, 34, 43],
+      ['agent-spec', getCenter(".office-floor-agent[data-agent-id='agent-spec']"), 18, 36, 34, 46],
       ['agent-bastion', getCenter(".office-floor-agent[data-agent-id='agent-bastion']"), 9, 17, 62, 70],
       ['agent-desk', getCenter(".office-floor-agent[data-agent-id='agent-desk']"), 70, 79, 62, 70],
       ['agent-verstalnyk', getCenter(".office-floor-agent[data-agent-id='agent-verstalnyk']"), 64, 73, 67, 77],
@@ -416,7 +416,7 @@ async function verifyOfficeDom(page: Page) {
     const checks = [
       ['agent-verstalnyk', getCenter('agent-verstalnyk'), 48, 56, 39, 47],
       ['agent-varta', getCenter('agent-varta'), 19, 27, 51, 60],
-      ['agent-spec', getCenter('agent-spec'), 18, 27, 34, 43],
+      ['agent-spec', getCenter('agent-spec'), 18, 36, 34, 46],
     ] as const
 
     return checks.map(([id, center, minX, maxX, minY, maxY]) => {

@@ -125,7 +125,7 @@ function useOfficeSimulationElapsedMs(mode: OfficeSimulationMode, controlledElap
     const startedAt = performance.now()
     const intervalId = window.setInterval(() => {
       setElapsedMs(Math.round(performance.now() - startedAt))
-    }, 360)
+    }, 120)
 
     return () => window.clearInterval(intervalId)
   }, [controlledElapsedMs, mode])
@@ -503,6 +503,8 @@ export function IsometricOfficeScene({
                 '--office-agent-delay': station.choreography.animationDelay,
                 '--office-agent-duration': station.choreography.animationDuration,
                 '--office-agent-heading': `${station.simulation.heading}deg`,
+                '--office-agent-route-dx': `${target.x - position.x}px`,
+                '--office-agent-route-dy': `${target.y - position.y}px`,
                 '--office-agent-tempo': station.choreography.tempo,
                 '--office-agent-target-x': `${target.x}px`,
                 '--office-agent-target-y': `${target.y}px`,

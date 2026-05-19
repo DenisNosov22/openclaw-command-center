@@ -2044,7 +2044,7 @@
 }
 
 .office-floor-agent.office-behavior--path-step {
-  animation: office-floor-agent-route var(--office-agent-duration, 7200ms) ease-in-out infinite;
+  animation: office-floor-agent-route 2.4s ease-in-out infinite;
   animation-delay: var(--office-agent-delay, 0ms);
 }
 
@@ -4921,8 +4921,8 @@
   50% {
     transform:
       translate(
-        calc(-50% + var(--office-agent-shift-x)),
-        calc(-50% + var(--office-agent-shift-y) - 2px)
+        calc(-50% + var(--office-agent-shift-x) + clamp(-28px, calc(var(--office-agent-route-dx, 0px) * 0.18), 28px)),
+        calc(-50% + var(--office-agent-shift-y) + clamp(-24px, calc(var(--office-agent-route-dy, 0px) * 0.18), 24px))
       );
   }
 }

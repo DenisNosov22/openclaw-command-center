@@ -741,7 +741,7 @@ function getTimedSimulationActivity(
   const phase = getScenarioPhase(agent, elapsedMs)
 
   if (baseActivity === 'handoff' || task?.status === 'delegated') {
-    return phase < 0.7 ? 'walking' : 'handoff'
+    return 'walking'
   }
 
   if (baseActivity === 'walking') {
@@ -808,10 +808,6 @@ function getAgentPosition(
   posture: OfficeAgentPosture,
   progress = 0.5,
 ) {
-  if (posture === 'handoff') {
-    return route[route.length - 1] ?? OFFICE_COORDINATION_HUB_POINT
-  }
-
   if (posture !== 'walking') {
     return desk.point
   }
