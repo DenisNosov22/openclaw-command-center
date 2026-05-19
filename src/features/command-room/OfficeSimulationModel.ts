@@ -638,11 +638,24 @@ const officeHubCorridorsByDesk: Record<OfficeDeskId, OfficePoint[]> = {
   'desk-trading': [{ x: 70, y: 72 }, { x: 60, y: 60 }, { x: 52, y: 46 }],
 }
 
+const officeHubApproachByDesk: Record<OfficeDeskId, OfficePoint> = {
+  'desk-command': OFFICE_COORDINATION_HUB_POINT,
+  'desk-coding': { x: 45, y: 43 },
+  'desk-ops': { x: 46, y: 50 },
+  'desk-research': { x: 47, y: 35 },
+  'desk-spec': { x: 53, y: 35 },
+  'desk-qa': { x: 45, y: 48 },
+  'desk-video': { x: 58, y: 43 },
+  'desk-layout': { x: 56, y: 48 },
+  'desk-marketing': { x: 59, y: 39 },
+  'desk-trading': { x: 55, y: 51 },
+}
+
 function getDeskByPoint(point: OfficePoint) {
   return OFFICE_DESKS.find((desk) => sameOfficePoint(desk.point, point))
 }
 
-function getCoordinationHubRoute(desk: OfficeDesk, finalTarget = OFFICE_COORDINATION_HUB_POINT) {
+function getCoordinationHubRoute(desk: OfficeDesk, finalTarget = officeHubApproachByDesk[desk.id]) {
   const route = [
     roundPoint(desk.point),
     ...officeHubCorridorsByDesk[desk.id].map(roundPoint),
@@ -796,7 +809,7 @@ function getAgentPosition(
   progress = 0.5,
 ) {
   if (posture === 'handoff') {
-    return OFFICE_COORDINATION_HUB_POINT
+    return route[route.length - 1] ?? OFFICE_COORDINATION_HUB_POINT
   }
 
   if (posture !== 'walking') {
@@ -953,7 +966,7 @@ function applyLiveStatus(
 
   const target = liveStatus.target && canContinueFromHub(merged.statusBadge, merged.activity, merged.posture)
     ? roundPoint(liveStatus.target)
-    : OFFICE_COORDINATION_HUB_POINT
+    : officeHubApproachByDesk[desk.id]
 
   const route = getCoordinationHubRoute(desk, target)
 
@@ -981,6 +994,7 @@ export function getOfficeAgentSimulationTick(
   const posture = getSimulationPosture(activity, profile)
   const progress = getOfficeAgentRouteProgress(agent, elapsedMs)
   const route = getCoordinationHubRoute(desk)
+  const target = route[route.length - 1] ?? OFFICE_COORDINATION_HUB_POINT
   const position = getAgentPosition(desk, route, posture, progress)
   const heading = posture === 'walking' || posture === 'handoff'
     ? getRouteHeading(route, progress)
@@ -996,7 +1010,7 @@ export function getOfficeAgentSimulationTick(
     position,
     progress,
     heading,
-    target: OFFICE_COORDINATION_HUB_POINT,
+    target,
     activity,
     currentTask: getTimedTaskLabel(task, activity, elapsedMs),
     posture,

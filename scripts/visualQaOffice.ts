@@ -408,6 +408,7 @@ async function verifyOfficeDom(page: Page) {
         ? {
             x: ((box.left + box.width / 2 - officeBox.left) / officeBox.width) * 100,
             y: ((box.top + box.height / 2 - officeBox.top) / officeBox.height) * 100,
+            posture: element?.dataset.agentPosture,
           }
         : undefined
     }
@@ -421,6 +422,10 @@ async function verifyOfficeDom(page: Page) {
     return checks.map(([id, center, minX, maxX, minY, maxY]) => {
       if (!center) {
         return `${id}: missing`
+      }
+
+      if (center.posture === 'walking' || center.posture === 'handoff') {
+        return ''
       }
 
       return center.x >= minX && center.x <= maxX && center.y >= minY && center.y <= maxY

@@ -230,7 +230,12 @@ for (const state of simulation.agents.filter((agent) => agent.route.length > 1))
     routeIncludesPoint(state.route, OFFICE_COORDINATION_HUB_POINT),
     `${state.agentId} active route should pass through Краб coordination hub`,
   )
-  assert.deepEqual(state.target, OFFICE_COORDINATION_HUB_POINT, `${state.agentId} active target should be Краб hub`)
+  assert(state.target, `${state.agentId} active target should be a routed hub approach point`)
+  assert(
+    Math.abs(state.target.x - OFFICE_COORDINATION_HUB_POINT.x) <= 10 &&
+      Math.abs(state.target.y - OFFICE_COORDINATION_HUB_POINT.y) <= 14,
+    `${state.agentId} active target should stay near the Краб coordination hub`,
+  )
 }
 
 const secondSimulation = createOfficeSimulation(snapshot.agents, snapshot.tasks)
@@ -488,7 +493,7 @@ assert(
   routeIncludesPoint(activeTick.route, OFFICE_COORDINATION_HUB_POINT),
   'Delegated active task should route through Краб central coordination hub',
 )
-assert.deepEqual(activeTick.target, OFFICE_COORDINATION_HUB_POINT, 'Delegated active task should target Краб central hub')
+assert.deepEqual(activeTick.target, { x: 45, y: 43 }, 'Delegated active task should target the coding-side Краб hub approach point')
 
 for (const state of timedSimulation.agents) {
   assert(
