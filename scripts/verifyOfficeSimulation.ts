@@ -346,7 +346,35 @@ for (const movingAgent of defaultAnimatedMovers) {
     movingAgent.progress > 0 || movingAgent.posture === 'handoff',
     `${movingAgent.agentId} should expose route progress or an explicit handoff posture`,
   )
+  assert(Number.isFinite(movingAgent.heading), `${movingAgent.agentId} should expose a finite route heading`)
 }
+
+const priorityAgents: Agent[] = [
+  { id: 'agent-priority-coding', name: 'Code', role: 'coding', status: 'working', currentTaskId: 'task-priority-coding' },
+  { id: 'agent-priority-research', name: 'Research', role: 'research', status: 'working', currentTaskId: 'task-priority-research' },
+  { id: 'agent-priority-qa', name: 'QA', role: 'QA', status: 'working', currentTaskId: 'task-priority-qa' },
+  { id: 'agent-priority-marketing', name: 'Marketing', role: 'marketing', status: 'working', currentTaskId: 'task-priority-marketing' },
+]
+const priorityTasks: Task[] = [
+  { id: 'task-priority-coding', title: 'Generic coding', status: 'in_progress', ownerAgentId: 'agent-priority-coding', priority: 'medium' },
+  { id: 'task-priority-research', title: 'Generic research', status: 'in_progress', ownerAgentId: 'agent-priority-research', priority: 'medium' },
+  { id: 'task-priority-qa', title: 'Generic QA', status: 'in_progress', ownerAgentId: 'agent-priority-qa', priority: 'medium' },
+  { id: 'task-priority-marketing', title: 'Priority handoff', status: 'delegated', ownerAgentId: 'agent-priority-marketing', priority: 'high' },
+]
+const prioritySimulation = createOfficeSimulation(priorityAgents, priorityTasks, {
+  elapsedMs: 1_200,
+  mode: 'animated',
+})
+const priorityMarketing = prioritySimulation.agents.find((agent) => agent.agentId === 'agent-priority-marketing')
+assert(priorityMarketing, 'Expected priority handoff agent')
+assert(
+  priorityMarketing.posture === 'walking' || priorityMarketing.posture === 'handoff',
+  'Delegated/handoff route agent should keep route slot even when it appears after generic movers',
+)
+assert(
+  prioritySimulation.agents.filter((agent) => agent.posture === 'walking' || agent.posture === 'handoff').length <= OFFICE_MAX_ACTIVE_ROUTE_AGENTS,
+  'Priority route cap should still keep the active mover count bounded',
+)
 
 for (const inactiveAgentId of ['agent-bastion', 'agent-desk']) {
   const state = defaultAnimatedSimulation.agents.find((agent) => agent.agentId === inactiveAgentId)

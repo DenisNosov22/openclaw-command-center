@@ -483,6 +483,7 @@ export function IsometricOfficeScene({
               data-agent-path={station.simulation.pathId}
               data-agent-posture={station.simulation.posture}
               data-agent-progress={station.simulation.progress}
+              data-agent-heading={station.simulation.heading}
               data-agent-target={`${station.simulation.target.x},${station.simulation.target.y}`}
               data-current-task={station.currentTask}
               data-floor-render={floorRender}
@@ -501,6 +502,7 @@ export function IsometricOfficeScene({
               style={{
                 '--office-agent-delay': station.choreography.animationDelay,
                 '--office-agent-duration': station.choreography.animationDuration,
+                '--office-agent-heading': `${station.simulation.heading}deg`,
                 '--office-agent-tempo': station.choreography.tempo,
                 '--office-agent-target-x': `${target.x}px`,
                 '--office-agent-target-y': `${target.y}px`,

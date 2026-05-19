@@ -1661,6 +1661,8 @@
     linear-gradient(135deg, transparent 0 47%, var(--office-agent-state-color) 47% 56%, transparent 56%);
   clip-path: polygon(0 35%, 58% 35%, 58% 8%, 100% 50%, 58% 92%, 58% 65%, 0 65%);
   filter: none;
+  transform: rotate(var(--office-agent-heading, 0deg));
+  transform-origin: 50% 50%;
 }
 
 .office-agent-document-transfer {
@@ -1878,6 +1880,7 @@
 .office-floor-agent[data-agent-posture='walking'] .office-agent-marker {
   border-color: rgba(120, 212, 192, 0.5);
   box-shadow: 0 0 0 1px rgba(120, 212, 192, 0.12);
+  transform: rotate(calc(var(--office-agent-heading, 0deg) * 0.08));
 }
 
 .office-floor-agent[data-agent-posture='working'] .office-agent-marker {
@@ -4914,19 +4917,11 @@
       );
   }
 
-  34% {
+  50% {
     transform:
       translate(
-        calc(-50% + var(--office-agent-shift-x) + 16px),
-        calc(-50% + var(--office-agent-shift-y) - 12px)
-      );
-  }
-
-  68% {
-    transform:
-      translate(
-        calc(-50% + var(--office-agent-shift-x) - 18px),
-        calc(-50% + var(--office-agent-shift-y) + 10px)
+        calc(-50% + var(--office-agent-shift-x)),
+        calc(-50% + var(--office-agent-shift-y) - 2px)
       );
   }
 }
@@ -6982,7 +6977,17 @@
   }
 
   .office-desk[data-agent-id='agent-vitryna'] .office-desk__label strong {
-    font-size: 0.56rem;
+    display: block;
+    font-size: 0.78rem;
+    line-height: 1.12;
+    min-width: 100px;
+  }
+
+  .office-desk[data-agent-id='agent-rezhyser'] .office-desk__label strong {
+    display: block;
+    font-size: 0.78rem;
+    line-height: 1.12;
+    min-width: 100px;
   }
 
   .office-agent-status-cue,
@@ -7247,6 +7252,8 @@
   .office-floor-agent[data-agent-id='agent-rezhyser'],
   .office-floor-agent[data-agent-id='agent-vitryna'] {
     z-index: 10;
+    width: 76px;
+    height: 88px;
   }
 
   .office-floor-agent[data-agent-id='agent-krab']:not([data-agent-posture='walking']):not([data-agent-posture='handoff']) {

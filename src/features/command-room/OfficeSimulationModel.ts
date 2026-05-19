@@ -115,6 +115,7 @@ export interface OfficeAgentSimulationState {
   route: OfficePoint[]
   position: OfficePoint
   progress: number
+  heading: number
   target: OfficePoint
   activity: OfficeAgentActivity
   currentTask: string
@@ -475,6 +476,18 @@ function interpolatePoint(from: OfficePoint, to: OfficePoint, progress: number):
   })
 }
 
+function getPointDistance(from: OfficePoint, to: OfficePoint) {
+  return Math.hypot(to.x - from.x, to.y - from.y)
+}
+
+function getRouteDistance(points: OfficePoint[]) {
+  return points.reduce((total, point, index) => {
+    const nextPoint = points[index + 1]
+
+    return nextPoint ? total + getPointDistance(point, nextPoint) : total
+  }, 0)
+}
+
 function getRoutePoint(points: OfficePoint[], progress: number) {
   const boundedProgress = clamp(progress, 0, 1)
 
@@ -486,27 +499,70 @@ function getRoutePoint(points: OfficePoint[], progress: number) {
     return points[0]
   }
 
-  const segmentCount = points.length - 1
-  const rawSegment = boundedProgress * segmentCount
-  const segmentIndex = Math.min(Math.floor(rawSegment), segmentCount - 1)
-  const segmentProgress = rawSegment - segmentIndex
-  const start = points[segmentIndex]
-  const end = points[segmentIndex + 1]
+  const routeDistance = getRouteDistance(points)
 
-  return interpolatePoint(start, end, segmentProgress)
+  if (routeDistance === 0) {
+    return points[0]
+  }
+
+  let walkedDistance = routeDistance * boundedProgress
+
+  for (let index = 0; index < points.length - 1; index += 1) {
+    const start = points[index]
+    const end = points[index + 1]
+    const segmentDistance = getPointDistance(start, end)
+
+    if (walkedDistance <= segmentDistance || index === points.length - 2) {
+      return interpolatePoint(start, end, segmentDistance === 0 ? 0 : walkedDistance / segmentDistance)
+    }
+
+    walkedDistance -= segmentDistance
+  }
+
+  return points[points.length - 1]
+}
+
+function getRouteHeading(points: OfficePoint[], progress: number) {
+  const boundedProgress = clamp(progress, 0, 1)
+
+  if (points.length < 2) {
+    return 0
+  }
+
+  const routeDistance = getRouteDistance(points)
+
+  if (routeDistance === 0) {
+    return 0
+  }
+
+  let walkedDistance = routeDistance * boundedProgress
+
+  for (let index = 0; index < points.length - 1; index += 1) {
+    const start = points[index]
+    const end = points[index + 1]
+    const segmentDistance = getPointDistance(start, end)
+
+    if (walkedDistance <= segmentDistance || index === points.length - 2) {
+      return Math.round((Math.atan2(end.y - start.y, end.x - start.x) * 180) / Math.PI)
+    }
+
+    walkedDistance -= segmentDistance
+  }
+
+  return 0
 }
 
 export function getOfficeAgentRouteProgress(agent: Agent, elapsedMs = 0) {
   const phase = getScenarioPhase(agent, elapsedMs)
   const profile = OFFICE_AGENT_PROFILES[agent.role] ?? fallbackProfile
   const desktopRouteLimitByDesk: Partial<Record<OfficeDeskId, number>> = {
-    'desk-coding': 0.16,
-    'desk-qa': 0.18,
-    'desk-layout': 0.16,
-    'desk-marketing': 0.14,
-    'desk-trading': 0.16,
+    'desk-coding': 0.58,
+    'desk-qa': 0.62,
+    'desk-layout': 0.5,
+    'desk-marketing': 0.48,
+    'desk-trading': 0.52,
   }
-  const routeLimit = desktopRouteLimitByDesk[profile.deskId] ?? 0.22
+  const routeLimit = desktopRouteLimitByDesk[profile.deskId] ?? 0.56
 
   return clamp(phase <= 0.5 ? phase * 2 : (1 - phase) * 2, 0, 1) * routeLimit
 }
@@ -758,6 +814,7 @@ function normalizeAgentHomeState(
     ...state,
     position: roundPoint(desk.point),
     progress: 0,
+    heading: 0,
     target: roundPoint(desk.point),
     route: [roundPoint(desk.point)],
   }
@@ -804,17 +861,43 @@ function isRouteActiveState(state: OfficeAgentSimulationState) {
   )
 }
 
-function capActiveRouteAgents(states: OfficeAgentSimulationState[]) {
-  let routeActiveCount = 0
+function getRouteMovementPriority(state: OfficeAgentSimulationState) {
+  if (
+    state.posture === 'handoff' ||
+    state.activity === 'handoff' ||
+    state.statusBadge === 'delegated' ||
+    state.statusBadge === 'handoff' ||
+    state.statusBadge === 'transferring'
+  ) {
+    return 0
+  }
 
-  return states.map((state) => {
+  if (state.statusBadge === 'escalating' || state.statusBadge === 'blocked_escalation') {
+    return 1
+  }
+
+  if (state.posture === 'walking' || state.activity === 'walking') {
+    return 2
+  }
+
+  return 3
+}
+
+function capActiveRouteAgents(states: OfficeAgentSimulationState[]) {
+  const activeRouteIndexes = states
+    .map((state, index) => ({ index, priority: getRouteMovementPriority(state), state }))
+    .filter(({ state }) => isRouteActiveState(state))
+    .sort((left, right) => left.priority - right.priority || left.index - right.index)
+    .slice(0, OFFICE_MAX_ACTIVE_ROUTE_AGENTS)
+    .map(({ index }) => index)
+  const activeRouteIndexSet = new Set(activeRouteIndexes)
+
+  return states.map((state, index) => {
     if (!isRouteActiveState(state)) {
       return state
     }
 
-    routeActiveCount += 1
-
-    return routeActiveCount <= OFFICE_MAX_ACTIVE_ROUTE_AGENTS
+    return activeRouteIndexSet.has(index)
       ? state
       : settleActiveAgentAtHome(state)
   })
@@ -872,10 +955,13 @@ function applyLiveStatus(
     ? roundPoint(liveStatus.target)
     : OFFICE_COORDINATION_HUB_POINT
 
+  const route = getCoordinationHubRoute(desk, target)
+
   return {
     ...merged,
     target: roundPoint(target),
-    route: getCoordinationHubRoute(desk, target),
+    route,
+    heading: getRouteHeading(route, merged.progress),
   }
 }
 
@@ -896,6 +982,9 @@ export function getOfficeAgentSimulationTick(
   const progress = getOfficeAgentRouteProgress(agent, elapsedMs)
   const route = getCoordinationHubRoute(desk)
   const position = getAgentPosition(desk, route, posture, progress)
+  const heading = posture === 'walking' || posture === 'handoff'
+    ? getRouteHeading(route, progress)
+    : 0
   const baseState = {
     agentId: agent.id,
     role: agent.role,
@@ -906,6 +995,7 @@ export function getOfficeAgentSimulationTick(
     route,
     position,
     progress,
+    heading,
     target: OFFICE_COORDINATION_HUB_POINT,
     activity,
     currentTask: getTimedTaskLabel(task, activity, elapsedMs),
